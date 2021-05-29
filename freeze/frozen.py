@@ -10,4 +10,5 @@ def frozen__set__(*args, **kwargs):
 
 
 def frozen__delattr__(name):
-    raise FrozenException(f"Can't delete attribute \"{name}\" on immutable instance")
+    raise FrozenException(
+        f"Can't delete attribute \"{name}\" on immutable instance")

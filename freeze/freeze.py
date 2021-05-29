@@ -35,6 +35,3 @@ def freeze(obj: object) -> object:
         frozen_obj.__class__ = frozen_class
         return frozen_obj
     raise ValueError(f"object of type {obj.__class__} not frozen")
-
-
-
