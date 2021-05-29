@@ -1,7 +1,7 @@
 import unittest
 from frozendict import frozendict
-from freeze.freeze import freeze
-from freeze.exceptions import FrozenException
+from freeze import freeze
+from freeze import FrozenException
 
 
 class TestFreeze(unittest.TestCase):
