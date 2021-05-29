@@ -1,5 +1,4 @@
-class FrozenException(TypeError):
-    pass
+from freeze.exceptions import FrozenException
 
 
 def frozen__setattr__(x, y, v):

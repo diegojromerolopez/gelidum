@@ -1,8 +1,8 @@
 import copy
 from frozendict import frozendict
 
-from frozen import frozen__setattr__, frozen__delattr__, frozen__set__
-from utils import isbuiltin
+from freeze.frozen import frozen__setattr__, frozen__delattr__, frozen__set__
+from freeze.utils import isbuiltin
 
 
 def freeze(obj: object) -> object:

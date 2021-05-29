@@ -1,0 +1,2 @@
+class FrozenException(TypeError):
+    pass

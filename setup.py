@@ -29,7 +29,7 @@ setup(
     keywords="freeze python object",
     url="https://github.com/diegojromerolopez/freeze",
     packages=["freeze"],
-    package_dir={"freeze": "src/freeze"},
+    package_dir={"freeze": "freeze"},
     data_files=[],
     include_package_data=True,
     scripts=[]
