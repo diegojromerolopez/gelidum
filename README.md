@@ -7,6 +7,9 @@ Inspired by the method freeze found in other languages like Javascript,
 this package tries to make immutable objects to make it easier avoid
 accidental modifications in your code.
 
+## WARNING
+This is an **EXPERIMENTAL** package. Don't use it unless you have checked it
+fulfills your use-case safely.
 
 ## How it works
 In case of the builtin types (int, float, str, etc) it makes nothing, as
@@ -32,6 +35,11 @@ your_frozen_object = freeze(your_object)
 # Raises exception
 your_frozen_object.attr1 = new_value
 ```
+
+## Limitations
+- hash issues are completely ignored for now.
+- this library does not modify the object but creates a new
+one with the same content by frozen.
 
 ## Dependencies
 Right now this package uses
