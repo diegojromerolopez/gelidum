@@ -26,10 +26,13 @@ jobs:
       - name: Test with unittest
         run: |
           python -m unittest discover -s ./tests
-      - name: Test & publish code coverage
+      - name: Generate the coverage report
+        run: |
+          coverage run --source=test -m pytest
+          coverage xml -o coverage.xml
+      - name: Publish code coverage to code climate
         uses: paambaati/codeclimate-action@v2.7.5
         env:
           CC_TEST_REPORTER_ID: $CC_TEST_REPORTER_ID
         with:
-          coverageCommand: coverage run -m unittest
-          debug: true
+          coverageCommand: coverage report
