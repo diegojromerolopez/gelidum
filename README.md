@@ -1,6 +1,12 @@
 # gelidum
 Freeze your objects in python.
 
+| Latin | English  |
+| -------------------------------------------------------- | -------------------------------------------------------- |
+| *Caelum est hieme frigidum et gelidum; myrtos oleas quaeque alia assiduo tepore laetantur, aspernatur ac respuit; laurum tamen patitur atque etiam nitidissimam profert, interdum sed non saepius quam sub urbe nostra necat.* | *In winter the air is cold and frosty: myrtles, olives and all other trees which require constant warmth for them to do well, the climate rejects and spurns, though it allows laurel to grow, and even brings it to a luxuriant leaf. Occasionally, however, it kills it, but that does not happen more frequently than in the neighbourhood of Rome.* |
+
+[The Letters of the Younger Pliny, First Series — Volume 1 by the Younger Pliny](https://www.gutenberg.org/ebooks/3234), translated to English by John Benjamin Firth.
+
 ## Introduction
 Inspired by the method freeze found in other languages like Javascript,
 this package tries to make immutable objects to make it easier avoid
