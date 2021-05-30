@@ -26,3 +26,5 @@ jobs:
       - name: Test with unittest
         run: |
           python -m unittest discover -s ./tests
+      - name: Code Climate Coverage Action
+        uses: paambaati/codeclimate-action@v2.7.5
