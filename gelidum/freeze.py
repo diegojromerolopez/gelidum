@@ -1,7 +1,7 @@
 import copy
 from frozendict import frozendict
 
-from gelidum.frozen import FrozenBase
+from gelidum.frozen import make_frozen_class
 from gelidum.utils import isbuiltin
 
 
@@ -19,14 +19,6 @@ def freeze(obj: object, inplace: bool = False) -> object:
         return frozenset([freeze(item, inplace=inplace)
                           for item in obj])
     if isinstance(obj, object):
-        frozen_class = type(
-            f"Frozen{obj.__class__.__name__}",
-            (obj.__class__, FrozenBase),
-            {
-                "__slots__": tuple(),
-                **{attr: None for attr in list(obj.__dict__.keys())}
-            }
-        )
         if inplace:
             frozen_obj = obj
         else:
@@ -34,8 +26,7 @@ def freeze(obj: object, inplace: bool = False) -> object:
         for attr, value in frozen_obj.__dict__.items():
             attr_value = getattr(frozen_obj, attr)
             setattr(frozen_obj, attr, freeze(attr_value, inplace=inplace))
-
-        frozen_obj.__class__ = frozen_class
+        frozen_obj.__class__ = make_frozen_class(klass=obj.__class__, attrs=list(obj.__dict__.keys()))
         return frozen_obj
 
     raise ValueError(f"object of type {obj.__class__} not frozen")

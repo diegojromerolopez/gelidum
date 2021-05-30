@@ -61,9 +61,7 @@ your_frozen_object.attr1 = new_value
 ```
 
 ## Limitations
-- hash issues are completely ignored for now.
-- this library does not modify the object but creates a new
-one with the same content by frozen.
+- dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
 
 ## Dependencies
 Right now this package uses
