@@ -27,12 +27,14 @@ fulfills your use-case safely.
 In case of the builtin types (int, float, str, etc) it makes nothing, as
 they are already immutable.
 
-For the list type, a tuple is returned.
+For the list type, a tuple with frozen items is returned.
 
-For sets, frozensets are returned.
+Tuples are already immutable, so a new tuple with frozen items is returned.
+
+For sets, frozensets of frozen items are returned.
 
 For dicts, it creates a new [frozendict](https://pypi.org/project/frozendict/)
-with the keys and values of the original dict.
+with the keys and frozen values of the original dict.
 
 This package, change the methods \_\_setattr\_\_, \_\_delattr\_\_, \_\_set\_\_,
 \_\_setitem\_\_, \_\_delitem\_\_, and \_\_reversed\_\_.
@@ -74,6 +76,9 @@ your_frozen_object.attr1 = new_value
 Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/). 
 
+## Collaborations
+This project is open to collaborations. Make a PR or an issue and
+I'll take a look to it.
 
 ## License
-MIT
+[MIT](LICENSE)
