@@ -1,8 +1,8 @@
 import unittest
 from frozendict import frozendict
-from freeze import freeze
-from freeze import FrozenException
-from freeze.frozen import FrozenBase
+from gelidum import freeze
+from gelidum import FrozenException
+from gelidum.frozen import FrozenBase
 
 
 class TestFreeze(unittest.TestCase):

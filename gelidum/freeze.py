@@ -1,8 +1,8 @@
 import copy
 from frozendict import frozendict
 
-from freeze.frozen import FrozenBase
-from freeze.utils import isbuiltin
+from gelidum.frozen import FrozenBase
+from gelidum.utils import isbuiltin
 
 
 def freeze(obj: object, inplace: bool = False) -> object:

@@ -1,4 +1,4 @@
-from freeze.exceptions import FrozenException
+from gelidum.exceptions import FrozenException
 
 
 class FrozenBase(object):

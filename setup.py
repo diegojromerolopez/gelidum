@@ -14,7 +14,7 @@ with open(requirements_path) as requirements_file:
     requirements = requirements_file.readlines()
 
 setup(
-    name="freeze",
+    name="gelidum",
     version="0.1",
     author="Diego J. Romero López",
     author_email="diegojromerolopez@gmail.com",
@@ -28,9 +28,9 @@ setup(
     install_requires=requirements,
     license="MIT",
     keywords="freeze python object",
-    url="https://github.com/diegojromerolopez/freeze",
-    packages=["freeze"],
-    package_dir={"freeze": "freeze"},
+    url="https://github.com/diegojromerolopez/gelidum",
+    packages=["gelidum"],
+    package_dir={"gelidum": "freeze"},
     data_files=[],
     include_package_data=True,
     scripts=[]
