@@ -71,10 +71,20 @@ your_frozen_object.attr1 = new_value
 
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
+- file handler attributes are not supported.
 
 ## Dependencies
 Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/). 
+
+## Roadmap
+- [ ] Make pypi package.
+- [ ] Add decorator to make sure input parameters are immutable.
+- [ ] Measure cost in time of freezing objects.
+- [ ] Check that pickle serialization works fine.
+- [ ] Add delayed_freeze, a function that freezes an object but
+when a condition happens.
+
 
 ## Collaborations
 This project is open to collaborations. Make a PR or an issue and
