@@ -362,3 +362,17 @@ class TestFreeze(unittest.TestCase):
 
     def test_modifying_class_method(self):
         pass
+
+    def test_cannot_add_attribute_to_frozen_object(self):
+        class Dummy(object):
+            def __init__(self, attr1: int, attr2: int, attr3: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+                self.__attr3 = attr3
+
+        dummy = Dummy(attr1=1, attr2=2, attr3=3)
+        frozen_dummy = freeze(dummy)
+        with self.assertRaises(FrozenException) as context:
+            frozen_dummy.new_attribute = 99
+        self.assertEqual(
+            "Can't assign \"new_attribute\" on immutable instance", str(context.exception))
