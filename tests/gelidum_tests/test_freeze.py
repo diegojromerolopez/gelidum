@@ -1,6 +1,5 @@
-import tempfile
 import unittest
-from typing import Dict, Union, IO
+from typing import Dict
 
 from frozendict import frozendict
 from gelidum import freeze
