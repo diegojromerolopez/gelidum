@@ -1,6 +1,6 @@
 import copy
 import sys
-from typing import List, Tuple, Set, Dict
+from typing import List, Tuple, Set, Dict, Any
 
 from frozendict import frozendict
 
@@ -8,7 +8,7 @@ from gelidum.frozen import make_frozen_class
 from gelidum.utils import isbuiltin
 
 
-def freeze(obj: object, inplace: bool = False) -> object:
+def freeze(obj: Any, inplace: bool = False) -> Any:
     if isbuiltin(obj):
         return obj
 
