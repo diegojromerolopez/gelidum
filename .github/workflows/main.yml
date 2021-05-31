@@ -37,6 +37,8 @@ jobs:
         with:
           coverageCommand: coverage report
       - name: Publish a Python distribution to PyPI
+        run: |
+          python setup.py sdist
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
