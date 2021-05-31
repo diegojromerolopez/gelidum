@@ -3,7 +3,7 @@ from setuptools import setup
 
 root_dir_path = os.path.dirname(os.path.abspath(__file__))
 
-long_description = open(os.path.join(root_dir_path, "LONGDESC.rst")).read()
+long_description = open(os.path.join(root_dir_path, "README.md")).read()
 
 requirements_path = os.path.join(root_dir_path, "requirements.txt")
 with open(requirements_path) as requirements_file:
@@ -16,6 +16,7 @@ setup(
     author_email="diegojromerolopez@gmail.com",
     description="Freeze your python objects",
     long_description=long_description,
+    long_description_content_type="text/markdown",
     classifiers=[
         "Programming Language :: Python :: 3.9",
         "Development Status :: 3 - Alpha",
