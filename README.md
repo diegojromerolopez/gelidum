@@ -69,6 +69,25 @@ your_object.attr1 = new_value
 your_frozen_object.attr1 = new_value
 ```
 
+### Freeze input params
+Use the decorator freeze_params to freeze the input parameters
+and avoid non-intended modifications:
+```python
+from typing import List
+from gelidum import freeze_params
+
+@freeze_params()
+def append_to_list(a_list: List, new_item: int):
+    a_list.append(new_item)
+```
+If freeze_params is called without arguments, all input parameters will be frozen.
+Otherwise, passing a set of parameters will inform the decorator of which parameters
+must be frozen.
+
+Take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
+It makes no sense to freeze a parameter of a function that could be used later, *outside*
+said function.
+
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
 - file handler attributes are not supported.
@@ -79,7 +98,6 @@ Right now this package uses
 
 ## Roadmap
 - [ ] Make pypi package.
-- [ ] Add decorator to make sure input parameters are immutable.
 - [ ] Measure cost in time of freezing objects.
 - [ ] Check that pickle serialization works fine.
 - [ ] Add delayed_freeze, a function that freezes an object but
@@ -87,8 +105,8 @@ when a condition happens.
 
 
 ## Collaborations
-This project is open to collaborations. Make a PR or an issue and
-I'll take a look to it.
+This project is open to collaborations. Make a PR or an issue,
+and  I'll take a look to it.
 
 ## License
 [MIT](LICENSE)
