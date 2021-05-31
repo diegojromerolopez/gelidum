@@ -17,7 +17,7 @@ setup(
     description="Freeze your python objects",
     long_description=long_description,
     classifiers=[
-        "Programming Language :: Python :: 3.9"
+        "Programming Language :: Python :: 3.9",
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License"
     ],
