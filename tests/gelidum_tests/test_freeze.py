@@ -374,8 +374,18 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(hash(dummy), hash(frozen_dummy_inplace))
         self.assertEqual("this is a dummy object", my_dict.get(frozen_dummy_inplace))
 
-    def test_modifying_class_attribute(self):
-        pass
+    def test_modifying_class_attribute_on_frozen_objects(self):
+        class Dummy(object):
+            COUNTER = 1
+
+        dummy = Dummy()
+        frozen_dummy = freeze(dummy, inplace=False)
+        frozen_dummy_inplace = freeze(dummy, inplace=True)
+        Dummy.COUNTER += 1
+
+        self.assertEqual(2, Dummy.COUNTER)
+        self.assertEqual(2, frozen_dummy.COUNTER)
+        self.assertEqual(2, frozen_dummy_inplace.COUNTER)
 
     def test_cannot_add_attribute_to_frozen_object(self):
         class Dummy(object):
