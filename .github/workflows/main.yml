@@ -38,6 +38,7 @@ jobs:
           coverageCommand: coverage report
       - name: Create distribution package to PyPI
         run: |
+          pip install pypandoc
           python setup.py sdist
       - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
