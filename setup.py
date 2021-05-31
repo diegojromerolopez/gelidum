@@ -5,7 +5,7 @@ root_dir_path = os.path.dirname(os.path.abspath(__file__))
 
 try:
     import pypandoc
-    long_description = pypandoc.convert_file("README.md", "rst")
+    long_description = pypandoc.convert_file(os.path.join(root_dir_path, "README.md"), "rst")
 except(IOError, ImportError):
     long_description = open(os.path.join(root_dir_path, "README.md")).read()
 
