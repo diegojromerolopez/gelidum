@@ -1,4 +1,7 @@
+import tempfile
 import unittest
+from typing import Dict, Union, IO
+
 from frozendict import frozendict
 from gelidum import freeze
 from gelidum import FrozenException
@@ -354,13 +357,24 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy = freeze(dummy, inplace=False)
         self.assertNotEqual(hash(dummy), hash(frozen_dummy))
 
-    def test_modifying_method(self):
-        pass
+    def test_hash_frozen_object_as_key_in_dict(self):
+        class Dummy(object):
+            def __init__(self, attr1: int, attr2: int, attr3: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+                self.__attr3 = attr3
+
+        dummy = Dummy(attr1=1, attr2=2, attr3=3)
+        frozen_dummy = freeze(dummy, inplace=False)
+        frozen_dummy_inplace = freeze(dummy, inplace=True)
+        my_dict: Dict = {dummy: "this is a dummy object"}
+
+        self.assertNotEqual(hash(dummy), hash(frozen_dummy))
+        self.assertEqual(None, my_dict.get(frozen_dummy))
+        self.assertEqual(hash(dummy), hash(frozen_dummy_inplace))
+        self.assertEqual("this is a dummy object", my_dict.get(frozen_dummy_inplace))
 
     def test_modifying_class_attribute(self):
-        pass
-
-    def test_modifying_class_method(self):
         pass
 
     def test_cannot_add_attribute_to_frozen_object(self):
@@ -376,3 +390,35 @@ class TestFreeze(unittest.TestCase):
             frozen_dummy.new_attribute = 99
         self.assertEqual(
             "Can't assign \"new_attribute\" on immutable instance", str(context.exception))
+
+    def test_cannot_use_modifying_attribute_method_in_frozen_object(self):
+        class Dummy(object):
+            def __init__(self, attr1: int, attr2: int, attr3: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+                self.__attr3 = attr3
+
+            def inc_attr1(self):
+                self.attr1 += 1
+
+            def inc_attr2(self):
+                self._attr2 += 1
+
+            def inc_attr3(self):
+                self.__attr3 += 1
+
+        dummy = Dummy(attr1=1, attr2=2, attr3=3)
+        frozen_dummy = freeze(dummy)
+        with self.assertRaises(FrozenException) as context1:
+            frozen_dummy.inc_attr1()
+        with self.assertRaises(FrozenException) as context2:
+            frozen_dummy.inc_attr2()
+        with self.assertRaises(FrozenException) as context3:
+            frozen_dummy.inc_attr3()
+
+        self.assertEqual(
+            "Can't assign \"attr1\" on immutable instance", str(context1.exception))
+        self.assertEqual(
+            "Can't assign \"_attr2\" on immutable instance", str(context2.exception))
+        self.assertEqual(
+            "Can't assign \"_Dummy__attr3\" on immutable instance", str(context3.exception))
