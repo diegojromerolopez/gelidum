@@ -9,6 +9,9 @@ try:
 except(IOError, ImportError):
     long_description = open(os.path.join(root_dir_path, "README.md")).read()
 
+print(long_description)
+
+
 requirements_path = os.path.join(root_dir_path, "requirements.txt")
 with open(requirements_path) as requirements_file:
     requirements = requirements_file.readlines()
