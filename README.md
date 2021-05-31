@@ -97,7 +97,6 @@ Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/). 
 
 ## Roadmap
-- [ ] Make pypi package.
 - [ ] Measure cost in time of freezing objects.
 - [ ] Check that pickle serialization works fine.
 - [ ] Add delayed_freeze, a function that freezes an object but
