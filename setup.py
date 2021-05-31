@@ -3,14 +3,7 @@ from setuptools import setup
 
 root_dir_path = os.path.dirname(os.path.abspath(__file__))
 
-try:
-    import pypandoc
-    long_description = pypandoc.convert_file(os.path.join(root_dir_path, "README.md"), "rst")
-except(IOError, ImportError):
-    long_description = open(os.path.join(root_dir_path, "README.md")).read()
-
-print(long_description)
-
+long_description = open(os.path.join(root_dir_path, "LONGDESC.rst")).read()
 
 requirements_path = os.path.join(root_dir_path, "requirements.txt")
 with open(requirements_path) as requirements_file:
