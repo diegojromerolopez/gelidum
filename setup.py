@@ -11,7 +11,7 @@ with open(requirements_path) as requirements_file:
 
 setup(
     name="gelidum",
-    version="0.1",
+    version="0.2",
     author="Diego J. Romero López",
     author_email="diegojromerolopez@gmail.com",
     description="Freeze your python objects",
