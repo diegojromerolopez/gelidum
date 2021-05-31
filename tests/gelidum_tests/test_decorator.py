@@ -41,7 +41,7 @@ class TestDecorator(unittest.TestCase):
 
         dummy.attr = 100
 
-        self.assertEqual("Can't assign \"attr\" on immutable instance",
+        self.assertEqual("Can't assign 'attr' on immutable instance",
                          str(context.exception))
         self.assertEqual(100, dummy.attr)
 
