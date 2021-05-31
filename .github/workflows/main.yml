@@ -36,9 +36,10 @@ jobs:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
           coverageCommand: coverage report
-      - name: Publish a Python distribution to PyPI
+      - name: Create distribution package to PyPI
         run: |
           python setup.py sdist
+      - name: Publish a Python distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
