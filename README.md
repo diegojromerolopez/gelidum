@@ -84,8 +84,36 @@ def append_to_list(a_list: List, new_item: int):
     a_list.append(new_item)
 ```
 If freeze_params is called without arguments, all input parameters will be frozen.
-Otherwise, passing a set of parameters will inform the decorator of which parameters
-must be frozen.
+Otherwise, passing a set of parameters will inform the decorator of which named
+parameters must be frozen.
+
+```python
+from typing import List
+from gelidum import freeze_params
+
+@freeze_params(params={"list1", "list2"})
+def concat_lists_in(dest: List, list1: List, list2: List):
+    dest = list1 + list2
+
+# Freeze dest, list1 and list2
+concat_lists_in([], list1=[1, 2, 3], list2=[4, 5, 6])
+
+# Freeze list1 and list2
+concat_lists_in(dest=[], list1=[1, 2, 3], list2=[4, 5, 6])
+```
+
+Always use kwargs unless you want to freeze the args params. A good way to enforce this is by making the
+function have keyword-only arguments:
+
+```python
+from typing import List
+from gelidum import freeze_params
+
+@freeze_params(params={"list1", "list2"})
+def concat_lists_in(*, dest: List, list1: List, list2: List):
+    dest = list1 + list2
+```
+
 
 Take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
 It makes no sense to freeze a parameter of a function that could be used later, *outside*
