@@ -1,9 +1,10 @@
+import json
+import marshal
 import unittest
 from typing import Dict
-
 from frozendict import frozendict
-from gelidum import freeze
 from gelidum import FrozenException
+from gelidum import freeze
 from gelidum.frozen import FrozenBase
 
 
@@ -431,3 +432,10 @@ class TestFreeze(unittest.TestCase):
             "Can't assign '_attr2' on immutable instance", str(context2.exception))
         self.assertEqual(
             "Can't assign '_Dummy__attr3' on immutable instance", str(context3.exception))
+
+    def test_json(self):
+        data_list = [{"a": 1, "b": 2}, {"a": 11, "b": 22}]
+        data_dict = {"first": [{"a": 1}, {"a": 1}]}
+
+        self.assertEqual('[{"a": 1, "b": 2}, {"a": 11, "b": 22}]', json.dumps(freeze(data_list)))
+        self.assertEqual('{"first": [{"a": 1}, {"a": 1}]}', json.dumps(freeze(data_dict)))

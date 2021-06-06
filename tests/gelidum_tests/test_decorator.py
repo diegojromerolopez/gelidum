@@ -1,6 +1,7 @@
+import concurrent.futures
 import unittest
 from typing import Dict, List, Tuple, Any
-from gelidum import freeze_params
+from gelidum import freeze_params, FrozenException
 
 
 class TestDecorator(unittest.TestCase):
@@ -64,3 +65,26 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual(99, dummy1.attr)
         self.assertEqual(99, dummy2.attr)
         self.assertEqual(99, dummy_const.attr)
+
+    def test_concurrent_futures(self):
+        class Dummy(object):
+            def __init__(self, attr: int):
+                self.attr = attr
+
+        @freeze_params()
+        def job(dummy_input: Dummy):
+            dummy_input.attr += 1
+
+        thread_pool_executor = concurrent.futures.ThreadPoolExecutor(2)
+        fut1 = thread_pool_executor.submit(job, Dummy(1))
+        fut2 = thread_pool_executor.submit(job, Dummy(2))
+        futures = [fut1, fut2]
+        concurrent.futures.wait(futures)
+        future_count = 0
+        for future_i in futures:
+            with self.assertRaises(FrozenException) as context:
+                future_i.result()
+            self.assertEqual("Can't assign 'attr' on immutable instance",
+                             str(context.exception))
+            future_count += 1
+        self.assertEqual(2, future_count)

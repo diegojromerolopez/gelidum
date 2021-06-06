@@ -122,6 +122,8 @@ said function.
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
 - file handler attributes are not supported.
+- [pickle](https://docs.python.org/3/library/pickle.html) serialization does not work.
+- frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
 ## Dependencies
 Right now this package uses
@@ -129,14 +131,13 @@ Right now this package uses
 
 ## Roadmap
 - [ ] Measure cost in time of freezing objects.
-- [ ] Check that pickle serialization works fine.
 - [ ] Add delayed_freeze, a function that freezes an object but
 when a condition happens.
 
 
 ## Collaborations
 This project is open to collaborations. Make a PR or an issue,
-and  I'll take a look to it.
+and I'll take a look to it.
 
 ## License
 [MIT](LICENSE)
