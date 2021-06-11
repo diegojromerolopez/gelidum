@@ -1,5 +1,6 @@
 import json
-import marshal
+import pickle
+import sys
 import unittest
 from typing import Dict
 from frozendict import frozendict
@@ -439,3 +440,76 @@ class TestFreeze(unittest.TestCase):
 
         self.assertEqual('[{"a": 1, "b": 2}, {"a": 11, "b": 22}]', json.dumps(freeze(data_list)))
         self.assertEqual('{"first": [{"a": 1}, {"a": 1}]}', json.dumps(freeze(data_dict)))
+
+    def test_pickle(self):
+        class DummyForPickle(object):
+            def __init__(self, attr: int):
+                self.attr = attr
+
+        setattr(sys.modules[__name__], DummyForPickle.__name__, DummyForPickle)
+
+        dummy = DummyForPickle(attr=1)
+        frozen_dummy = freeze(dummy)
+        pickled_frozen_dummy = pickle.dumps(frozen_dummy)
+        unpickled_frozen_dummy = pickle.loads(pickled_frozen_dummy)
+
+        with self.assertRaises(FrozenException) as context:
+            unpickled_frozen_dummy.attr = 8
+
+        self.assertEqual(
+            "Can't assign 'attr' on immutable instance",
+            str(context.exception)
+        )
+        self.assertEqual(1, frozen_dummy.attr, unpickled_frozen_dummy.attr)
+
+    def test_pickle_object_of_same_name_classes(self):
+        import tests.gelidum_tests.utils.dummy1
+        import tests.gelidum_tests.utils.dummy2
+
+        dummy1 = tests.gelidum_tests.utils.dummy1.Dummy(attr1=1)
+        dummy2 = tests.gelidum_tests.utils.dummy2.Dummy(attr2=2)
+
+        frozen_dummy1 = freeze(dummy1)
+        frozen_dummy2 = freeze(dummy2)
+        pickled_frozen_dummy1 = pickle.dumps(frozen_dummy1)
+        pickled_frozen_dummy2 = pickle.dumps(frozen_dummy2)
+        unpickled_frozen_dummy1 = pickle.loads(pickled_frozen_dummy1)
+        unpickled_frozen_dummy2 = pickle.loads(pickled_frozen_dummy2)
+
+        with self.assertRaises(FrozenException) as context1:
+            unpickled_frozen_dummy1.attr1 = 99
+
+        with self.assertRaises(FrozenException) as context2:
+            unpickled_frozen_dummy2.attr2 = 99
+
+        with self.assertRaises(FrozenException) as context1_get_gelidum_hot_class_module:
+            unpickled_frozen_dummy2.get_gelidum_hot_class_module = 99
+
+        with self.assertRaises(FrozenException) as context2_get_gelidum_hot_class_module:
+            unpickled_frozen_dummy2.get_gelidum_hot_class_module = 99
+
+        self.assertEqual(
+            "Can't assign 'attr1' on immutable instance",
+            str(context1.exception)
+        )
+        self.assertEqual(
+            "Can't assign 'attr2' on immutable instance",
+            str(context2.exception)
+        )
+        self.assertEqual(
+            "Can't assign 'get_gelidum_hot_class_module' on immutable instance",
+            str(context1_get_gelidum_hot_class_module.exception)
+        )
+        self.assertEqual(
+            "Can't assign 'get_gelidum_hot_class_module' on immutable instance",
+            str(context2_get_gelidum_hot_class_module.exception)
+        )
+        self.assertEqual(1, frozen_dummy1.attr1, unpickled_frozen_dummy1.attr1)
+        self.assertEqual(2, frozen_dummy2.attr2, unpickled_frozen_dummy2.attr2)
+
+        self.assertEqual("tests.gelidum_tests.utils.dummy1",
+                         frozen_dummy1.get_gelidum_hot_class_module())
+        self.assertEqual("tests.gelidum_tests.utils.dummy2",
+                         frozen_dummy2.get_gelidum_hot_class_module())
+        self.assertEqual("Dummy", frozen_dummy1.get_gelidum_hot_class_name())
+        self.assertEqual("Dummy", frozen_dummy2.get_gelidum_hot_class_name())

@@ -114,20 +114,23 @@ def concat_lists_in(*, dest: List, list1: List, list2: List):
     dest = list1 + list2
 ```
 
-
 Take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
 It makes no sense to freeze a parameter of a function that could be used later, *outside*
 said function.
 
+### Check original (i.e. "hot") class
+- **get_gelidum_hot_class_name**: returns the name of hot class.
+- **get_gelidum_hot_class_module** returns the module reference where the hot class was.
+
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
 - file handler attributes are not supported.
-- [pickle](https://docs.python.org/3/library/pickle.html) serialization does not work.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
 ## Dependencies
 Right now this package uses
-[frozendict](https://pypi.org/project/frozendict/). 
+[frozendict](https://pypi.org/project/frozendict/) and 
+[shortuuid](https://pypi.org/project/shortuuid/).
 
 ## Roadmap
 - [ ] Measure cost in time of freezing objects.
