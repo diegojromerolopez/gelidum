@@ -569,7 +569,7 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy3 = freeze(dummy3, inplace=False)
 
         self.assertDictEqual(
-            {"test_freeze.TestFreeze.test_count_frozen_classes.<locals>.Dummy":
+            {"gelidum_tests.test_freeze.TestFreeze.test_count_frozen_classes.<locals>.Dummy":
                 frozen_dummy1.__class__},
             frozen_classes
         )
