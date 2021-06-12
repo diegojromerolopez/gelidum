@@ -1,2 +1,1 @@
 frozendict==2.0.2
-shortuuid==1.0.1

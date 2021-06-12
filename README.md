@@ -22,9 +22,9 @@ Inspired by the method freeze found in other languages like Javascript,
 this package tries to make immutable objects to make it easier avoid
 accidental modifications in your code.
 
-## WARNING
-This is an **EXPERIMENTAL** package. Don't use it unless you have checked it
-fulfills your use-case safely.
+## Major highlights
+- **freeze** method creates objects with the same attributes of inputs that cannot be expanded or modified.
+- Frozen object creation is thread-safe.
 
 ## How it works
 In case of the builtin types (int, float, str, etc) it makes nothing, as
@@ -130,7 +130,6 @@ said function.
 ## Dependencies
 Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/) and 
-[shortuuid](https://pypi.org/project/shortuuid/).
 
 ## Roadmap
 - [ ] Measure cost in time of freezing objects.

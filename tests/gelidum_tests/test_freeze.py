@@ -6,10 +6,13 @@ from typing import Dict
 from frozendict import frozendict
 from gelidum import FrozenException
 from gelidum import freeze
-from gelidum.frozen import FrozenBase
+from gelidum.frozen import FrozenBase, clear_frozen_classes
 
 
 class TestFreeze(unittest.TestCase):
+    def setUp(self) -> None:
+        clear_frozen_classes()
+
     def test_freeze_builtins(self):
         self.assertEqual(3, freeze(3))
         self.assertEqual(3.9, freeze(3.9))
@@ -513,3 +516,61 @@ class TestFreeze(unittest.TestCase):
                          frozen_dummy2.get_gelidum_hot_class_module())
         self.assertEqual("Dummy", frozen_dummy1.get_gelidum_hot_class_name())
         self.assertEqual("Dummy", frozen_dummy2.get_gelidum_hot_class_name())
+
+    def test_hot_class_module_class(self):
+        from tests.gelidum_tests.utils.dummy1 import Dummy
+
+        dummy1 = Dummy(1)
+        dummy2 = Dummy(2)
+        dummy3 = Dummy(3)
+        frozen_dummy1 = freeze(dummy1, inplace=False)
+        frozen_dummy2 = freeze(dummy2, inplace=False)
+        frozen_dummy3 = freeze(dummy3, inplace=False)
+
+        self.assertEqual(Dummy.__name__, frozen_dummy1.get_gelidum_hot_class_name())
+        self.assertEqual(Dummy.__name__, frozen_dummy2.get_gelidum_hot_class_name())
+        self.assertEqual(Dummy.__name__, frozen_dummy3.get_gelidum_hot_class_name())
+        self.assertEqual(Dummy.__module__, frozen_dummy1.get_gelidum_hot_class_module())
+        self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())
+        self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())
+
+    def test_hot_class_module_internal_class(self):
+        class Dummy(object):
+            pass
+
+        dummy1 = Dummy()
+        dummy2 = Dummy()
+        dummy3 = Dummy()
+        frozen_dummy1 = freeze(dummy1, inplace=False)
+        frozen_dummy2 = freeze(dummy2, inplace=False)
+        frozen_dummy3 = freeze(dummy3, inplace=False)
+
+        self.assertEqual(Dummy.__name__, frozen_dummy1.get_gelidum_hot_class_name())
+        self.assertEqual(Dummy.__name__, frozen_dummy2.get_gelidum_hot_class_name())
+        self.assertEqual(Dummy.__name__, frozen_dummy3.get_gelidum_hot_class_name())
+        self.assertEqual(Dummy.__module__, frozen_dummy1.get_gelidum_hot_class_module())
+        self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())
+        self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())
+
+    def test_count_frozen_classes(self):
+        import gelidum.frozen
+
+        frozen_classes = getattr(gelidum.frozen, "__FROZEN_CLASSES")
+
+        class Dummy(object):
+            def __init__(self, attr: int):
+                self.attr = attr
+
+        dummy1 = Dummy(1)
+        dummy2 = Dummy(2)
+        dummy3 = Dummy(3)
+        frozen_dummy1 = freeze(dummy1, inplace=False)
+        frozen_dummy2 = freeze(dummy2, inplace=False)
+        frozen_dummy3 = freeze(dummy3, inplace=False)
+
+        self.assertDictEqual(
+            {"test_freeze.TestFreeze.test_count_frozen_classes.<locals>.Dummy":
+                frozen_dummy1.__class__},
+            frozen_classes
+        )
+        self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__, frozen_dummy3.__class__)
