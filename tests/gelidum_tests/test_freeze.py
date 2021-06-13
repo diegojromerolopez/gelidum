@@ -45,6 +45,32 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(
             frozenset(["one", 2, "three"]), freeze({"one", 2, "three"}))
 
+    def test_freeze_simple_dataclass(self):
+        from dataclasses import dataclass
+
+        @dataclass
+        class Dummy:
+            attr1: str
+            attr2: str
+            attr3: str = "0"
+
+        dummy = Dummy(attr1="1", attr2="2", attr3="3")
+        frozen_dummy_not_inplace = freeze(dummy, inplace=False)
+        frozen_dummy_inplace = freeze(dummy, inplace=True)
+
+        with self.assertRaises(FrozenException) as context_not_inplace:
+            frozen_dummy_not_inplace.attr1 = "2"
+
+        with self.assertRaises(FrozenException) as context_inplace:
+            frozen_dummy_inplace.attr2 = "2"
+
+        self.assertEqual("Can't assign 'attr1' on immutable instance",
+                         str(context_not_inplace.exception))
+        self.assertEqual("Can't assign 'attr2' on immutable instance",
+                         str(context_inplace.exception))
+        self.assertEqual(id(dummy), id(frozen_dummy_inplace))
+        self.assertNotEqual(id(dummy), id(frozen_dummy_not_inplace))
+
     def test_freeze_simple_object_inplace(self):
         class Dummy(object):
             def __init__(self, attr1: int, attr2: int, attr3: int):
