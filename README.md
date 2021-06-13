@@ -133,9 +133,7 @@ Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/) and 
 
 ## Roadmap
-- [ ] Measure cost in time of freezing objects.
-- [ ] Add delayed_freeze, a function that freezes an object but
-when a condition happens.
+- [ ] Make some use-cases with threading module.
 
 
 ## Collaborations
