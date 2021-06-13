@@ -2,7 +2,7 @@ import copy
 import io
 import sys
 from io import TextIOWrapper, BufferedWriter
-from typing import List, Tuple, Set, Dict, Any, IO
+from typing import List, Tuple, Set, Dict, Any
 
 from frozendict import frozendict
 
@@ -48,7 +48,7 @@ def __freeze_set(obj: Set, inplace: bool = False) -> frozenset:
     return frozenset([freeze(item, inplace=inplace) for item in obj])
 
 
-def __freeze_TextIOWrapper(obj: BufferedWriter, inplace: bool = False):
+def __freeze_TextIOWrapper(obj: TextIOWrapper, inplace: bool = False):
     raise io.UnsupportedOperation("Text file handlers can't be frozen")
 
 
