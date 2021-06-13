@@ -124,7 +124,8 @@ said function.
 
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
-- file handler attributes are not supported.
+- file handler attributes are not supported. An exception is raised when trying to freeze
+  an object with them
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
 ## Dependencies

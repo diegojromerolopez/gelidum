@@ -1,6 +1,8 @@
 import copy
+import io
 import sys
-from typing import List, Tuple, Set, Dict, Any
+from io import TextIOWrapper, BufferedWriter
+from typing import List, Tuple, Set, Dict, Any, IO
 
 from frozendict import frozendict
 
@@ -44,6 +46,14 @@ def __freeze_tuple(obj: Tuple, inplace: bool = False) -> Tuple:
 
 def __freeze_set(obj: Set, inplace: bool = False) -> frozenset:
     return frozenset([freeze(item, inplace=inplace) for item in obj])
+
+
+def __freeze_TextIOWrapper(obj: BufferedWriter, inplace: bool = False):
+    raise io.UnsupportedOperation("Text file handlers can't be frozen")
+
+
+def __freeze_BufferedWriter(obj: BufferedWriter, inplace: bool = False):
+    raise io.UnsupportedOperation("Binary file handlers can't be frozen")
 
 
 def __freeze_object(obj: object, inplace: bool = False) -> object:

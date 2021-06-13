@@ -1,6 +1,8 @@
+import io
 import json
 import pickle
 import sys
+import tempfile
 import unittest
 from typing import Dict
 from frozendict import frozendict
@@ -338,6 +340,31 @@ class TestFreeze(unittest.TestCase):
             "Can't assign '_Dummy__attr3' on immutable instance",
             str(context_exc_setattr_dummy1_attr3.exception)
         )
+
+    def test_freeze_object_with_file_handler_attribute(self):
+        with tempfile.TemporaryFile("w") as temp_text_file:
+            with tempfile.TemporaryFile("wb") as temp_bin_file:
+                class DummyWithTextFile(object):
+                    def __init__(self):
+                        self.text_file = temp_text_file
+
+                class DummyWithBinaryFile(object):
+                    def __init__(self):
+                        self.binary_file = temp_bin_file
+
+                dummy_with_text_file = DummyWithTextFile()
+                dummy_with_binary_file = DummyWithBinaryFile()
+
+                with self.assertRaises(io.UnsupportedOperation) as text_write_context:
+                    freeze(dummy_with_text_file, inplace=True)
+
+                with self.assertRaises(io.UnsupportedOperation) as binary_write_context:
+                    freeze(dummy_with_binary_file, inplace=True)
+
+        self.assertEqual("Text file handlers can't be frozen",
+                         str(text_write_context.exception))
+        self.assertEqual("Binary file handlers can't be frozen",
+                         str(binary_write_context.exception))
 
     def test_hash_inplace(self):
         class Dummy(object):
