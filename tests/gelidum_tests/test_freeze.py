@@ -4,6 +4,7 @@ import pickle
 import sys
 import tempfile
 import unittest
+import warnings
 from typing import Dict
 from frozendict import frozendict
 from gelidum import FrozenException
@@ -70,6 +71,54 @@ class TestFreeze(unittest.TestCase):
                          str(context_inplace.exception))
         self.assertEqual(id(dummy), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy), id(frozen_dummy_not_inplace))
+
+    def test_freeze_simple_object_on_update_warning_inplace(self):
+        class Dummy(object):
+            def __init__(self, attr1: int, attr2: int, attr3: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+                self.__attr3 = attr3
+
+        dummy = Dummy(attr1=1, attr2=2, attr3=3)
+        frozen_dummy = freeze(dummy, on_update="warning", inplace=True)
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            frozen_dummy.attr1 = 99
+            frozen_dummy._attr2 = 99
+            frozen_dummy._Dummy__attr3 = 99
+
+        self.assertEqual(id(dummy), id(frozen_dummy))
+        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual(1, frozen_dummy.attr1)
+        self.assertEqual(2, frozen_dummy._attr2)
+        self.assertEqual(3, frozen_dummy._Dummy__attr3)
+        self.assertListEqual(
+            [
+                "Can't assign 'attr1' on immutable instance",
+                "Can't assign '_attr2' on immutable instance",
+                "Can't assign '_Dummy__attr3' on immutable instance"
+            ],
+            [str(warn.message) for warn in caught_warnings]
+        )
+
+    def test_freeze_simple_object_on_update_nothing_inplace(self):
+        class Dummy(object):
+            def __init__(self, attr1: int, attr2: int, attr3: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+                self.__attr3 = attr3
+
+        dummy = Dummy(attr1=1, attr2=2, attr3=3)
+        frozen_dummy = freeze(dummy, on_update="nothing", inplace=True)
+        frozen_dummy.attr1 = 99
+        frozen_dummy._attr2 = 99
+        frozen_dummy._Dummy__attr3 = 99
+
+        self.assertEqual(id(dummy), id(frozen_dummy))
+        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual(1, frozen_dummy.attr1)
+        self.assertEqual(2, frozen_dummy._attr2)
+        self.assertEqual(3, frozen_dummy._Dummy__attr3)
 
     def test_freeze_simple_object_inplace(self):
         class Dummy(object):

@@ -1,32 +1,33 @@
 import sys
 import threading
-from typing import Type, List, cast, Dict
+import warnings
+from typing import Type, List, cast, Dict, Callable
 from gelidum.exceptions import FrozenException
 
 
 class FrozenBase(object):
-    @property
-    def gelidum_hot_class_module(self):
+    @classmethod
+    def __gelidum_on_update(cls, message: str):
         raise NotImplementedError("Implement in derived class")
 
     def __setattr__(self, key, value):
-        raise FrozenException(f"Can't assign '{key}' on immutable instance")
+        self.__gelidum_on_update(f"Can't assign '{key}' on immutable instance")
 
     def __set__(self, *args, **kwargs):
-        raise FrozenException("Can't assign setter on immutable instance")
+        self.__gelidum_on_update("Can't assign setter on immutable instance")
 
     def __delattr__(self, name):
-        raise FrozenException(
+        self.__gelidum_on_update(
             f"Can't delete attribute '{name}' on immutable instance")
 
     def __setitem__(self, key, value):
-        raise FrozenException("Can't set key on immutable instance")
+        self.__gelidum_on_update("Can't set key on immutable instance")
 
     def __delitem__(self, key):
-        raise FrozenException("Can't delete key on immutable instance")
+        self.__gelidum_on_update("Can't delete key on immutable instance")
 
     def __reversed__(self):
-        raise FrozenException("Can't reverse on immutable instance")
+        self.__gelidum_on_update("Can't reverse on immutable instance")
 
 
 __FROZEN_CLASSES: Dict[str, Type[FrozenBase]] = dict()
@@ -49,12 +50,13 @@ def __store_frozen_class(klass: Type[object], frozen_class: Type[FrozenBase]) ->
         setattr(sys.modules[__name__], frozen_class.__name__, frozen_class)
 
 
-def clear_frozen_classes():
+def clear_frozen_classes() -> None:
     with __FROZEN_CLASSES_LOCK:
         __FROZEN_CLASSES.clear()
 
 
-def __create_frozen_class(klass: Type[object], attrs: List[str]) -> Type[FrozenBase]:
+def __create_frozen_class(klass: Type[object], attrs: List[str],
+                          on_update: Callable[[str], None]) -> Type[FrozenBase]:
     camel_case_module = klass.__module__.title().replace(".", "").replace("_", "")
     frozen_class_name = f"Frozen{klass.__name__}From{camel_case_module}"
     frozen_class: Type[FrozenBase] = cast(
@@ -67,6 +69,7 @@ def __create_frozen_class(klass: Type[object], attrs: List[str]) -> Type[FrozenB
                 **{
                     'get_gelidum_hot_class_name': lambda _: klass.__name__,
                     'get_gelidum_hot_class_module': lambda _: klass.__module__,
+                    '_FrozenBase__gelidum_on_update': lambda _, message: on_update(message),
                     **{attr: None for attr in attrs}
                 }
             }
@@ -76,13 +79,39 @@ def __create_frozen_class(klass: Type[object], attrs: List[str]) -> Type[FrozenB
     return frozen_class
 
 
-def make_frozen_class(klass: Type[object], attrs: List[str]) -> Type[FrozenBase]:
+def __on_update_exception(message: str) -> None:
+    raise FrozenException(message)
+
+
+def __on_update_warning(message: str) -> None:
+    warnings.warn(message)
+
+
+def __on_update_func(on_update: str) -> Callable[[str], None]:
+    if on_update == "exception":
+        return __on_update_exception
+    elif on_update == "warning":
+        return __on_update_warning
+    elif on_update == "nothing":
+        return lambda _: None
+    else:
+        raise AttributeError(
+            f"Invalid value for on_update parameter, '{on_update}' found, "
+            f"only 'exception', 'warning', and 'nothing' are valid options"
+        )
+
+
+def make_frozen_class(klass: Type[object], attrs: List[str],
+                      on_update: str = "exception") -> Type[FrozenBase]:
     klass_key = f"{klass.__module__}.{klass.__qualname__}"
     with __FROZEN_CLASSES_LOCK:
         frozen_class = __FROZEN_CLASSES.get(klass_key)
 
     if not frozen_class:
-        frozen_class = __create_frozen_class(klass=klass, attrs=attrs)
+        frozen_class = __create_frozen_class(
+            klass=klass, attrs=attrs,
+            on_update=__on_update_func(on_update=on_update)
+        )
 
     return frozen_class
 

@@ -60,17 +60,43 @@ your_frozen_object.attr1 = new_value
 ```
 
 ### Freeze in a new object
+
+#### Basic use
 ```python
 from gelidum import freeze
 # inplace=False by default
 your_frozen_object = freeze(your_object, inplace=False)
 
-# Don't raise exception
+# It doesn't raise an exception, mutable object
 your_object.attr1 = new_value
 
-# Raises exception
+# Raises exception, immutable object
 your_frozen_object.attr1 = new_value
 ```
+
+#### What to do when trying to update an attribute
+```python
+from gelidum import freeze
+
+class SharedState(object):
+  def __init__(self, count: int):
+    self.count = count
+
+shared_state = SharedState(1)
+      
+# on_update="exception": raises an exception when an update is tried
+frozen_shared_state = freeze(shared_state, on_update="exception")
+frozen_shared_state.count = 4  # Raises exception
+
+# on_update="warning": shows a warning in console exception when an update is tried
+frozen_shared_state = freeze(shared_state, on_update="warning")
+frozen_shared_state.count = 4  # Shows a warning in console
+
+# on_update="nothing": does nothing when an update is tried
+frozen_shared_state = freeze(shared_state, on_update="nothing")
+frozen_shared_state.count = 4  # Does nothing, as this update did not exist
+```
+
 
 ### Freeze input params
 Use the decorator freeze_params to freeze the input parameters
@@ -133,7 +159,9 @@ Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/) and 
 
 ## Roadmap
+- [ ] Include timestamp when freezing objects.
 - [ ] Make some use-cases with threading module.
+- [ ] Add version of object when freezing.
 
 
 ## Collaborations
