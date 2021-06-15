@@ -1,7 +1,7 @@
 import concurrent.futures
 import unittest
-from typing import Dict, List, Tuple, Any
-from gelidum import freeze_params, FrozenException
+from typing import Dict, List, Tuple, Any, Final
+from gelidum import freeze_params, freeze_final, FrozenException
 
 
 class TestDecorator(unittest.TestCase):
@@ -88,3 +88,52 @@ class TestDecorator(unittest.TestCase):
                              str(context.exception))
             future_count += 1
         self.assertEqual(2, future_count)
+
+    def test_freeze_final_list_params(self):
+        # TODO: check if there is any way to circumvent the error when using final
+        #  as typehint in function parameters.
+        @freeze_final
+        def join_lists_bad_implementation(one: Final[List], two: Final[List]):
+            one.extend(two)
+            return one
+
+        with self.assertRaises(AttributeError) as context_unnamed_arguments:
+            join_lists_bad_implementation([], [])
+
+        with self.assertRaises(AttributeError) as context_named_arguments:
+            join_lists_bad_implementation(one=[], two=[])
+
+        self.assertEqual("'tuple' object has no attribute 'extend'",
+                         str(context_unnamed_arguments.exception))
+        self.assertEqual("'tuple' object has no attribute 'extend'",
+                         str(context_named_arguments.exception))
+
+    def test_freeze_final_object_params(self):
+        class Number(object):
+            def __init__(self, value: int):
+                self.value = value
+                self.value_str = str(value)
+
+        # TODO: check if there is any way to circumvent the error when using final
+        #  as typehint in function parameters.
+        @freeze_final
+        def product_bad_implementation(one: Final[Number], two: Final[Number], three: Number):
+            three.value *= 99
+            one.value *= two.value * three.value
+            return one.value
+
+        with self.assertRaises(FrozenException) as context_unnamed_arguments:
+            product_bad_implementation(Number(1), Number(2), Number(3))
+
+        with self.assertRaises(FrozenException) as context_some_named_arguments:
+            product_bad_implementation(Number(1), two=Number(2), three=Number(3))
+
+        with self.assertRaises(FrozenException) as context_named_arguments:
+            product_bad_implementation(one=Number(1), two=Number(2), three=Number(3))
+
+        self.assertEqual("Can't assign 'value' on immutable instance",
+                         str(context_unnamed_arguments.exception))
+        self.assertEqual("Can't assign 'value' on immutable instance",
+                         str(context_some_named_arguments.exception))
+        self.assertEqual("Can't assign 'value' on immutable instance",
+                         str(context_named_arguments.exception))

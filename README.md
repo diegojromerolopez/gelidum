@@ -140,7 +140,34 @@ def concat_lists_in(*, dest: List, list1: List, list2: List):
     dest = list1 + list2
 ```
 
-Take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
+You can use the Final typehint to signal that an argument is immutable:
+
+```python
+from typing import List, Final
+from gelidum import freeze_final
+
+@freeze_final
+def concatenate_lists(list1: Final[List], list2: Final[List]):
+    return list1 + list2
+```
+
+There is a typehint error for list1 and list2 as Final is not allowed in
+function params, but you can circumvent that by creating an alias typehint.
+
+```python
+from typing import List, Final
+from gelidum import freeze_final
+
+FinalList = Final[List]
+
+@freeze_final
+def concatenate_lists(list1: FinalList, list2: FinalList):
+    return list1 + list2
+```
+
+That's not pretty, but is a solution.
+
+Finally, take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
 It makes no sense to freeze a parameter of a function that could be used later, *outside*
 said function.
 
@@ -159,7 +186,6 @@ Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/).
 
 ## Roadmap
-- [ ] @freeze_final decorator (use final typehints in params to freeze only those parameters).
 - [ ] Include on_update: Callable. Add some examples of callables.
 - [ ] Freeze only when attributes are modified?
 - [ ] Include timestamp when freezing objects.
