@@ -156,7 +156,7 @@ said function.
 
 ## Dependencies
 Right now this package uses
-[frozendict](https://pypi.org/project/frozendict/) and 
+[frozendict](https://pypi.org/project/frozendict/).
 
 ## Roadmap
 - [ ] Include timestamp when freezing objects.
