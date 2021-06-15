@@ -159,9 +159,15 @@ Right now this package uses
 [frozendict](https://pypi.org/project/frozendict/).
 
 ## Roadmap
+- [ ] @freeze_final decorator (use final typehints in params to freeze only those parameters).
+- [ ] Include on_update: Callable. Add some examples of callables.
+- [ ] Freeze only when attributes are modified?
 - [ ] Include timestamp when freezing objects.
-- [ ] Make some use-cases with threading module.
+- [ ] Include some RELEASE_NOTES.md with information about
+  each release.
+- [ ] Make some use-cases with threading/async module (i.e. server)
 - [ ] Add version of object when freezing.
+
 
 
 ## Collaborations
