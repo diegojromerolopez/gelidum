@@ -150,7 +150,18 @@ def concat_lists_in(*, dest: List, list1: List, list2: List):
     dest = list1 + list2
 ```
 
-Take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
+You can use the **Final typehint from gelidum** to signal that an argument is immutable:
+
+```python
+from typing import List
+from gelidum import freeze_final, Final
+
+@freeze_final
+def concatenate_lists(list1: Final[List], list2: Final[List]):
+    return list1 + list2
+```
+
+Finally, take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
 It makes no sense to freeze a parameter of a function that could be used later, *outside*
 said function.
 
@@ -169,7 +180,7 @@ Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
-- [ ] @freeze_final decorator (use final typehints in params to freeze only those parameters).
+- [ ] Include on_update: Callable. Add some examples of callables.
 - [ ] Freeze only when attributes are modified?
 - [ ] Include some RELEASE_NOTES.md with information about
   each release.
