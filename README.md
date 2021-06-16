@@ -165,8 +165,8 @@ said function.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
 ## Dependencies
-Right now this package uses
-[frozendict](https://pypi.org/project/frozendict/).
+Packages on pypi gelidum uses:
+- [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
 - [ ] @freeze_final decorator (use final typehints in params to freeze only those parameters).
@@ -183,4 +183,4 @@ This project is open to collaborations. Make a PR or an issue,
 and I'll take a look to it.
 
 ## License
-[MIT](LICENSE)
+[MIT](LICENSE) but if you need any other contact me.
