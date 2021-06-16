@@ -180,7 +180,6 @@ Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
-- [ ] Include on_update: Callable. Add some examples of callables.
 - [ ] Freeze only when attributes are modified?
 - [ ] Include some RELEASE_NOTES.md with information about
   each release.
