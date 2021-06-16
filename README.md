@@ -150,32 +150,16 @@ def concat_lists_in(*, dest: List, list1: List, list2: List):
     dest = list1 + list2
 ```
 
-You can use the Final typehint to signal that an argument is immutable:
+You can use the Frozen typehint to signal that an argument is immutable:
 
 ```python
-from typing import List, Final
-from gelidum import freeze_final
+from typing import List
+from gelidum import freeze_final, Frozen
 
 @freeze_final
-def concatenate_lists(list1: Final[List], list2: Final[List]):
+def concatenate_lists(list1: Frozen[List], list2: Frozen[List]):
     return list1 + list2
 ```
-
-There is a typehint error for list1 and list2 as Final is not allowed in
-function params, but you can circumvent that by creating an alias typehint.
-
-```python
-from typing import List, Final
-from gelidum import freeze_final
-
-FinalList = Final[List]
-
-@freeze_final
-def concatenate_lists(list1: FinalList, list2: FinalList):
-    return list1 + list2
-```
-
-That's not pretty, but is a solution.
 
 Finally, take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
 It makes no sense to freeze a parameter of a function that could be used later, *outside*

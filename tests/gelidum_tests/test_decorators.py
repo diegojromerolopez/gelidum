@@ -1,7 +1,7 @@
 import concurrent.futures
 import unittest
-from typing import Dict, List, Tuple, Any, Final
-from gelidum import freeze_params, freeze_final, FrozenException
+from typing import Dict, List, Tuple, Any
+from gelidum import freeze_params, freeze_final, FrozenException, Frozen
 
 
 class TestDecorator(unittest.TestCase):
@@ -90,10 +90,8 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual(2, future_count)
 
     def test_freeze_final_list_params(self):
-        # TODO: check if there is any way to circumvent the error when using final
-        #  as typehint in function parameters.
         @freeze_final
-        def join_lists_bad_implementation(one: Final[List], two: Final[List]):
+        def join_lists_bad_implementation(one: Frozen[List], two: Frozen[List]):
             one.extend(two)
             return one
 
@@ -114,10 +112,8 @@ class TestDecorator(unittest.TestCase):
                 self.value = value
                 self.value_str = str(value)
 
-        # TODO: check if there is any way to circumvent the error when using final
-        #  as typehint in function parameters.
         @freeze_final
-        def product_bad_implementation(one: Final[Number], two: Final[Number], three: Number):
+        def product_bad_implementation(one: Frozen[Number], two: Frozen[Number], three: Number):
             three.value *= 99
             one.value *= two.value * three.value
             return one.value
