@@ -1,7 +1,7 @@
 import concurrent.futures
 import unittest
 from typing import Dict, List, Tuple, Any
-from gelidum import freeze_params, freeze_final, FrozenException, Frozen
+from gelidum import freeze_params, freeze_final, FrozenException, Final
 
 
 class TestDecorator(unittest.TestCase):
@@ -91,7 +91,7 @@ class TestDecorator(unittest.TestCase):
 
     def test_freeze_final_list_params(self):
         @freeze_final
-        def join_lists_bad_implementation(one: Frozen[List], two: Frozen[List]):
+        def join_lists_bad_implementation(one: Final[List], two: Final[List]):
             one.extend(two)
             return one
 
@@ -113,7 +113,7 @@ class TestDecorator(unittest.TestCase):
                 self.value_str = str(value)
 
         @freeze_final
-        def product_bad_implementation(one: Frozen[Number], two: Frozen[Number], three: Number):
+        def product_bad_implementation(one: Final[Number], two: Final[Number], three: Number):
             three.value *= 99
             one.value *= two.value * three.value
             return one.value

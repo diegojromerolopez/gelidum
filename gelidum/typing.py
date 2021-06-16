@@ -5,7 +5,7 @@ _SpecialForm = getattr(typing, "_SpecialForm")
 
 
 @_SpecialForm
-def Frozen(self, parameters):  # noqa
+def Final(self, parameters):  # noqa
     return typing.Final[parameters]
 
 

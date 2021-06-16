@@ -150,14 +150,14 @@ def concat_lists_in(*, dest: List, list1: List, list2: List):
     dest = list1 + list2
 ```
 
-You can use the Frozen typehint to signal that an argument is immutable:
+You can use the **Final typehint from gelidum** to signal that an argument is immutable:
 
 ```python
 from typing import List
-from gelidum import freeze_final, Frozen
+from gelidum import freeze_final, Final
 
 @freeze_final
-def concatenate_lists(list1: Frozen[List], list2: Frozen[List]):
+def concatenate_lists(list1: Final[List], list2: Final[List]):
     return list1 + list2
 ```
 
