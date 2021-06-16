@@ -6,9 +6,10 @@ from typing import List, Tuple, Set, Dict, Any
 from frozendict import frozendict
 from gelidum.frozen import make_frozen_class
 from gelidum.utils import isbuiltin
+from gelidum.typing import OnUpdateType
 
 
-def freeze(obj: Any, on_update: str = "exception", inplace: bool = False) -> Any:
+def freeze(obj: Any, on_update: OnUpdateType = "exception", inplace: bool = False) -> Any:
     if isbuiltin(obj):
         return obj
 
@@ -29,41 +30,41 @@ def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:
     return bytes(obj)
 
 
-def __freeze_dict(obj: Dict, on_update: str = "exception",
+def __freeze_dict(obj: Dict, on_update: OnUpdateType = "exception",
                   inplace: bool = False) -> frozendict:
     return frozendict({key: freeze(value, on_update=on_update, inplace=inplace)
                        for key, value in obj.items()})
 
 
-def __freeze_list(obj: List, on_update: str = "exception",
+def __freeze_list(obj: List, on_update: OnUpdateType = "exception",
                   inplace: bool = False) -> Tuple:
     return tuple(freeze(item, on_update=on_update, inplace=inplace)
                  for item in obj)
 
 
-def __freeze_tuple(obj: Tuple, on_update: str = "exception",
+def __freeze_tuple(obj: Tuple, on_update: OnUpdateType = "exception",
                    inplace: bool = False) -> Tuple:
     return tuple(freeze(item, on_update=on_update, inplace=inplace)
                  for item in obj)
 
 
-def __freeze_set(obj: Set, on_update: str = "exception",
+def __freeze_set(obj: Set, on_update: OnUpdateType = "exception",
                  inplace: bool = False) -> frozenset:
     return frozenset([freeze(item, on_update=on_update, inplace=inplace)
                       for item in obj])
 
 
-def __freeze_TextIOWrapper(obj: TextIOWrapper, on_update: str = "exception",
+def __freeze_TextIOWrapper(obj: TextIOWrapper, on_update: OnUpdateType = "exception",
                            inplace: bool = False):
     raise io.UnsupportedOperation("Text file handlers can't be frozen")
 
 
-def __freeze_BufferedWriter(obj: BufferedWriter, on_update: str = "exception",
+def __freeze_BufferedWriter(obj: BufferedWriter, on_update: OnUpdateType = "exception",
                             inplace: bool = False):
     raise io.UnsupportedOperation("Binary file handlers can't be frozen")
 
 
-def __freeze_object(obj: object, on_update: str = "exception",
+def __freeze_object(obj: object, on_update: OnUpdateType = "exception",
                     inplace: bool = False) -> object:
     if inplace:
         frozen_obj = obj

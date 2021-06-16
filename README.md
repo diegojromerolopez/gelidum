@@ -76,6 +76,7 @@ your_frozen_object.attr1 = new_value
 
 #### What to do when trying to update an attribute
 ```python
+import logging
 from gelidum import freeze
 
 class SharedState(object):
@@ -95,6 +96,15 @@ frozen_shared_state.count = 4  # Shows a warning in console
 # on_update="nothing": does nothing when an update is tried
 frozen_shared_state = freeze(shared_state, on_update="nothing")
 frozen_shared_state.count = 4  # Does nothing, as this update did not exist
+
+# on_update=<lambda message, *args, **kwargs>: calls the function
+# Note the parameters of that function must be message, *args, **kwargs
+frozen_shared_state = freeze(
+  shared_state,
+  on_update=lambda message, *args, **kwargs: logging.warning(message)
+)
+frozen_shared_state.count = 4  # Calls on_update function and logs in the warning level:
+                               # "Can't assign 'count' on immutable instance" 
 ```
 
 
@@ -182,13 +192,12 @@ said function.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
 ## Dependencies
-Right now this package uses
-[frozendict](https://pypi.org/project/frozendict/).
+Packages on pypi gelidum uses:
+- [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
 - [ ] Include on_update: Callable. Add some examples of callables.
 - [ ] Freeze only when attributes are modified?
-- [ ] Include timestamp when freezing objects.
 - [ ] Include some RELEASE_NOTES.md with information about
   each release.
 - [ ] Make some use-cases with threading/async module (i.e. server)
@@ -201,4 +210,4 @@ This project is open to collaborations. Make a PR or an issue,
 and I'll take a look to it.
 
 ## License
-[MIT](LICENSE)
+[MIT](LICENSE) but if you need any other contact me.
