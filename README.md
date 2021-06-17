@@ -205,16 +205,54 @@ said function.
   an object with them
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
+## Advice & comments on use
+Use on_update with a callable to store when somebody tried to write in the immutable object:
+```python
+import datetime
+import logging
+import threading
+from gelidum import freeze
+
+
+class Dummy(object):
+  def __init__(self, attr: int):
+    self.attr = attr
+
+
+class FrozenDummyUpdateTryRecorder:
+  LOCK = threading.Lock()
+  written_tries = []
+  
+  @classmethod
+  def add_writing_try(cls, message, *args, **kwargs):
+    logging.warning(message)
+    with cls.LOCK:
+      cls.written_tries.append({
+        "message": message,
+        "args": args,
+        "kwargs": kwargs,
+        "datetime": datetime.datetime.utcnow()
+      })
+
+
+dummy = Dummy(1)
+frozen_dummy = freeze(
+    dummy,
+    on_update=FrozenDummyUpdateTryRecorder.add_writing_try 
+  )
+# It will call FrozenDummyUpdateTryRecorder.add_writing_try
+# and will continue the execution flow with the next sentence.
+frozen_dummy.attr = 4
+```
+
+
 ## Dependencies
 Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
 - [ ] Freeze only when attributes are modified?
-- [ ] Include some RELEASE_NOTES.md with information about
-  each release.
 - [ ] Make some use-cases with threading/async module (i.e. server)
-- [ ] Add version of object when freezing.
 
 
 
