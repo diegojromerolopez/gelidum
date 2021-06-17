@@ -51,28 +51,57 @@ the attributes of the instance.
 
 ### Freeze in the same object
 ```python
+from typing import List
 from gelidum import freeze
-your_frozen_object = freeze(your_object, inplace=True)
-assert(id(your_frozen_object), id(your_object))
+
+class Dummy(object):
+  def __init__(self, attr1: int, attr2: List):
+    self.attr1 = attr1
+    self.attr2 = attr2
+
+dummy = Dummy(1, [2, 3, 4])
+frozen_dummy = freeze(dummy, inplace=True)
+assert(id(dummy) == id(frozen_dummy))
 
 # Both raise exception
-your_object.attr1 = new_value
-your_frozen_object.attr1 = new_value
+new_value = 1
+dummy.attr1 = new_value
+frozen_dummy.attr1 = new_value
+
+# Both raise exception
+new_value_list = [1]
+dummy.attr2 = new_value_list
+frozen_dummy.attr2 = new_value_list
 ```
 
 ### Freeze in a new object
 
 #### Basic use
 ```python
+from typing import List
 from gelidum import freeze
+
+class Dummy(object):
+  def __init__(self, attr1: int, attr2: List):
+    self.attr1 = attr1
+    self.attr2 = attr2
+
+dummy = Dummy(1, [2, 3, 4])
 # inplace=False by default
-your_frozen_object = freeze(your_object, inplace=False)
+frozen_dummy = freeze(dummy)
+assert(id(dummy) != id(frozen_dummy))
 
-# It doesn't raise an exception, mutable object
-your_object.attr1 = new_value
+# inplace=False by default
+frozen_object_dummy2 = freeze(dummy, inplace=False)
 
-# Raises exception, immutable object
-your_frozen_object.attr1 = new_value
+# It doesn't raise an exception,
+# dummy keeps being a mutable object
+new_attr1_value = 99
+dummy.attr1 = new_attr1_value
+
+# Raises exception,
+# frozen_dummy is an immutable object
+frozen_dummy.attr1 = new_attr1_value
 ```
 
 #### What to do when trying to update an attribute
