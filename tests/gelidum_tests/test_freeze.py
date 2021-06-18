@@ -276,6 +276,7 @@ class TestFreeze(unittest.TestCase):
             unittest.mock.call("Can't assign 'attr1' on immutable instance"),
             mock_logger.warning.call_args
         )
+        self.assertEqual(id(dummy), id(update_try_recorder.original_obj))
 
     def test_freeze_simple_object_on_freeze_inplace(self):
         class Dummy(object):
