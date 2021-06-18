@@ -1,5 +1,5 @@
 import typing
-from typing import Any, Callable, Union
+from typing import Any, Callable, Union, Type
 
 
 try:
@@ -12,9 +12,9 @@ try:
 except AttributeError:
     Final = typing.Final
 
-
-_GelidumOnUpdateWithMessageType = Callable[[Any, str], None]
-_GelidumOnUpdateWithFuncType = Callable[[Any, str, ...], None]
+_FrozenBase = Type["FrozenBase"]
+_GelidumOnUpdateWithMessageType = Callable[[_FrozenBase, str], None]
+_GelidumOnUpdateWithFuncType = Callable[[_FrozenBase, str, ...], None]
 
 GelidumOnUpdateType = Union[
     _GelidumOnUpdateWithMessageType,
@@ -22,7 +22,7 @@ GelidumOnUpdateType = Union[
 ]
 
 
-OnUpdateFuncType = Callable[[str, Any], None]
+OnUpdateFuncType = Callable[[_FrozenBase, str, ...], None]
 
 
 OnFreezeFuncType = Callable[[Any], Any]

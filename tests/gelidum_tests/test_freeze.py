@@ -244,8 +244,8 @@ class TestFreeze(unittest.TestCase):
                 frozen_object = copy.deepcopy(obj)
                 self.original_obj = obj
                 return frozen_object
-            # TODO: check type hint of frozen_obj
-            def on_update(self, frozen_obj: object,
+
+            def on_update(self, frozen_obj: Type["FrozenBase"],
                           message: str, *args, **kwargs):
                 self.log.warning(message)
                 with self.lock:
@@ -851,7 +851,7 @@ class TestFreeze(unittest.TestCase):
             str(context.exception)
         )
 
-    def test_invalid_valeu_for_on_freeze_parameter(self):
+    def test_invalid_value_for_on_freeze_parameter(self):
         with self.assertRaises(AttributeError) as context:
             freeze(("one", 2, "three"), on_freeze=99)
 

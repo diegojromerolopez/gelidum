@@ -156,4 +156,3 @@ def make_frozen_class(klass: Type[object], attrs: List[str],
         )
 
     return frozen_class
-

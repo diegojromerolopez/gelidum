@@ -158,8 +158,9 @@ from typing import List
 from gelidum import freeze_params
 
 @freeze_params(params={"list1", "list2"})
-def concat_lists_in(dest: List, list1: List, list2: List):
+def concat_lists(dest: List, list1: List, list2: List) -> List:
     dest = list1 + list2
+    return dest
 
 # Freeze dest, list1 and list2
 concat_lists_in([], list1=[1, 2, 3], list2=[4, 5, 6])
