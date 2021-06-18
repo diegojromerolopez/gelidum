@@ -3,7 +3,7 @@ import threading
 import warnings
 from typing import Type, List, cast, Dict
 from gelidum.exceptions import FrozenException
-from gelidum.typing import OnUpdateType, GelidumOnUpdateType
+from gelidum.typing import OnUpdateFuncType, GelidumOnUpdateType
 
 
 class FrozenBase(object):
@@ -11,37 +11,53 @@ class FrozenBase(object):
     def __gelidum_on_update(cls, *args, **kwargs):
         raise NotImplementedError("Implement in derived class")
 
+    @classmethod
+    def get_gelidum_hot_class_name(cls) -> str:
+        raise NotImplementedError("Implement in derived class")
+
+    @classmethod
+    def get_gelidum_hot_class_module(cls) -> str:
+        raise NotImplementedError("Implement in derived class")
+
     def __setattr__(self, key, value):
         self.__gelidum_on_update(
+            obj=self,
             message=f"Can't assign '{key}' on immutable instance",
             key=key, value=value
         )
 
     def __set__(self, *args, **kwargs):
         self.__gelidum_on_update(
+            obj=self,
             message="Can't assign setter on immutable instance",
             *args, **kwargs
         )
 
     def __delattr__(self, name):
         self.__gelidum_on_update(
+            obj=self,
             message=f"Can't delete attribute '{name}' on immutable instance",
             name=name
         )
 
     def __setitem__(self, key, value):
         self.__gelidum_on_update(
+            obj=self,
             message="Can't set key on immutable instance",
             key=key, value=value
         )
 
     def __delitem__(self, key):
         self.__gelidum_on_update(
+            obj=self,
             message="Can't delete key on immutable instance",
             key=key)
 
     def __reversed__(self):
-        self.__gelidum_on_update(message="Can't reverse on immutable instance")
+        self.__gelidum_on_update(
+            obj=self,
+            message="Can't reverse on immutable instance"
+        )
 
 
 __FROZEN_CLASSES: Dict[str, Type[FrozenBase]] = dict()
@@ -102,7 +118,7 @@ def __on_update_warning(message: str, *args, **kwargs) -> None:
     warnings.warn(message)
 
 
-def __on_update_func(on_update: OnUpdateType) -> GelidumOnUpdateType:
+def __on_update_func(on_update: OnUpdateFuncType) -> GelidumOnUpdateType:
     if isinstance(on_update, str):
         if on_update == "exception":
             return __on_update_exception
@@ -128,7 +144,7 @@ def __on_update_func(on_update: OnUpdateType) -> GelidumOnUpdateType:
 
 
 def make_frozen_class(klass: Type[object], attrs: List[str],
-                      on_update: OnUpdateType) -> Type[FrozenBase]:
+                      on_update: OnUpdateFuncType) -> Type[FrozenBase]:
     klass_key = f"{klass.__module__}.{klass.__qualname__}"
     with __FROZEN_CLASSES_LOCK:
         frozen_class = __FROZEN_CLASSES.get(klass_key)

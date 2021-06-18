@@ -60,7 +60,7 @@ class Dummy(object):
     self.attr2 = attr2
 
 dummy = Dummy(1, [2, 3, 4])
-frozen_dummy = freeze(dummy, inplace=True)
+frozen_dummy = freeze(dummy, on_freeze="inplace")
 assert(id(dummy) == id(frozen_dummy))
 
 # Both raise exception
@@ -92,7 +92,7 @@ frozen_dummy = freeze(dummy)
 assert(id(dummy) != id(frozen_dummy))
 
 # inplace=False by default
-frozen_object_dummy2 = freeze(dummy, inplace=False)
+frozen_object_dummy2 = freeze(dummy, on_freeze="copy")
 
 # It doesn't raise an exception,
 # dummy keeps being a mutable object
@@ -191,7 +191,7 @@ def concatenate_lists(list1: Final[List], list2: Final[List]):
     return list1 + list2
 ```
 
-Finally, take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
+Finally, take in account that all freezing is done in a new object (i.e. freeze with on_freeze="copy").
 It makes no sense to freeze a parameter of a function that could be used later, *outside*
 said function.
 
@@ -206,6 +206,7 @@ said function.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
 ## Advice & comments on use
+### On_update parameter of freeze function
 Use on_update with a callable to store when somebody tried to write in the immutable object:
 ```python
 import datetime
@@ -245,6 +246,30 @@ frozen_dummy = freeze(
 frozen_dummy.attr = 4
 ```
 
+### On_freeze parameter of freeze function
+The parameter on_freeze of the function freeze must be a string or a function.
+This parameter informs of what to do with the object that will be frozen.
+Should it be the same input object frozen or a copy of it?
+
+If it has a string as parameter, values "inplace" and "copy" are allowed.
+A value of "inplace" will make the freeze method to try to freeze the object
+as-is, while a value of "copy" will make a copy of the original object and then,
+freeze that copy. **These are the recommended parameters**.
+
+On the other hand, the interesting part is to define a custom on_freeze method.
+This method must return an object of the same type of the input.
+**This returned will be frozen, and returned to the caller of freeze**.
+
+```python
+import copy
+
+def on_freeze(self, obj: object) -> object:
+    frozen_object = copy.deepcopy(obj)
+    # log, copy the original method or do any other
+    # custom action in this function
+    return frozen_object
+```
+
 
 ## Dependencies
 Packages on pypi gelidum uses:
@@ -261,4 +286,4 @@ This project is open to collaborations. Make a PR or an issue,
 and I'll take a look to it.
 
 ## License
-[MIT](LICENSE) but if you need any other contact me.
+[MIT](LICENSE) license, but if you need any other contact me.

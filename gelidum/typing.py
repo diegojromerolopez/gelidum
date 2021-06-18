@@ -1,6 +1,7 @@
 import typing
 from typing import Any, Callable, Union
 
+
 try:
     _SpecialForm = getattr(typing, "_SpecialForm")
 
@@ -12,13 +13,16 @@ except AttributeError:
     Final = typing.Final
 
 
-_GelidumOnUpdateWithMessageType = Callable[[str], None]
-_GelidumOnUpdateWithFuncType = Callable[[str, ...], None]
+_GelidumOnUpdateWithMessageType = Callable[[Any, str], None]
+_GelidumOnUpdateWithFuncType = Callable[[Any, str, ...], None]
 
 GelidumOnUpdateType = Union[
     _GelidumOnUpdateWithMessageType,
     _GelidumOnUpdateWithFuncType
 ]
 
-_OnUpdateFuncType = Callable[[str, Any], None]
-OnUpdateType = Union[_OnUpdateFuncType, str]
+
+OnUpdateFuncType = Callable[[str, Any], None]
+
+
+OnFreezeFuncType = Callable[[Any], Any]
