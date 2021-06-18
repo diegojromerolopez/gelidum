@@ -21,41 +21,41 @@ class FrozenBase(object):
 
     def __setattr__(self, key, value):
         self.__gelidum_on_update(
-            obj=self,
+            frozen_obj=self,
             message=f"Can't assign '{key}' on immutable instance",
             key=key, value=value
         )
 
     def __set__(self, *args, **kwargs):
         self.__gelidum_on_update(
-            obj=self,
+            frozen_obj=self,
             message="Can't assign setter on immutable instance",
             *args, **kwargs
         )
 
     def __delattr__(self, name):
         self.__gelidum_on_update(
-            obj=self,
+            frozen_obj=self,
             message=f"Can't delete attribute '{name}' on immutable instance",
             name=name
         )
 
     def __setitem__(self, key, value):
         self.__gelidum_on_update(
-            obj=self,
+            frozen_obj=self,
             message="Can't set key on immutable instance",
             key=key, value=value
         )
 
     def __delitem__(self, key):
         self.__gelidum_on_update(
-            obj=self,
+            frozen_obj=self,
             message="Can't delete key on immutable instance",
             key=key)
 
     def __reversed__(self):
         self.__gelidum_on_update(
-            obj=self,
+            frozen_obj=self,
             message="Can't reverse on immutable instance"
         )
 

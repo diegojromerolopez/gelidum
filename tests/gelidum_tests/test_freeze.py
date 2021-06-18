@@ -9,7 +9,7 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Dict, List
+from typing import Dict, List, Type
 from unittest.mock import patch
 from frozendict import frozendict
 from gelidum import FrozenException
@@ -177,31 +177,16 @@ class TestFreeze(unittest.TestCase):
         fixed_utcnow = datetime.datetime(2021, 6, 16, 14, 20, 56, 809581)
         mock_datetime.utcnow = unittest.mock.Mock(return_value=fixed_utcnow)
 
-        expected_write_tries = [
-            {'args': (),
-             'kwargs': {'key': 'attr1', 'value': 99, 'obj': unittest.mock.ANY},
-             'message': "Can't assign 'attr1' on immutable instance",
-             'time': fixed_utcnow},
-            {'args': (),
-             'kwargs': {'key': '_attr2', 'value': 99, 'obj': unittest.mock.ANY},
-             'message': "Can't assign '_attr2' on immutable instance",
-             'time': fixed_utcnow},
-            {'args': (),
-             'kwargs': {'key': '_Dummy__attr3', 'value': 99, 'obj': unittest.mock.ANY},
-             'message': "Can't assign '_Dummy__attr3' on immutable instance",
-             'time': fixed_utcnow}
-        ]
-
         class Dummy(object):
             def __init__(self, attr1: int, attr2: int, attr3: int):
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
 
-        write_tries = []
+        writing_tries = []
 
         def on_update_func(message, *args, **kwargs):
-            write_tries.append({
+            writing_tries.append({
                 "message": message,
                 "args": args,
                 "kwargs": kwargs,
@@ -218,12 +203,27 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy._attr2 = 99
         frozen_dummy._Dummy__attr3 = 99
 
+        expected_writing_tries = [
+            {'args': (),
+             'kwargs': {'key': 'attr1', 'value': 99, 'frozen_obj': frozen_dummy},
+             'message': "Can't assign 'attr1' on immutable instance",
+             'time': fixed_utcnow},
+            {'args': (),
+             'kwargs': {'key': '_attr2', 'value': 99, 'frozen_obj': frozen_dummy},
+             'message': "Can't assign '_attr2' on immutable instance",
+             'time': fixed_utcnow},
+            {'args': (),
+             'kwargs': {'key': '_Dummy__attr3', 'value': 99, 'frozen_obj': frozen_dummy},
+             'message': "Can't assign '_Dummy__attr3' on immutable instance",
+             'time': fixed_utcnow}
+        ]
+
         self.assertEqual(id(dummy), id(frozen_dummy))
         self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
-        self.assertListEqual(expected_write_tries, write_tries)
+        self.assertListEqual(expected_writing_tries, writing_tries)
 
     @patch("logging.Logger")
     def test_freeze_simple_object_on_update_func_store_update_tries(self, mock_logger):
@@ -237,18 +237,20 @@ class TestFreeze(unittest.TestCase):
             def __init__(self, log: logging.Logger):
                 self.log = log
                 self.lock = threading.Lock()
-                self.written_tries: List[Dict] = []
+                self.writing_tries: List[Dict] = []
                 self.original_obj = None
 
             def on_freeze(self, obj: object) -> object:
                 frozen_object = copy.deepcopy(obj)
                 self.original_obj = obj
                 return frozen_object
-
-            def on_update(self, obj: object, message: str, *args, **kwargs):
+            # TODO: check type hint of frozen_obj
+            def on_update(self, frozen_obj: object,
+                          message: str, *args, **kwargs):
                 self.log.warning(message)
                 with self.lock:
-                    self.written_tries.append({
+                    self.writing_tries.append({
+                        "frozen_obj": frozen_obj,
                         "args": args,
                         "kwargs": kwargs,
                         "datetime": datetime.datetime.utcnow()
@@ -265,6 +267,13 @@ class TestFreeze(unittest.TestCase):
             on_update=update_try_recorder.on_update
         )
 
+        expected_writing_tries = [{
+            "args": tuple(),
+            "datetime": unittest.mock.ANY,
+            "frozen_obj": frozen_dummy,
+            "kwargs": {"key": "attr1", "value": 99}
+        }]
+
         frozen_dummy.attr1 = 99
 
         self.assertNotEqual(id(dummy), id(frozen_dummy))
@@ -277,6 +286,7 @@ class TestFreeze(unittest.TestCase):
             mock_logger.warning.call_args
         )
         self.assertEqual(id(dummy), id(update_try_recorder.original_obj))
+        self.assertEqual(expected_writing_tries, update_try_recorder.writing_tries)
 
     def test_freeze_simple_object_on_freeze_inplace(self):
         class Dummy(object):
@@ -830,3 +840,23 @@ class TestFreeze(unittest.TestCase):
 
         self.assertSetEqual({frozen_dummy1.__class__}, set(frozen_classes.values()))
         self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__, frozen_dummy3.__class__)
+
+    def test_invalid_str_for_on_freeze_parameter(self):
+        with self.assertRaises(AttributeError) as context:
+            freeze(("one", 2, "three"), on_freeze="invalid")
+
+        self.assertEqual(
+            "Invalid value for on_freeze parameter, 'invalid' found, "
+            "only 'copy' and 'inplace' are valid options if passed a string",
+            str(context.exception)
+        )
+
+    def test_invalid_valeu_for_on_freeze_parameter(self):
+        with self.assertRaises(AttributeError) as context:
+            freeze(("one", 2, "three"), on_freeze=99)
+
+        self.assertEqual(
+            "Invalid value for on_freeze parameter, '99' found, "
+            "only 'copy', 'inplace' or a function are valid options",
+            str(context.exception)
+        )

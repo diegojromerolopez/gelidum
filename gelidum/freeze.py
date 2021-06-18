@@ -40,10 +40,7 @@ def freeze(
             on_freeze = __on_freeze_func(on_freeze="copy")
 
     else:
-        if isinstance(on_freeze, str):
-            on_freeze = __on_freeze_func(on_freeze=on_freeze)
-        elif not callable(on_freeze):
-            raise ValueError("on_freeze must be a string or a callable function with one parameter")
+        on_freeze = __on_freeze_func(on_freeze=on_freeze)
 
     return __freeze(obj=obj, on_update=on_update, on_freeze=on_freeze)
 
@@ -129,7 +126,7 @@ def __on_freeze_func(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncTyp
         else:
             raise AttributeError(
                 f"Invalid value for on_freeze parameter, '{on_freeze}' found, "
-                f"only 'copy', 'inplace' are valid options if passed a string."
+                f"only 'copy' and 'inplace' are valid options if passed a string"
             )
 
     elif callable(on_freeze):
