@@ -28,12 +28,14 @@ def freeze_final(func):
     def wrapper(*args, **kwargs):
         unnamed_params_to_freeze: Set[str] = {
             i
-            for i, (param_name, param_typing) in enumerate(func.__annotations__.items())
+            for i, (param_name, param_typing) in
+            enumerate(func.__annotations__.items())
             if str(param_typing).startswith("typing.Final")
         }
         named_params_to_freeze: Set[str] = {
             param_name
-            for param_name, param_typing in func.__annotations__.items()
+            for param_name, param_typing in
+            func.__annotations__.items()
             if str(param_typing).startswith("typing.Final")
         }
         func_args = tuple([

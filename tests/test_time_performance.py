@@ -55,4 +55,3 @@ class TestTimePerformance(unittest.TestCase):
         spent_time = sum(spent_times) / len(spent_times)
 
         self.assertLessEqual(spent_time, 0.4)
-

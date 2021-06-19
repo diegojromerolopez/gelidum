@@ -137,4 +137,3 @@ def __on_freeze_func(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncTyp
             f"Invalid value for on_freeze parameter, '{on_freeze}' found, "
             f"only 'copy', 'inplace' or a function are valid options"
         )
-

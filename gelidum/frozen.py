@@ -64,7 +64,9 @@ __FROZEN_CLASSES: Dict[str, Type[FrozenBase]] = dict()
 __FROZEN_CLASSES_LOCK = threading.Lock()
 
 
-def __store_frozen_class(klass: Type[object], frozen_class: Type[FrozenBase]) -> None:
+def __store_frozen_class(
+        klass: Type[object], frozen_class: Type[FrozenBase]
+) -> None:
     """
     Add a frozen class to this module.
     Required for pickle serialization as only objects of non-dynamic
@@ -85,9 +87,14 @@ def clear_frozen_classes() -> None:
         __FROZEN_CLASSES.clear()
 
 
-def __create_frozen_class(klass: Type[object], attrs: List[str],
-                          on_update_func: GelidumOnUpdateType) -> Type[FrozenBase]:
-    camel_case_module = klass.__module__.title().replace(".", "").replace("_", "")
+def __create_frozen_class(
+        klass: Type[object],
+        attrs: List[str],
+        on_update_func: GelidumOnUpdateType
+) -> Type[FrozenBase]:
+    camel_case_module = (
+        klass.__module__.title().replace(".", "").replace("_", "")
+    )
     frozen_class_name = f"Frozen{klass.__name__}From{camel_case_module}"
     frozen_class: Type[FrozenBase] = cast(
         Type[FrozenBase],
@@ -100,7 +107,8 @@ def __create_frozen_class(klass: Type[object], attrs: List[str],
                     'get_gelidum_hot_class_name': lambda _: klass.__name__,
                     'get_gelidum_hot_class_module': lambda _: klass.__module__,
                     '_FrozenBase__gelidum_on_update':
-                        lambda _self, *args, **kwargs: on_update_func(*args, **kwargs),
+                        lambda _self, *args, **kwargs:
+                        on_update_func(*args, **kwargs),
                     **{attr: None for attr in attrs}
                 }
             }
@@ -139,7 +147,8 @@ def __on_update_func(on_update: OnUpdateFuncType) -> GelidumOnUpdateType:
     else:
         raise AttributeError(
             f"Invalid value for on_update parameter, '{on_update}' found, "
-            f"only 'exception', 'warning', 'nothing' or a function are valid options"
+            f"only 'exception', 'warning', 'nothing' or a function are "
+            f"valid options"
         )
 
 

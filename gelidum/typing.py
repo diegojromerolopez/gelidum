@@ -12,7 +12,7 @@ try:
 except AttributeError:
     Final = typing.Final
 
-_FrozenBase = Type["FrozenBase"]
+_FrozenBase = Type["gelidum.frozen.FrozenBase"]
 _GelidumOnUpdateWithMessageType = Callable[[_FrozenBase, str], None]
 _GelidumOnUpdateWithFuncType = Callable[[_FrozenBase, str, ...], None]
 
