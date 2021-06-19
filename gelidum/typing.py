@@ -1,3 +1,4 @@
+from __future__ import annotations
 import typing
 from typing import Any, Callable, Union, Type
 
@@ -12,7 +13,7 @@ try:
 except AttributeError:
     Final = typing.Final
 
-_FrozenBase = Type["gelidum.frozen.FrozenBase"]
+_FrozenBase = Type["FrozenBase"]
 _GelidumOnUpdateWithMessageType = Callable[[_FrozenBase, str], None]
 _GelidumOnUpdateWithFuncType = Callable[[_FrozenBase, str, ...], None]
 
