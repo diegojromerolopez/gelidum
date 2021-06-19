@@ -1,7 +1,7 @@
 import typing
 from typing import Any, Callable, Union, Type, TYPE_CHECKING
 if TYPE_CHECKING:
-    from gelidum.frozen import FrozenBase
+    from gelidum.frozen import FrozenBase  # noqa
 
 try:
     _SpecialForm = getattr(typing, "_SpecialForm")
