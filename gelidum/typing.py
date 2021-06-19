@@ -1,7 +1,7 @@
-from __future__ import annotations
 import typing
-from typing import Any, Callable, Union, Type
-
+from typing import Any, Callable, Union, Type, TYPE_CHECKING
+if TYPE_CHECKING:
+    from gelidum.frozen import FrozenBase
 
 try:
     _SpecialForm = getattr(typing, "_SpecialForm")
