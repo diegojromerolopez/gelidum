@@ -8,15 +8,15 @@ from gelidum.typing import OnUpdateFuncType, GelidumOnUpdateType
 
 class FrozenBase(object):
     @classmethod
-    def __gelidum_on_update(cls, *args, **kwargs):
+    def __gelidum_on_update(cls, *args, **kwargs):  # pragma: no cover
         raise NotImplementedError("Implement in derived class")
 
     @classmethod
-    def get_gelidum_hot_class_name(cls) -> str:
+    def get_gelidum_hot_class_name(cls) -> str:  # pragma: no cover
         raise NotImplementedError("Implement in derived class")
 
     @classmethod
-    def get_gelidum_hot_class_module(cls) -> str:
+    def get_gelidum_hot_class_module(cls) -> str:  # pragma: no cover
         raise NotImplementedError("Implement in derived class")
 
     def __setattr__(self, key, value):

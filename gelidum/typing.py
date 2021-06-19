@@ -1,6 +1,6 @@
 import typing
 from typing import Any, Callable, Union, Type, TYPE_CHECKING
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from gelidum.frozen import FrozenBase  # noqa
 
 try:
@@ -10,7 +10,7 @@ try:
     def Final(self, parameters):  # noqa
         return typing.Final[parameters]
 
-except AttributeError:
+except AttributeError:  # pragma: no cover
     Final = typing.Final
 
 _FrozenBase = Type["FrozenBase"]

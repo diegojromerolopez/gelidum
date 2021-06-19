@@ -61,7 +61,8 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
     if isinstance(obj, object):
         return __freeze_object(obj, on_update=on_update, on_freeze=on_freeze)
 
-    raise ValueError(f"object of type {obj.__class__} not frozen")
+    # Actually, this code is unreachable
+    raise ValueError(f"object of type {obj.__class__} not frozen")  # pragma: no cover
 
 
 def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:
