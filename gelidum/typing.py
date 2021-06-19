@@ -1,5 +1,7 @@
 import typing
-from typing import Any, Callable, Union
+from typing import Any, Callable, Union, Type, TYPE_CHECKING
+if TYPE_CHECKING:
+    from gelidum.frozen import FrozenBase  # noqa
 
 try:
     _SpecialForm = getattr(typing, "_SpecialForm")
@@ -11,14 +13,17 @@ try:
 except AttributeError:
     Final = typing.Final
 
-
-_GelidumOnUpdateWithMessageType = Callable[[str], None]
-_GelidumOnUpdateWithFuncType = Callable[[str, ...], None]
+_FrozenBase = Type["FrozenBase"]
+_GelidumOnUpdateWithMessageType = Callable[[_FrozenBase, str], None]
+_GelidumOnUpdateWithFuncType = Callable[[_FrozenBase, str, ...], None]
 
 GelidumOnUpdateType = Union[
     _GelidumOnUpdateWithMessageType,
     _GelidumOnUpdateWithFuncType
 ]
 
-_OnUpdateFuncType = Callable[[str, Any], None]
-OnUpdateType = Union[_OnUpdateFuncType, str]
+
+OnUpdateFuncType = Callable[[_FrozenBase, str, ...], None]
+
+
+OnFreezeFuncType = Callable[[Any], Any]

@@ -51,28 +51,57 @@ the attributes of the instance.
 
 ### Freeze in the same object
 ```python
+from typing import List
 from gelidum import freeze
-your_frozen_object = freeze(your_object, inplace=True)
-assert(id(your_frozen_object), id(your_object))
+
+class Dummy(object):
+  def __init__(self, attr1: int, attr2: List):
+    self.attr1 = attr1
+    self.attr2 = attr2
+
+dummy = Dummy(1, [2, 3, 4])
+frozen_dummy = freeze(dummy, on_freeze="inplace")
+assert(id(dummy) == id(frozen_dummy))
 
 # Both raise exception
-your_object.attr1 = new_value
-your_frozen_object.attr1 = new_value
+new_value = 1
+dummy.attr1 = new_value
+frozen_dummy.attr1 = new_value
+
+# Both raise exception
+new_value_list = [1]
+dummy.attr2 = new_value_list
+frozen_dummy.attr2 = new_value_list
 ```
 
 ### Freeze in a new object
 
 #### Basic use
 ```python
+from typing import List
 from gelidum import freeze
+
+class Dummy(object):
+  def __init__(self, attr1: int, attr2: List):
+    self.attr1 = attr1
+    self.attr2 = attr2
+
+dummy = Dummy(1, [2, 3, 4])
 # inplace=False by default
-your_frozen_object = freeze(your_object, inplace=False)
+frozen_dummy = freeze(dummy)
+assert(id(dummy) != id(frozen_dummy))
 
-# It doesn't raise an exception, mutable object
-your_object.attr1 = new_value
+# inplace=False by default
+frozen_object_dummy2 = freeze(dummy, on_freeze="copy")
 
-# Raises exception, immutable object
-your_frozen_object.attr1 = new_value
+# It doesn't raise an exception,
+# dummy keeps being a mutable object
+new_attr1_value = 99
+dummy.attr1 = new_attr1_value
+
+# Raises exception,
+# frozen_dummy is an immutable object
+frozen_dummy.attr1 = new_attr1_value
 ```
 
 #### What to do when trying to update an attribute
@@ -129,8 +158,9 @@ from typing import List
 from gelidum import freeze_params
 
 @freeze_params(params={"list1", "list2"})
-def concat_lists_in(dest: List, list1: List, list2: List):
+def concat_lists(dest: List, list1: List, list2: List) -> List:
     dest = list1 + list2
+    return dest
 
 # Freeze dest, list1 and list2
 concat_lists_in([], list1=[1, 2, 3], list2=[4, 5, 6])
@@ -162,7 +192,7 @@ def concatenate_lists(list1: Final[List], list2: Final[List]):
     return list1 + list2
 ```
 
-Finally, take in account that all freezing is done in a new object (i.e. freeze with inplace=False).
+Finally, take in account that all freezing is done in a new object (i.e. freeze with on_freeze="copy").
 It makes no sense to freeze a parameter of a function that could be used later, *outside*
 said function.
 
@@ -176,16 +206,79 @@ said function.
   an object with them
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 
+## Advice & comments on use
+### On_update parameter of freeze function
+Use on_update with a callable to store when somebody tried to write in the immutable object:
+```python
+import datetime
+import logging
+import threading
+from gelidum import freeze
+
+
+class Dummy(object):
+  def __init__(self, attr: int):
+    self.attr = attr
+
+
+class FrozenDummyUpdateTryRecorder:
+  LOCK = threading.Lock()
+  written_tries = []
+  
+  @classmethod
+  def add_writing_try(cls, message, *args, **kwargs):
+    logging.warning(message)
+    with cls.LOCK:
+      cls.written_tries.append({
+        "message": message,
+        "args": args,
+        "kwargs": kwargs,
+        "datetime": datetime.datetime.utcnow()
+      })
+
+
+dummy = Dummy(1)
+frozen_dummy = freeze(
+    dummy,
+    on_update=FrozenDummyUpdateTryRecorder.add_writing_try 
+  )
+# It will call FrozenDummyUpdateTryRecorder.add_writing_try
+# and will continue the execution flow with the next sentence.
+frozen_dummy.attr = 4
+```
+
+### On_freeze parameter of freeze function
+The parameter on_freeze of the function freeze must be a string or a function.
+This parameter informs of what to do with the object that will be frozen.
+Should it be the same input object frozen or a copy of it?
+
+If it has a string as parameter, values "inplace" and "copy" are allowed.
+A value of "inplace" will make the freeze method to try to freeze the object
+as-is, while a value of "copy" will make a copy of the original object and then,
+freeze that copy. **These are the recommended parameters**.
+
+On the other hand, the interesting part is to define a custom on_freeze method.
+This method must return an object of the same type of the input.
+**This returned will be frozen, and returned to the caller of freeze**.
+
+```python
+import copy
+
+def on_freeze(self, obj: object) -> object:
+    frozen_object = copy.deepcopy(obj)
+    # log, copy the original method or do any other
+    # custom action in this function
+    return frozen_object
+```
+
+
 ## Dependencies
 Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
 - [ ] Freeze only when attributes are modified?
-- [ ] Include some RELEASE_NOTES.md with information about
-  each release.
 - [ ] Make some use-cases with threading/async module (i.e. server)
-- [ ] Add version of object when freezing.
 
 
 
@@ -194,4 +287,4 @@ This project is open to collaborations. Make a PR or an issue,
 and I'll take a look to it.
 
 ## License
-[MIT](LICENSE) but if you need any other contact me.
+[MIT](LICENSE) license, but if you need any other contact me.

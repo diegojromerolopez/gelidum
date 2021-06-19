@@ -3,7 +3,7 @@ import threading
 import warnings
 from typing import Type, List, cast, Dict
 from gelidum.exceptions import FrozenException
-from gelidum.typing import OnUpdateType, GelidumOnUpdateType
+from gelidum.typing import OnUpdateFuncType, GelidumOnUpdateType
 
 
 class FrozenBase(object):
@@ -11,44 +11,62 @@ class FrozenBase(object):
     def __gelidum_on_update(cls, *args, **kwargs):
         raise NotImplementedError("Implement in derived class")
 
+    @classmethod
+    def get_gelidum_hot_class_name(cls) -> str:
+        raise NotImplementedError("Implement in derived class")
+
+    @classmethod
+    def get_gelidum_hot_class_module(cls) -> str:
+        raise NotImplementedError("Implement in derived class")
+
     def __setattr__(self, key, value):
         self.__gelidum_on_update(
-            message=f"Can't assign '{key}' on immutable instance",
+            frozen_obj=self,
+            message=f"Can't assign attribute '{key}' on immutable instance",
             key=key, value=value
         )
 
     def __set__(self, *args, **kwargs):
         self.__gelidum_on_update(
+            frozen_obj=self,
             message="Can't assign setter on immutable instance",
             *args, **kwargs
         )
 
     def __delattr__(self, name):
         self.__gelidum_on_update(
+            frozen_obj=self,
             message=f"Can't delete attribute '{name}' on immutable instance",
             name=name
         )
 
     def __setitem__(self, key, value):
         self.__gelidum_on_update(
-            message="Can't set key on immutable instance",
+            frozen_obj=self,
+            message=f"Can't set key '{key}' on immutable instance",
             key=key, value=value
         )
 
     def __delitem__(self, key):
         self.__gelidum_on_update(
-            message="Can't delete key on immutable instance",
+            frozen_obj=self,
+            message=f"Can't delete key '{key}' on immutable instance",
             key=key)
 
     def __reversed__(self):
-        self.__gelidum_on_update(message="Can't reverse on immutable instance")
+        self.__gelidum_on_update(
+            frozen_obj=self,
+            message="Can't reverse on immutable instance"
+        )
 
 
 __FROZEN_CLASSES: Dict[str, Type[FrozenBase]] = dict()
 __FROZEN_CLASSES_LOCK = threading.Lock()
 
 
-def __store_frozen_class(klass: Type[object], frozen_class: Type[FrozenBase]) -> None:
+def __store_frozen_class(
+        klass: Type[object], frozen_class: Type[FrozenBase]
+) -> None:
     """
     Add a frozen class to this module.
     Required for pickle serialization as only objects of non-dynamic
@@ -69,9 +87,14 @@ def clear_frozen_classes() -> None:
         __FROZEN_CLASSES.clear()
 
 
-def __create_frozen_class(klass: Type[object], attrs: List[str],
-                          on_update_func: GelidumOnUpdateType) -> Type[FrozenBase]:
-    camel_case_module = klass.__module__.title().replace(".", "").replace("_", "")
+def __create_frozen_class(
+        klass: Type[object],
+        attrs: List[str],
+        on_update_func: GelidumOnUpdateType
+) -> Type[FrozenBase]:
+    camel_case_module = (
+        klass.__module__.title().replace(".", "").replace("_", "")
+    )
     frozen_class_name = f"Frozen{klass.__name__}From{camel_case_module}"
     frozen_class: Type[FrozenBase] = cast(
         Type[FrozenBase],
@@ -84,7 +107,8 @@ def __create_frozen_class(klass: Type[object], attrs: List[str],
                     'get_gelidum_hot_class_name': lambda _: klass.__name__,
                     'get_gelidum_hot_class_module': lambda _: klass.__module__,
                     '_FrozenBase__gelidum_on_update':
-                        lambda _self, *args, **kwargs: on_update_func(*args, **kwargs),
+                        lambda _self, *args, **kwargs:
+                        on_update_func(*args, **kwargs),
                     **{attr: None for attr in attrs}
                 }
             }
@@ -102,7 +126,7 @@ def __on_update_warning(message: str, *args, **kwargs) -> None:
     warnings.warn(message)
 
 
-def __on_update_func(on_update: OnUpdateType) -> GelidumOnUpdateType:
+def __on_update_func(on_update: OnUpdateFuncType) -> GelidumOnUpdateType:
     if isinstance(on_update, str):
         if on_update == "exception":
             return __on_update_exception
@@ -123,12 +147,13 @@ def __on_update_func(on_update: OnUpdateType) -> GelidumOnUpdateType:
     else:
         raise AttributeError(
             f"Invalid value for on_update parameter, '{on_update}' found, "
-            f"only 'exception', 'warning', 'nothing' or a function are valid options"
+            f"only 'exception', 'warning', 'nothing' or a function are "
+            f"valid options"
         )
 
 
 def make_frozen_class(klass: Type[object], attrs: List[str],
-                      on_update: OnUpdateType) -> Type[FrozenBase]:
+                      on_update: OnUpdateFuncType) -> Type[FrozenBase]:
     klass_key = f"{klass.__module__}.{klass.__qualname__}"
     with __FROZEN_CLASSES_LOCK:
         frozen_class = __FROZEN_CLASSES.get(klass_key)
@@ -140,4 +165,3 @@ def make_frozen_class(klass: Type[object], attrs: List[str],
         )
 
     return frozen_class
-

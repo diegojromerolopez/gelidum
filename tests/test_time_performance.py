@@ -29,11 +29,11 @@ class TestTimePerformance(unittest.TestCase):
 
         dummy1 = Dummy(attr="1")
         start_inplace = time.time()
-        freeze(dummy1, inplace=True)
+        freeze(dummy1, on_freeze="inplace")
         spent_time_inplace = time.time() - start_inplace
         dummy2 = Dummy(attr="1")
         start_not_inplace = time.time()
-        freeze(dummy2, inplace=False)
+        freeze(dummy2, on_freeze="copy")
         spent_time_not_inplace = time.time() - start_not_inplace
 
         self.assertLessEqual(spent_time_inplace, spent_time_not_inplace)
@@ -49,10 +49,9 @@ class TestTimePerformance(unittest.TestCase):
         spent_times = []
         for i in range(5):
             start = time.time()
-            freeze(dummy, inplace=False)
+            freeze(dummy, on_freeze="copy")
             spent_times.append(time.time() - start)
 
         spent_time = sum(spent_times) / len(spent_times)
 
         self.assertLessEqual(spent_time, 0.4)
-
