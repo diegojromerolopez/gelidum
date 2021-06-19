@@ -81,9 +81,9 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_inplace:
             frozen_dummy_inplace.attr2 = "2"
 
-        self.assertEqual("Can't assign 'attr1' on immutable instance",
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance",
                          str(context_on_freeze_copy.exception))
-        self.assertEqual("Can't assign 'attr2' on immutable instance",
+        self.assertEqual("Can't assign attribute 'attr2' on immutable instance",
                          str(context_inplace.exception))
         self.assertEqual(id(dummy), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy), id(frozen_dummy_on_freeze_copy))
@@ -146,9 +146,9 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
         self.assertListEqual(
             [
-                "Can't assign 'attr1' on immutable instance",
-                "Can't assign '_attr2' on immutable instance",
-                "Can't assign '_Dummy__attr3' on immutable instance"
+                "Can't assign attribute 'attr1' on immutable instance",
+                "Can't assign attribute '_attr2' on immutable instance",
+                "Can't assign attribute '_Dummy__attr3' on immutable instance"
             ],
             [str(warn.message) for warn in caught_warnings]
         )
@@ -218,11 +218,11 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr)
         self.assertEqual(
-            "Can't assign 'attr' on immutable instance",
+            "Can't assign attribute 'attr' on immutable instance",
             str(setattr_context.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr' on immutable instance",
+            "Can't assign attribute 'attr' on immutable instance",
             str(set_context.exception)
         )
         self.assertEqual(
@@ -276,15 +276,15 @@ class TestFreeze(unittest.TestCase):
         expected_writing_tries = [
             {'args': (),
              'kwargs': {'key': 'attr1', 'value': 99, 'frozen_obj': frozen_dummy},
-             'message': "Can't assign 'attr1' on immutable instance",
+             'message': "Can't assign attribute 'attr1' on immutable instance",
              'time': fixed_utcnow},
             {'args': (),
              'kwargs': {'key': '_attr2', 'value': 99, 'frozen_obj': frozen_dummy},
-             'message': "Can't assign '_attr2' on immutable instance",
+             'message': "Can't assign attribute '_attr2' on immutable instance",
              'time': fixed_utcnow},
             {'args': (),
              'kwargs': {'key': '_Dummy__attr3', 'value': 99, 'frozen_obj': frozen_dummy},
-             'message': "Can't assign '_Dummy__attr3' on immutable instance",
+             'message': "Can't assign attribute '_Dummy__attr3' on immutable instance",
              'time': fixed_utcnow}
         ]
 
@@ -352,7 +352,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(2, frozen_dummy.attr2)
         self.assertEqual(3, frozen_dummy.attr3)
         self.assertEqual(
-            unittest.mock.call("Can't assign 'attr1' on immutable instance"),
+            unittest.mock.call("Can't assign attribute 'attr1' on immutable instance"),
             mock_logger.warning.call_args
         )
         self.assertEqual(id(dummy), id(update_try_recorder.original_obj))
@@ -393,39 +393,39 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_assign_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_assign_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_assign_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_inc_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_inc_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_inc_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_dec_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_dec_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_dec_attr3.exception)
         )
 
@@ -464,39 +464,39 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_assign_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_assign_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_assign_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_inc_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_inc_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_inc_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_dec_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_dec_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_dec_attr3.exception)
         )
 
@@ -545,35 +545,35 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(12, frozen_deep_dummy.dummy1._attr2)
         self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)
         self.assertEqual(
-            "Can't assign 'dummy1' on immutable instance",
+            "Can't assign attribute 'dummy1' on immutable instance",
             str(context_exc_dummy1.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_dummy1_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_dummy1_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign 'dummy1' on immutable instance",
+            "Can't assign attribute 'dummy1' on immutable instance",
             str(context_exc_setattr_dummy1.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_setattr_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_setattr_dummy1_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_setattr_dummy1_attr3.exception)
         )
 
@@ -622,35 +622,35 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(12, frozen_deep_dummy.dummy1._attr2)
         self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)
         self.assertEqual(
-            "Can't assign 'dummy1' on immutable instance",
+            "Can't assign attribute 'dummy1' on immutable instance",
             str(context_exc_dummy1.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_dummy1_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_dummy1_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign 'dummy1' on immutable instance",
+            "Can't assign attribute 'dummy1' on immutable instance",
             str(context_exc_setattr_dummy1.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context_exc_setattr_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance",
+            "Can't assign attribute '_attr2' on immutable instance",
             str(context_exc_setattr_dummy1_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance",
+            "Can't assign attribute '_Dummy__attr3' on immutable instance",
             str(context_exc_setattr_dummy1_attr3.exception)
         )
 
@@ -743,7 +743,7 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as context:
             frozen_dummy.new_attribute = 99
         self.assertEqual(
-            "Can't assign 'new_attribute' on immutable instance", str(context.exception))
+            "Can't assign attribute 'new_attribute' on immutable instance", str(context.exception))
 
     def test_cannot_use_modifying_attribute_method_in_frozen_object(self):
         class Dummy(object):
@@ -771,11 +771,11 @@ class TestFreeze(unittest.TestCase):
             frozen_dummy.inc_attr3()
 
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance", str(context1.exception))
+            "Can't assign attribute 'attr1' on immutable instance", str(context1.exception))
         self.assertEqual(
-            "Can't assign '_attr2' on immutable instance", str(context2.exception))
+            "Can't assign attribute '_attr2' on immutable instance", str(context2.exception))
         self.assertEqual(
-            "Can't assign '_Dummy__attr3' on immutable instance", str(context3.exception))
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context3.exception))
 
     def test_json(self):
         data_list = [{"a": 1, "b": 2}, {"a": 11, "b": 22}]
@@ -800,7 +800,7 @@ class TestFreeze(unittest.TestCase):
             unpickled_frozen_dummy.attr = 8
 
         self.assertEqual(
-            "Can't assign 'attr' on immutable instance",
+            "Can't assign attribute 'attr' on immutable instance",
             str(context.exception)
         )
         self.assertEqual(1, frozen_dummy.attr, unpickled_frozen_dummy.attr)
@@ -832,19 +832,19 @@ class TestFreeze(unittest.TestCase):
             unpickled_frozen_dummy2.get_gelidum_hot_class_module = 99
 
         self.assertEqual(
-            "Can't assign 'attr1' on immutable instance",
+            "Can't assign attribute 'attr1' on immutable instance",
             str(context1.exception)
         )
         self.assertEqual(
-            "Can't assign 'attr2' on immutable instance",
+            "Can't assign attribute 'attr2' on immutable instance",
             str(context2.exception)
         )
         self.assertEqual(
-            "Can't assign 'get_gelidum_hot_class_module' on immutable instance",
+            "Can't assign attribute 'get_gelidum_hot_class_module' on immutable instance",
             str(context1_get_gelidum_hot_class_module.exception)
         )
         self.assertEqual(
-            "Can't assign 'get_gelidum_hot_class_module' on immutable instance",
+            "Can't assign attribute 'get_gelidum_hot_class_module' on immutable instance",
             str(context2_get_gelidum_hot_class_module.exception)
         )
         self.assertEqual(1, frozen_dummy1.attr1, unpickled_frozen_dummy1.attr1)

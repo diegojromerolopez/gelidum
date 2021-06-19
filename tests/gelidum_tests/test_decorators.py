@@ -42,7 +42,7 @@ class TestDecorator(unittest.TestCase):
 
         dummy.attr = 100
 
-        self.assertEqual("Can't assign 'attr' on immutable instance",
+        self.assertEqual("Can't assign attribute 'attr' on immutable instance",
                          str(context.exception))
         self.assertEqual(100, dummy.attr)
 
@@ -84,7 +84,7 @@ class TestDecorator(unittest.TestCase):
         for future_i in futures:
             with self.assertRaises(FrozenException) as context:
                 future_i.result()
-            self.assertEqual("Can't assign 'attr' on immutable instance",
+            self.assertEqual("Can't assign attribute 'attr' on immutable instance",
                              str(context.exception))
             future_count += 1
         self.assertEqual(2, future_count)
@@ -127,9 +127,9 @@ class TestDecorator(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_named_arguments:
             product_bad_implementation(one=Number(1), two=Number(2), three=Number(3))
 
-        self.assertEqual("Can't assign 'value' on immutable instance",
+        self.assertEqual("Can't assign attribute 'value' on immutable instance",
                          str(context_unnamed_arguments.exception))
-        self.assertEqual("Can't assign 'value' on immutable instance",
+        self.assertEqual("Can't assign attribute 'value' on immutable instance",
                          str(context_some_named_arguments.exception))
-        self.assertEqual("Can't assign 'value' on immutable instance",
+        self.assertEqual("Can't assign attribute 'value' on immutable instance",
                          str(context_named_arguments.exception))

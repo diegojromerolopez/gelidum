@@ -22,7 +22,7 @@ class FrozenBase(object):
     def __setattr__(self, key, value):
         self.__gelidum_on_update(
             frozen_obj=self,
-            message=f"Can't assign '{key}' on immutable instance",
+            message=f"Can't assign attribute '{key}' on immutable instance",
             key=key, value=value
         )
 
