@@ -43,14 +43,14 @@ class FrozenBase(object):
     def __setitem__(self, key, value):
         self.__gelidum_on_update(
             frozen_obj=self,
-            message="Can't set key on immutable instance",
+            message=f"Can't set key '{key}' on immutable instance",
             key=key, value=value
         )
 
     def __delitem__(self, key):
         self.__gelidum_on_update(
             frozen_obj=self,
-            message="Can't delete key on immutable instance",
+            message=f"Can't delete key '{key}' on immutable instance",
             key=key)
 
     def __reversed__(self):

@@ -172,6 +172,76 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
 
+    def test_freeze_simple_object_and_catch_setattr_exception(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+        class DummyWithProperty(object):
+            def __init__(self, value: int):
+                self.__attr = value
+
+            @property
+            def attr(self):
+                return self.__attr
+
+            @attr.setter
+            def attr(self, value: int):
+                self.__attr = value
+
+        dummy = Dummy(value=1)
+        frozen_dummy = freeze(dummy, on_update="exception", on_freeze="inplace")
+
+        dummy_with_property = DummyWithProperty(value=1)
+        frozen_dummy_with_property = freeze(dummy_with_property, on_update="exception",
+                                            on_freeze="inplace")
+
+        with self.assertRaises(FrozenException) as setattr_context:
+            setattr(frozen_dummy, "attr", 99)
+
+        with self.assertRaises(FrozenException) as set_context:
+            frozen_dummy_with_property.attr = "99"
+
+        with self.assertRaises(FrozenException) as delattr_context:
+            delattr(frozen_dummy, "attr")
+
+        with self.assertRaises(FrozenException) as setitem_context:
+            frozen_dummy["attr"] = 99
+
+        with self.assertRaises(FrozenException) as delitem_context:
+            del frozen_dummy["attr"]
+
+        with self.assertRaises(FrozenException) as reversed_context:
+            reversed(frozen_dummy)
+
+        self.assertEqual(id(dummy), id(frozen_dummy))
+        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual(1, frozen_dummy.attr)
+        self.assertEqual(
+            "Can't assign 'attr' on immutable instance",
+            str(setattr_context.exception)
+        )
+        self.assertEqual(
+            "Can't assign 'attr' on immutable instance",
+            str(set_context.exception)
+        )
+        self.assertEqual(
+            "Can't delete attribute 'attr' on immutable instance",
+            str(delattr_context.exception)
+        )
+        self.assertEqual(
+            "Can't set key 'attr' on immutable instance",
+            str(setitem_context.exception)
+        )
+        self.assertEqual(
+            "Can't delete key 'attr' on immutable instance",
+            str(delitem_context.exception)
+        )
+        self.assertEqual(
+            "Can't reverse on immutable instance",
+            str(reversed_context.exception)
+        )
+
     @patch("datetime.datetime")
     def test_freeze_simple_object_on_update_function_freeze_inplace(self, mock_datetime):
         fixed_utcnow = datetime.datetime(2021, 6, 16, 14, 20, 56, 809581)
