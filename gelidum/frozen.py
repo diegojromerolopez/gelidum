@@ -3,7 +3,7 @@ import threading
 import warnings
 from typing import Type, List, cast, Dict
 from gelidum.exceptions import FrozenException
-from gelidum.typing import OnUpdateFuncType, GelidumOnUpdateType
+from gelidum.typing import OnUpdateFuncType
 
 
 class FrozenBase(object):
@@ -90,7 +90,7 @@ def clear_frozen_classes() -> None:
 def __create_frozen_class(
         klass: Type[object],
         attrs: List[str],
-        on_update_func: GelidumOnUpdateType
+        on_update_func: OnUpdateFuncType
 ) -> Type[FrozenBase]:
     camel_case_module = (
         klass.__module__.title().replace(".", "").replace("_", "")
@@ -118,15 +118,15 @@ def __create_frozen_class(
     return frozen_class
 
 
-def __on_update_exception(message: str, *args, **kwargs) -> None:
+def __on_update_exception(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
     raise FrozenException(message)
 
 
-def __on_update_warning(message: str, *args, **kwargs) -> None:
+def __on_update_warning(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
     warnings.warn(message)
 
 
-def __on_update_func(on_update: OnUpdateFuncType) -> GelidumOnUpdateType:
+def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
     if isinstance(on_update, str):
         if on_update == "exception":
             return __on_update_exception

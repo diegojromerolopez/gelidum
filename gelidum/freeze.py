@@ -2,8 +2,10 @@ import copy
 import io
 import sys
 import warnings
-from io import TextIOWrapper, BufferedWriter
-from typing import List, Tuple, Set, Dict, Any, Optional, Union, Type, TypeVar
+from typing import (
+    List, Tuple, Set, Dict, Any,
+    Optional, Union, Type, TypeVar
+)
 from frozendict import frozendict
 from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.utils import isbuiltin
