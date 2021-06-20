@@ -93,13 +93,11 @@ def __freeze_set(obj: Set, on_update: OnUpdateFuncType,
                       for item in obj])
 
 
-def __freeze_TextIOWrapper(obj: TextIOWrapper, on_update: OnUpdateFuncType,
-                           on_freeze: OnFreezeFuncType) -> None:
+def __freeze_TextIOWrapper(*args, **kwargs) -> None:  # noqa
     raise io.UnsupportedOperation("Text file handlers can't be frozen")
 
 
-def __freeze_BufferedWriter(obj: BufferedWriter, on_update: OnUpdateFuncType,
-                            on_freeze: OnFreezeFuncType) -> None:
+def __freeze_BufferedWriter(*args, **kwargs) -> None:  # noqa
     raise io.UnsupportedOperation("Binary file handlers can't be frozen")
 
 
