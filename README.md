@@ -28,8 +28,8 @@ accidental modifications in your code.
 - Frozen object creation is thread-safe.
 
 ## How it works
-In case of the builtin types (int, float, str, etc) it makes nothing, as
-they are already immutable.
+In case of the [builtin types](https://docs.python.org/3/library/stdtypes.html)
+(bool, None, int, float, bytes, complex, str) it does nothing, as they are already immutable.
 
 For the list type, a tuple with frozen items is returned.
 
