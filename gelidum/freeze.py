@@ -162,8 +162,8 @@ def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
         else:
             raise AttributeError(
                 f"Invalid value for on_update parameter, '{on_update}' found, "
-                f"only 'exception', 'warning', and 'nothing' are valid options"
-                f"if passed a string."
+                f"only 'exception', 'warning', and 'nothing' are valid options "
+                f"if passed a string"
             )
 
     elif callable(on_update):

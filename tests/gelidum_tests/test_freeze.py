@@ -930,3 +930,24 @@ class TestFreeze(unittest.TestCase):
             "only 'copy', 'inplace' or a function are valid options",
             str(context.exception)
         )
+
+    def test_invalid_str_for_on_update_parameter(self):
+        with self.assertRaises(AttributeError) as context:
+            freeze(("one", 2, "three"), on_update="invalid")
+
+        self.assertEqual(
+            "Invalid value for on_update parameter, 'invalid' found, "
+            "only 'exception', 'warning', and 'nothing' are valid options "
+            "if passed a string",
+            str(context.exception)
+        )
+
+    def test_invalid_value_for_on_update_parameter(self):
+        with self.assertRaises(AttributeError) as context:
+            freeze(("one", 2, "three"), on_update=1)
+
+        self.assertEqual(
+            "Invalid value for on_update parameter, '1' found, "
+            "only 'exception', 'warning', 'nothing' or a function are valid options",
+            str(context.exception)
+        )
