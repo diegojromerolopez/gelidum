@@ -1,8 +1,6 @@
 import sys
 import threading
-import warnings
 from typing import Type, List, cast, Dict
-from gelidum.exceptions import FrozenException
 from gelidum.typing import OnUpdateFuncType
 
 
@@ -118,40 +116,6 @@ def __create_frozen_class(
     return frozen_class
 
 
-def __on_update_exception(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
-    raise FrozenException(message)
-
-
-def __on_update_warning(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
-    warnings.warn(message)
-
-
-def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
-    if isinstance(on_update, str):
-        if on_update == "exception":
-            return __on_update_exception
-        elif on_update == "warning":
-            return __on_update_warning
-        elif on_update == "nothing":
-            return lambda message, *args, **kwargs: None
-        else:
-            raise AttributeError(
-                f"Invalid value for on_update parameter, '{on_update}' found, "
-                f"only 'exception', 'warning', and 'nothing' are valid options"
-                f"if passed a string."
-            )
-
-    elif callable(on_update):
-        return on_update
-
-    else:
-        raise AttributeError(
-            f"Invalid value for on_update parameter, '{on_update}' found, "
-            f"only 'exception', 'warning', 'nothing' or a function are "
-            f"valid options"
-        )
-
-
 def make_frozen_class(klass: Type[object], attrs: List[str],
                       on_update: OnUpdateFuncType) -> Type[FrozenBase]:
     klass_key = f"{klass.__module__}.{klass.__qualname__}"
@@ -161,7 +125,7 @@ def make_frozen_class(klass: Type[object], attrs: List[str],
     if not frozen_class:
         frozen_class = __create_frozen_class(
             klass=klass, attrs=attrs,
-            on_update_func=__on_update_func(on_update=on_update)
+            on_update_func=on_update
         )
 
     return frozen_class

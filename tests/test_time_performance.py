@@ -27,7 +27,8 @@ class TestTimePerformance(unittest.TestCase):
                 for attr_index in range(0, 10000):
                     setattr(self, f"attr{attr_index+1}", attr)
 
-        dummy1 = Dummy(attr="1")
+        value = "1" * 1_000_000
+        dummy1 = Dummy(attr=value)
         start_inplace = time.time()
         freeze(dummy1, on_freeze="inplace")
         spent_time_inplace = time.time() - start_inplace
@@ -44,7 +45,8 @@ class TestTimePerformance(unittest.TestCase):
                 for attr_index in range(0, 10000):
                     setattr(self, f"attr{attr_index+1}", attr)
 
-        dummy = BigDummy(attr="1")
+        value = "1" * 1_000_000
+        dummy = BigDummy(attr=value)
 
         spent_times = []
         for i in range(5):

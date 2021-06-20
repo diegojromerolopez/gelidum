@@ -7,6 +7,7 @@ from typing import (
     Optional, Union, Type, TypeVar
 )
 from frozendict import frozendict
+from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.utils import isbuiltin
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType
@@ -29,22 +30,24 @@ def freeze(
         inplace: Optional[bool] = None
         ) -> _FrozenType:
 
-    # inplace argument will be removed from freeze in the next major version
+    # inplace argument will be removed from freeze in the next major version (0.5.0)
     if isinstance(inplace, bool):
         warnings.warn(
             DeprecationWarning(
-                "Use of inplace is deprecated and will be removed in next major version"
+                "Use of inplace is deprecated and will be removed in next major version (0.5.0)"
             )
         )
         if inplace:
-            on_freeze = __on_freeze_func(on_freeze="inplace")
+            on_freeze_func: OnFreezeFuncType = __on_freeze_func(on_freeze="inplace")
         else:
-            on_freeze = __on_freeze_func(on_freeze="copy")
+            on_freeze_func: OnFreezeFuncType = __on_freeze_func(on_freeze="copy")
 
     else:
-        on_freeze = __on_freeze_func(on_freeze=on_freeze)
+        on_freeze_func: OnFreezeFuncType = __on_freeze_func(on_freeze=on_freeze)
 
-    return __freeze(obj=obj, on_update=on_update, on_freeze=on_freeze)
+    on_update_func: OnUpdateFuncType = __on_update_func(on_update=on_update)
+
+    return __freeze(obj=obj, on_update=on_update_func, on_freeze=on_freeze_func)
 
 
 def __freeze(obj: Any, on_update: OnUpdateFuncType,
@@ -137,4 +140,38 @@ def __on_freeze_func(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncTyp
         raise AttributeError(
             f"Invalid value for on_freeze parameter, '{on_freeze}' found, "
             f"only 'copy', 'inplace' or a function are valid options"
+        )
+
+
+def __on_update_exception(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
+    raise FrozenException(message)
+
+
+def __on_update_warning(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
+    warnings.warn(message)
+
+
+def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
+    if isinstance(on_update, str):
+        if on_update == "exception":
+            return __on_update_exception
+        elif on_update == "warning":
+            return __on_update_warning
+        elif on_update == "nothing":
+            return lambda message, *args, **kwargs: None
+        else:
+            raise AttributeError(
+                f"Invalid value for on_update parameter, '{on_update}' found, "
+                f"only 'exception', 'warning', and 'nothing' are valid options"
+                f"if passed a string."
+            )
+
+    elif callable(on_update):
+        return on_update
+
+    else:
+        raise AttributeError(
+            f"Invalid value for on_update parameter, '{on_update}' found, "
+            f"only 'exception', 'warning', 'nothing' or a function are "
+            f"valid options"
         )
