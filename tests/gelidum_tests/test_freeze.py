@@ -50,7 +50,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(("one", 2, "three"), frozen_list)
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
-            "Use of inplace is deprecated and will be removed in next major version",
+            "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
             str(caught_warnings[0].message)
         )
 
@@ -102,7 +102,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy), id(frozen_dummy))
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
-            "Use of inplace is deprecated and will be removed in next major version",
+            "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
             str(caught_warnings[0].message)
         )
 
@@ -120,7 +120,7 @@ class TestFreeze(unittest.TestCase):
         self.assertNotEqual(id(dummy), id(frozen_dummy))
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
-            "Use of inplace is deprecated and will be removed in next major version",
+            "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
             str(caught_warnings[0].message)
         )
 
