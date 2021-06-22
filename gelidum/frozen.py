@@ -98,7 +98,7 @@ def __create_frozen_class(
         Type[FrozenBase],
         type(
             frozen_class_name,
-            (FrozenBase, klass, ),
+            (FrozenBase, klass),
             {
                 "__slots__": tuple(),
                 **{
