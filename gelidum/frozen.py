@@ -24,11 +24,11 @@ class FrozenBase(object):
             key=key, value=value
         )
 
-    def __set__(self, *args, **kwargs):
+    def __set__(self, obj, value):
         self.__gelidum_on_update(
             frozen_obj=self,
-            message="Can't assign setter on immutable instance",
-            *args, **kwargs
+            message=f"Can't assign setter on immutable instance",
+            obj=obj, value=value
         )
 
     def __delattr__(self, name):
@@ -98,13 +98,13 @@ def __create_frozen_class(
         Type[FrozenBase],
         type(
             frozen_class_name,
-            (klass, FrozenBase),
+            (FrozenBase, klass, ),
             {
                 "__slots__": tuple(),
                 **{
-                    'get_gelidum_hot_class_name': lambda _: klass.__name__,
-                    'get_gelidum_hot_class_module': lambda _: klass.__module__,
-                    '_FrozenBase__gelidum_on_update':
+                    "get_gelidum_hot_class_name": lambda _: klass.__name__,
+                    "get_gelidum_hot_class_module": lambda _: klass.__module__,
+                    "_FrozenBase__gelidum_on_update":
                         lambda _self, *args, **kwargs:
                         on_update_func(*args, **kwargs),
                     **{attr: None for attr in attrs}

@@ -36,8 +36,37 @@ class TestFreeze(unittest.TestCase):
             b"Byte array", freeze(bytearray(b"Byte array")))
 
     def test_freeze_dict(self):
+        frozen_obj: frozendict = freeze({"one": 1, "two": 2})
+
+        with self.assertRaises(TypeError) as context_assignment:
+            frozen_obj["one"] = "another value"
+
+        with self.assertRaises(AttributeError) as context_clear:
+            frozen_obj.clear()
+
+        with self.assertRaises(AttributeError) as context_update:
+            frozen_obj.update({"three": 3})
+
+        with self.assertRaises(TypeError) as context_deletion:
+            del frozen_obj["one"]
+
+        self.assertEqual(frozendict({"one": 1, "two": 2}), frozen_obj)
         self.assertEqual(
-            frozendict({"one": 1, "two": 2}), freeze({"one": 1, "two": 2}))
+            "'frozendict' object doesn't support item assignment",
+            str(context_assignment.exception)
+        )
+        self.assertEqual(
+            "'frozendict' object is read-only",
+            str(context_clear.exception)
+        )
+        self.assertEqual(
+            "'frozendict' object is read-only",
+            str(context_update.exception)
+        )
+        self.assertEqual(
+            "'frozendict' object doesn't support item deletion",
+            str(context_deletion.exception)
+        )
 
     def test_freeze_list(self):
         self.assertEqual(
@@ -152,7 +181,7 @@ class TestFreeze(unittest.TestCase):
             frozen_dummy._Dummy__attr3 = 99
 
         self.assertEqual(id(dummy), id(frozen_dummy))
-        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
@@ -179,7 +208,7 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy._Dummy__attr3 = 99
 
         self.assertEqual(id(dummy), id(frozen_dummy))
-        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
@@ -197,10 +226,6 @@ class TestFreeze(unittest.TestCase):
             def attr(self):
                 return self.__attr
 
-            @attr.setter
-            def attr(self, value: int):
-                self.__attr = value
-
         dummy = Dummy(value=1)
         frozen_dummy = freeze(dummy, on_update="exception", on_freeze="inplace")
 
@@ -211,7 +236,7 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as setattr_context:
             setattr(frozen_dummy, "attr", 99)
 
-        with self.assertRaises(FrozenException) as set_context:
+        with self.assertRaises(FrozenException) as setattr_context2:
             frozen_dummy_with_property.attr = "99"
 
         with self.assertRaises(FrozenException) as delattr_context:
@@ -227,7 +252,7 @@ class TestFreeze(unittest.TestCase):
             reversed(frozen_dummy)
 
         self.assertEqual(id(dummy), id(frozen_dummy))
-        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr)
         self.assertEqual(1, frozen_dummy_with_property.attr)
         self.assertEqual(
@@ -236,7 +261,7 @@ class TestFreeze(unittest.TestCase):
         )
         self.assertEqual(
             "Can't assign attribute 'attr' on immutable instance",
-            str(set_context.exception)
+            str(setattr_context2.exception)
         )
         self.assertEqual(
             "Can't delete attribute 'attr' on immutable instance",
@@ -253,6 +278,33 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(
             "Can't reverse on immutable instance",
             str(reversed_context.exception)
+        )
+
+    def test_freeze_object_with_set_descriptor_method_exception(self):
+        class DummyCounter(object):
+            def __init__(self, name: str):
+                self.name = name
+
+            def __get__(self, obj, type=None) -> object:
+                return obj.__dict__.get(self.name) or 0  # pragma: no cover
+
+            def __set__(self, obj, value) -> None:
+                obj.__dict__[self.name] = value  # pragma: no cover
+
+        class Dummy:
+            counter = freeze(DummyCounter("counter"))
+
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy1 = Dummy(value=1)
+
+        with self.assertRaises(FrozenException) as set_context:
+            dummy1.counter = 1
+
+        self.assertEqual(
+            "Can't assign setter on immutable instance",
+            str(set_context.exception)
         )
 
     @patch("datetime.datetime")
@@ -302,7 +354,7 @@ class TestFreeze(unittest.TestCase):
         ]
 
         self.assertEqual(id(dummy), id(frozen_dummy))
-        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
@@ -360,7 +412,7 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy.attr1 = 99
 
         self.assertNotEqual(id(dummy), id(frozen_dummy))
-        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy.attr2)
         self.assertEqual(3, frozen_dummy.attr3)
@@ -401,7 +453,7 @@ class TestFreeze(unittest.TestCase):
             frozen_dummy._Dummy__attr3 -= 99
 
         self.assertEqual(id(dummy), id(frozen_dummy))
-        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
@@ -472,7 +524,7 @@ class TestFreeze(unittest.TestCase):
             frozen_dummy._Dummy__attr3 -= 99
 
         self.assertNotEqual(id(dummy), id(frozen_dummy))
-        self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
+        self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
