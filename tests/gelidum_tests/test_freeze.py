@@ -88,6 +88,18 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy), id(frozen_dummy_on_freeze_copy))
 
+    def test_freeze_objects_of_same_class(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy1 = Dummy(value=1)
+        frozen_dummy1 = freeze(dummy1, on_freeze="copy")
+        dummy2 = Dummy(value=2)
+        frozen_dummy2 = freeze(dummy2, on_freeze="copy")
+
+        self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__)
+
     def test_freeze_simple_object_inplace_true_deprecated_parameter(self):
         class Dummy(object):
             def __init__(self, attr1: int, attr2: int, attr3: int):
@@ -217,6 +229,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy), id(frozen_dummy))
         self.assertEqual((Dummy, FrozenBase), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr)
+        self.assertEqual(1, frozen_dummy_with_property.attr)
         self.assertEqual(
             "Can't assign attribute 'attr' on immutable instance",
             str(setattr_context.exception)

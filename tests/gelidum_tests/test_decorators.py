@@ -93,7 +93,7 @@ class TestDecorator(unittest.TestCase):
         @freeze_final
         def join_lists_bad_implementation(one: Final[List], two: Final[List]):
             one.extend(two)
-            return one
+            return one  # pragma: no cover
 
         with self.assertRaises(AttributeError) as context_unnamed_arguments:
             join_lists_bad_implementation([], [])
@@ -116,7 +116,7 @@ class TestDecorator(unittest.TestCase):
         def product_bad_implementation(one: Final[Number], two: Final[Number], three: Number):
             three.value *= 99
             one.value *= two.value * three.value
-            return one.value
+            return one.value  # pragma: no cover
 
         with self.assertRaises(FrozenException) as context_unnamed_arguments:
             product_bad_implementation(Number(1), Number(2), Number(3))
