@@ -24,7 +24,7 @@ class TestTimePerformance(unittest.TestCase):
         class Dummy(object):
             def __init__(self, attr: str):
                 self.attr = DummyAttrLevel1(attr)
-                for attr_index in range(0, 10000):
+                for attr_index in range(0, 100_000):
                     setattr(self, f"attr{attr_index+1}", attr)
 
         value = "1" * 1_000_000

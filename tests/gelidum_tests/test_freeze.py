@@ -9,7 +9,7 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Tuple, Any
 from unittest.mock import patch
 from frozendict import frozendict
 from gelidum import FrozenException
@@ -1081,3 +1081,59 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy.obj_id), id(frozen_dummy.obj_id))
         self.assertEqual("unique_id", dummy.obj_id.value)
         self.assertEqual("unique_id", frozen_dummy.obj_id.value)
+
+    def test_structural_sharing_immutable_list(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.value = value
+
+        class ConsList(object):
+            @staticmethod
+            def __freeze(item: Any) -> FrozenBase:
+                return freeze(item, on_update="exception", on_freeze="copy")
+
+            def __init__(self, *args):
+                if len(args) > 0:
+                    self._items = tuple(
+                        self.__freeze(arg_i) for arg_i in args
+                    )
+                else:
+                    self._items = tuple()
+
+            def __getitem__(self, key) -> Any:
+                return self._items[key]
+
+            def __len__(self) -> int:
+                return len(self._items)
+
+            def __add__(self, other) -> "ConsList":
+                frozen_other = freeze(other, on_update="exception", on_freeze="copy")
+                new_cons_list = ConsList()
+                new_cons_list._items = self._items + (frozen_other,)
+                return new_cons_list
+
+        immutable_list_size_1 = ConsList(1)
+        immutable_list_size_2 = immutable_list_size_1 + 2
+        immutable_list_size_3 = immutable_list_size_2 + 3
+        immutable_list_size_4 = immutable_list_size_3 + Dummy(5)
+        immutable_list_size_6 = immutable_list_size_4 + Dummy(5) + "a string"
+
+        self.assertNotEqual(id(immutable_list_size_1), id(immutable_list_size_2))
+        self.assertNotEqual(id(immutable_list_size_2), id(immutable_list_size_3))
+        self.assertNotEqual(id(immutable_list_size_3), id(immutable_list_size_4))
+        self.assertNotEqual(id(immutable_list_size_4), id(immutable_list_size_6))
+        self.assertEqual(1, len(immutable_list_size_1))
+        self.assertEqual(2, len(immutable_list_size_2))
+        self.assertEqual(3, len(immutable_list_size_3))
+        self.assertEqual(4, len(immutable_list_size_4))
+        self.assertEqual(6, len(immutable_list_size_6))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_2[0]))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_3[0]))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_4[0]))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_6[0]))
+        self.assertEqual(id(immutable_list_size_2[1]), id(immutable_list_size_3[1]))
+        self.assertEqual(id(immutable_list_size_2[1]), id(immutable_list_size_4[1]))
+        self.assertEqual(id(immutable_list_size_2[1]), id(immutable_list_size_6[1]))
+        self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_4[2]))
+        self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_6[2]))
+        self.assertEqual(id(immutable_list_size_4[3]), id(immutable_list_size_6[3]))

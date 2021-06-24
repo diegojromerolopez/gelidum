@@ -165,10 +165,10 @@ def concat_lists(dest: List, list1: List, list2: List) -> List:
     return dest
 
 # Freeze dest, list1 and list2
-concat_lists_in([], list1=[1, 2, 3], list2=[4, 5, 6])
+concat_lists([], list1=[1, 2, 3], list2=[4, 5, 6])
 
 # Freeze list1 and list2
-concat_lists_in(dest=[], list1=[1, 2, 3], list2=[4, 5, 6])
+concat_lists(dest=[], list1=[1, 2, 3], list2=[4, 5, 6])
 ```
 
 Always use kwargs unless you want to freeze the args params. A good way to enforce this is by making the
@@ -181,6 +181,7 @@ from gelidum import freeze_params
 @freeze_params(params={"list1", "list2"})
 def concat_lists_in(*, dest: List, list1: List, list2: List):
     dest = list1 + list2
+    return dest
 ```
 
 You can use the **Final typehint from gelidum** to signal that an argument is immutable:
@@ -207,6 +208,7 @@ said function.
 - file handler attributes are not supported. An exception is raised when trying to freeze
   an object with them
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
+- frozen objects cannot be (deep)-copied. This limitation is inteded to make structural sharing easier.
 
 ## Advice & comments on use
 ### On_update parameter of freeze function
