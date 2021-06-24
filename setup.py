@@ -1,4 +1,5 @@
 import os
+from gelidum import __version__
 from setuptools import setup
 
 root_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -11,7 +12,7 @@ with open(requirements_path) as requirements_file:
 
 setup(
     name="gelidum",
-    version="0.4.3",
+    version=__version__,
     author="Diego J. Romero López",
     author_email="diegojromerolopez@gmail.com",
     description="Freeze your python objects",

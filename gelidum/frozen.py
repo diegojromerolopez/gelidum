@@ -57,6 +57,15 @@ class FrozenBase(object):
             message="Can't reverse on immutable instance"
         )
 
+    def __deepcopy__(self, *args, **kwargs) -> "FrozenBase":
+        """
+        No frozen object must need to be (deep) copied.
+        Use structural sharing to improve performance when doing
+        immutable data structures.
+        :return: reference to self.
+        """
+        return self
+
 
 __FROZEN_CLASSES: Dict[str, Type[FrozenBase]] = dict()
 __FROZEN_CLASSES_LOCK = threading.Lock()

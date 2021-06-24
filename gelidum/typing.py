@@ -1,5 +1,5 @@
 import typing
-from typing import Any, Callable, Type, TYPE_CHECKING
+from typing import Any, Callable, TYPE_CHECKING
 if TYPE_CHECKING:  # pragma: no cover
     from gelidum.frozen import FrozenBase  # noqa
 
@@ -13,7 +13,7 @@ try:
 except AttributeError:  # pragma: no cover
     Final = typing.Final
 
-_FrozenBase = Type["FrozenBase"]
+_FrozenBase = "FrozenBase"
 
 
 OnUpdateFuncType = Callable[[_FrozenBase, str, ...], None]

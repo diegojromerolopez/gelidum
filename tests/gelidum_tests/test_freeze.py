@@ -9,7 +9,7 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Dict, List, Type
+from typing import Dict, List, Union, Tuple, Any
 from unittest.mock import patch
 from frozendict import frozendict
 from gelidum import FrozenException
@@ -39,16 +39,16 @@ class TestFreeze(unittest.TestCase):
         frozen_obj: frozendict = freeze({"one": 1, "two": 2})
 
         with self.assertRaises(TypeError) as context_assignment:
-            frozen_obj["one"] = "another value"
+            frozen_obj["one"] = "another value"  # noqa
 
         with self.assertRaises(AttributeError) as context_clear:
-            frozen_obj.clear()
+            frozen_obj.clear()  # noqa
 
         with self.assertRaises(AttributeError) as context_update:
-            frozen_obj.update({"three": 3})
+            frozen_obj.update({"three": 3})  # noqa
 
         with self.assertRaises(TypeError) as context_deletion:
-            del frozen_obj["one"]
+            del frozen_obj["one"]  # noqa
 
         self.assertEqual(frozendict({"one": 1, "two": 2}), frozen_obj)
         self.assertEqual(
@@ -285,7 +285,7 @@ class TestFreeze(unittest.TestCase):
             def __init__(self, name: str):
                 self.name = name
 
-            def __get__(self, obj, type=None) -> object:
+            def __get__(self, obj, type=None) -> object:    # noqa
                 return obj.__dict__.get(self.name) or 0  # pragma: no cover
 
             def __set__(self, obj, value) -> None:
@@ -380,7 +380,7 @@ class TestFreeze(unittest.TestCase):
                 self.original_obj = obj
                 return frozen_object
 
-            def on_update(self, frozen_obj: Type["FrozenBase"],
+            def on_update(self, frozen_obj: "FrozenBase",
                           message: str, *args, **kwargs):
                 self.log.warning(message)
                 with self.lock:
@@ -988,7 +988,7 @@ class TestFreeze(unittest.TestCase):
 
     def test_invalid_value_for_on_freeze_parameter(self):
         with self.assertRaises(AttributeError) as context:
-            freeze(("one", 2, "three"), on_freeze=99)
+            freeze(("one", 2, "three"), on_freeze=99)  # noqa
 
         self.assertEqual(
             "Invalid value for on_freeze parameter, '99' found, "
@@ -1009,10 +1009,131 @@ class TestFreeze(unittest.TestCase):
 
     def test_invalid_value_for_on_update_parameter(self):
         with self.assertRaises(AttributeError) as context:
-            freeze(("one", 2, "three"), on_update=1)
+            freeze(("one", 2, "three"), on_update=1)  # noqa
 
         self.assertEqual(
             "Invalid value for on_update parameter, '1' found, "
             "only 'exception', 'warning', 'nothing' or a function are valid options",
             str(context.exception)
         )
+
+    def test_structural_sharing_when_freezing_simple_objects(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.value = value
+
+        dummy = Dummy(value=1)
+        frozen_dummy1 = freeze(dummy, on_update="exception", on_freeze="copy")
+        frozen_dummy2 = freeze(frozen_dummy1, on_update="exception", on_freeze="copy")
+        frozen_dummy3 = freeze(frozen_dummy2, on_update="exception", on_freeze="copy")
+
+        self.assertNotEqual(id(dummy), id(frozen_dummy1))
+        self.assertEqual(id(frozen_dummy1), id(frozen_dummy2))
+        self.assertEqual(id(frozen_dummy2), id(frozen_dummy3))
+        self.assertEqual(1, frozen_dummy1.value)
+        self.assertEqual(1, frozen_dummy2.value)
+        self.assertEqual(1, frozen_dummy3.value)
+
+    def test_structural_sharing_when_freezing_same_objects_multiple_times(self):
+        class DummyAttr(object):
+            def __init__(self, value: str):
+                self.value = value
+
+        class Dummy(object):
+            def __init__(self, dummy_attr: FrozenBase):
+                self.dummy_attr: Union[FrozenBase, DummyAttr] = dummy_attr
+
+        frozen_dummy_attr = freeze(
+            DummyAttr("my_value"), on_update="exception", on_freeze="copy"
+        )
+        dummy = Dummy(dummy_attr=frozen_dummy_attr)
+        frozen_dummy1 = freeze(dummy, on_update="exception", on_freeze="copy")
+        frozen_dummy2 = freeze(frozen_dummy1, on_update="exception", on_freeze="copy")
+        frozen_dummy3 = freeze(frozen_dummy2, on_update="exception", on_freeze="copy")
+
+        self.assertNotEqual(id(dummy), id(frozen_dummy1))
+        self.assertEqual(id(frozen_dummy1), id(frozen_dummy2))
+        self.assertEqual(id(frozen_dummy2), id(frozen_dummy3))
+        self.assertEqual(id(dummy.dummy_attr), id(frozen_dummy_attr))
+        self.assertEqual("my_value", dummy.dummy_attr.value)
+        self.assertEqual("my_value", frozen_dummy_attr.value)
+        self.assertEqual(id(frozen_dummy_attr), id(frozen_dummy1.dummy_attr))
+        self.assertEqual(id(frozen_dummy1.dummy_attr), id(frozen_dummy2.dummy_attr))
+        self.assertEqual(id(frozen_dummy2.dummy_attr), id(frozen_dummy3.dummy_attr))
+
+    def test_structural_sharing_when_freezing_nested_objects(self):
+        class Id(object):
+            def __init__(self, value: str):
+                self.value = value
+
+        class Dummy(object):
+            def __init__(self, value: int, obj_id: Id):
+                self.value = value
+                self.obj_id = freeze(
+                    obj_id, on_update="exception", on_freeze="copy"
+                )
+
+        dummy = Dummy(value=1, obj_id=Id("unique_id"))
+        frozen_dummy = freeze(dummy, on_update="exception", on_freeze="copy")
+
+        self.assertNotEqual(id(dummy), id(frozen_dummy))
+        self.assertEqual(id(dummy.obj_id.value), id(frozen_dummy.obj_id.value))
+        self.assertEqual(id(dummy.obj_id), id(frozen_dummy.obj_id))
+        self.assertEqual("unique_id", dummy.obj_id.value)
+        self.assertEqual("unique_id", frozen_dummy.obj_id.value)
+
+    def test_structural_sharing_immutable_list(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.value = value
+
+        class ConsList(object):
+            @staticmethod
+            def __freeze(item: Any) -> FrozenBase:
+                return freeze(item, on_update="exception", on_freeze="copy")
+
+            def __init__(self, *args):
+                if len(args) > 0:
+                    self._items = tuple(
+                        self.__freeze(arg_i) for arg_i in args
+                    )
+                else:
+                    self._items = tuple()
+
+            def __getitem__(self, key) -> Any:
+                return self._items[key]
+
+            def __len__(self) -> int:
+                return len(self._items)
+
+            def __add__(self, other) -> "ConsList":
+                frozen_other = freeze(other, on_update="exception", on_freeze="copy")
+                return ConsList(
+                    *(self._items + (frozen_other,))
+                )
+
+        immutable_list_size_1 = ConsList(1)
+        immutable_list_size_2 = immutable_list_size_1 + 2
+        immutable_list_size_3 = immutable_list_size_2 + 3
+        immutable_list_size_4 = immutable_list_size_3 + Dummy(5)
+        immutable_list_size_6 = immutable_list_size_4 + Dummy(5) + "a string"
+
+        self.assertNotEqual(id(immutable_list_size_1), id(immutable_list_size_2))
+        self.assertNotEqual(id(immutable_list_size_2), id(immutable_list_size_3))
+        self.assertNotEqual(id(immutable_list_size_3), id(immutable_list_size_4))
+        self.assertNotEqual(id(immutable_list_size_4), id(immutable_list_size_6))
+        self.assertEqual(1, len(immutable_list_size_1))
+        self.assertEqual(2, len(immutable_list_size_2))
+        self.assertEqual(3, len(immutable_list_size_3))
+        self.assertEqual(4, len(immutable_list_size_4))
+        self.assertEqual(6, len(immutable_list_size_6))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_2[0]))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_3[0]))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_4[0]))
+        self.assertEqual(id(immutable_list_size_1[0]), id(immutable_list_size_6[0]))
+        self.assertEqual(id(immutable_list_size_2[1]), id(immutable_list_size_3[1]))
+        self.assertEqual(id(immutable_list_size_2[1]), id(immutable_list_size_4[1]))
+        self.assertEqual(id(immutable_list_size_2[1]), id(immutable_list_size_6[1]))
+        self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_4[2]))
+        self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_6[2]))
+        self.assertEqual(id(immutable_list_size_4[3]), id(immutable_list_size_6[3]))
