@@ -284,7 +284,9 @@ Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
-- [ ] Freeze only when attributes are modified?
+- [x] Freeze only when attributes are modified? 
+  Not exactly but structural sharing is used.
+- [ ] Include immutable collections.  
 - [ ] Make some use-cases with threading/async module (i.e. server)
 
 
