@@ -1108,9 +1108,9 @@ class TestFreeze(unittest.TestCase):
 
             def __add__(self, other) -> "ConsList":
                 frozen_other = freeze(other, on_update="exception", on_freeze="copy")
-                new_cons_list = ConsList()
-                new_cons_list._items = self._items + (frozen_other,)
-                return new_cons_list
+                return ConsList(
+                    *(self._items + (frozen_other,))
+                )
 
         immutable_list_size_1 = ConsList(1)
         immutable_list_size_2 = immutable_list_size_1 + 2
