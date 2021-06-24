@@ -57,6 +57,11 @@ class FrozenBase(object):
             message="Can't reverse on immutable instance"
         )
 
+    # NO BORRAR!!!!!!!!!!!!!
+    # EL SECRETO DE LA VIDA
+    def __deepcopy__(self, *args, **kwargs) -> "FrozenBase":
+        return self
+
 
 __FROZEN_CLASSES: Dict[str, Type[FrozenBase]] = dict()
 __FROZEN_CLASSES_LOCK = threading.Lock()

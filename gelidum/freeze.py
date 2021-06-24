@@ -18,7 +18,7 @@ _FrozenType = Optional[
     Union[
         bool, int, float, bytes, complex, str,
         bytes, frozendict, tuple, frozenset,
-        Type[FrozenBase], T
+        FrozenBase, T
     ]
 ]
 
@@ -27,7 +27,7 @@ def freeze(
         obj: T,
         on_update: Union[str, OnUpdateFuncType] = "exception",
         on_freeze: Union[str, OnFreezeFuncType] = "copy",
-        inplace: Optional[bool] = None
+        inplace: Optional[bool] = None,
         ) -> _FrozenType:
 
     # inplace argument will be removed from freeze in the next major version (0.5.0)
@@ -54,6 +54,9 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
              on_freeze: OnFreezeFuncType) -> Any:
 
     if isbuiltin(obj):
+        return obj
+
+    if isinstance(obj, FrozenBase):
         return obj
 
     class_name = type(obj).__name__
@@ -107,7 +110,7 @@ def __freeze_BufferedWriter(*args, **kwargs) -> None:  # noqa
 
 
 def __freeze_object(obj: object, on_update: OnUpdateFuncType,
-                    on_freeze: OnFreezeFuncType) -> Type[FrozenBase]:
+                    on_freeze: OnFreezeFuncType) -> FrozenBase:
 
     frozen_obj = on_freeze(obj)
     for attr, value in frozen_obj.__dict__.items():
@@ -143,11 +146,11 @@ def __on_freeze_func(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncTyp
         )
 
 
-def __on_update_exception(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
+def __on_update_exception(frozen_obj: FrozenBase, message: str, *args, **kwargs) -> None:
     raise FrozenException(message)
 
 
-def __on_update_warning(frozen_obj: Type[FrozenBase], message: str, *args, **kwargs) -> None:
+def __on_update_warning(frozen_obj: FrozenBase, message: str, *args, **kwargs) -> None:
     warnings.warn(message)
 
 

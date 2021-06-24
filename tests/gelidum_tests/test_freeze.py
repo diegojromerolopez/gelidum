@@ -9,7 +9,7 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Dict, List, Type
+from typing import Dict, List, Type, Tuple
 from unittest.mock import patch
 from frozendict import frozendict
 from gelidum import FrozenException
@@ -1016,3 +1016,68 @@ class TestFreeze(unittest.TestCase):
             "only 'exception', 'warning', 'nothing' or a function are valid options",
             str(context.exception)
         )
+
+    def test_structural_sharing_when_freezing_simple_objects(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.value = value
+
+        dummy = Dummy(value=1)
+        frozen_dummy1 = freeze(dummy, on_update="exception", on_freeze="copy")
+        frozen_dummy2 = freeze(frozen_dummy1, on_update="exception", on_freeze="copy")
+        frozen_dummy3 = freeze(frozen_dummy2, on_update="exception", on_freeze="copy")
+
+        self.assertNotEqual(id(dummy), id(frozen_dummy1))
+        self.assertEqual(id(frozen_dummy1), id(frozen_dummy2))
+        self.assertEqual(id(frozen_dummy2), id(frozen_dummy3))
+        self.assertEqual(1, frozen_dummy1.value)
+        self.assertEqual(1, frozen_dummy2.value)
+        self.assertEqual(1, frozen_dummy3.value)
+
+    def test_structural_sharing_when_freezing_same_objects_multiple_times(self):
+        class DummyAttr(object):
+            def __init__(self, value: str):
+                self.value = value
+
+        class Dummy(object):
+            def __init__(self, dummy_attr: FrozenBase):
+                self.dummy_attr = dummy_attr
+
+        frozen_dummy_attr = freeze(
+            DummyAttr("my_value"), on_update="exception", on_freeze="copy"
+        )
+        dummy = Dummy(dummy_attr=frozen_dummy_attr)
+        frozen_dummy1 = freeze(dummy, on_update="exception", on_freeze="copy")
+        frozen_dummy2 = freeze(frozen_dummy1, on_update="exception", on_freeze="copy")
+        frozen_dummy3 = freeze(frozen_dummy2, on_update="exception", on_freeze="copy")
+
+        self.assertNotEqual(id(dummy), id(frozen_dummy1))
+        self.assertEqual(id(frozen_dummy1), id(frozen_dummy2))
+        self.assertEqual(id(frozen_dummy2), id(frozen_dummy3))
+        self.assertEqual(id(dummy.dummy_attr), id(frozen_dummy_attr))
+        self.assertEqual("my_value", dummy.dummy_attr.value)
+        self.assertEqual("my_value", frozen_dummy_attr.value)
+        self.assertEqual(id(frozen_dummy_attr), id(frozen_dummy1.dummy_attr))
+        self.assertEqual(id(frozen_dummy1.dummy_attr), id(frozen_dummy2.dummy_attr))
+        self.assertEqual(id(frozen_dummy2.dummy_attr), id(frozen_dummy3.dummy_attr))
+
+    def test_structural_sharing_when_freezing_nested_objects(self):
+        class Id(object):
+            def __init__(self, value: str):
+                self.value = value
+
+        class Dummy(object):
+            def __init__(self, value: int, obj_id: Id):
+                self.value = value
+                self.obj_id = freeze(
+                    obj_id, on_update="exception", on_freeze="copy"
+                )
+
+        dummy = Dummy(value=1, obj_id=Id("unique_id"))
+        frozen_dummy = freeze(dummy, on_update="exception", on_freeze="copy")
+
+        self.assertNotEqual(id(dummy), id(frozen_dummy))
+        self.assertEqual(id(dummy.obj_id.value), id(frozen_dummy.obj_id.value))
+        self.assertEqual(id(dummy.obj_id), id(frozen_dummy.obj_id))
+        self.assertEqual("unique_id", dummy.obj_id.value)
+        self.assertEqual("unique_id", frozen_dummy.obj_id.value)
