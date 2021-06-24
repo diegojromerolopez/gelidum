@@ -9,7 +9,7 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Dict, List, Type, Tuple
+from typing import Dict, List, Union
 from unittest.mock import patch
 from frozendict import frozendict
 from gelidum import FrozenException
@@ -39,16 +39,16 @@ class TestFreeze(unittest.TestCase):
         frozen_obj: frozendict = freeze({"one": 1, "two": 2})
 
         with self.assertRaises(TypeError) as context_assignment:
-            frozen_obj["one"] = "another value"
+            frozen_obj["one"] = "another value"  # noqa
 
         with self.assertRaises(AttributeError) as context_clear:
-            frozen_obj.clear()
+            frozen_obj.clear()  # noqa
 
         with self.assertRaises(AttributeError) as context_update:
-            frozen_obj.update({"three": 3})
+            frozen_obj.update({"three": 3})  # noqa
 
         with self.assertRaises(TypeError) as context_deletion:
-            del frozen_obj["one"]
+            del frozen_obj["one"]  # noqa
 
         self.assertEqual(frozendict({"one": 1, "two": 2}), frozen_obj)
         self.assertEqual(
@@ -285,7 +285,7 @@ class TestFreeze(unittest.TestCase):
             def __init__(self, name: str):
                 self.name = name
 
-            def __get__(self, obj, type=None) -> object:
+            def __get__(self, obj, type=None) -> object:    # noqa
                 return obj.__dict__.get(self.name) or 0  # pragma: no cover
 
             def __set__(self, obj, value) -> None:
@@ -380,7 +380,7 @@ class TestFreeze(unittest.TestCase):
                 self.original_obj = obj
                 return frozen_object
 
-            def on_update(self, frozen_obj: Type["FrozenBase"],
+            def on_update(self, frozen_obj: "FrozenBase",
                           message: str, *args, **kwargs):
                 self.log.warning(message)
                 with self.lock:
@@ -988,7 +988,7 @@ class TestFreeze(unittest.TestCase):
 
     def test_invalid_value_for_on_freeze_parameter(self):
         with self.assertRaises(AttributeError) as context:
-            freeze(("one", 2, "three"), on_freeze=99)
+            freeze(("one", 2, "three"), on_freeze=99)  # noqa
 
         self.assertEqual(
             "Invalid value for on_freeze parameter, '99' found, "
@@ -1009,7 +1009,7 @@ class TestFreeze(unittest.TestCase):
 
     def test_invalid_value_for_on_update_parameter(self):
         with self.assertRaises(AttributeError) as context:
-            freeze(("one", 2, "three"), on_update=1)
+            freeze(("one", 2, "three"), on_update=1)  # noqa
 
         self.assertEqual(
             "Invalid value for on_update parameter, '1' found, "
@@ -1041,7 +1041,7 @@ class TestFreeze(unittest.TestCase):
 
         class Dummy(object):
             def __init__(self, dummy_attr: FrozenBase):
-                self.dummy_attr = dummy_attr
+                self.dummy_attr: Union[FrozenBase, DummyAttr] = dummy_attr
 
         frozen_dummy_attr = freeze(
             DummyAttr("my_value"), on_update="exception", on_freeze="copy"

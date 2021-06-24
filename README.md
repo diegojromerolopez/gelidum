@@ -26,6 +26,8 @@ accidental modifications in your code.
 ## Major highlights
 - **freeze** method creates objects with the same attributes of inputs that cannot be expanded or modified.
 - Frozen object creation is thread-safe.
+- Structural sharing: any frozen object is shared by all of its user objects. There is no copy
+performed, only reference.
 
 ## How it works
 In case of the [builtin types](https://docs.python.org/3/library/stdtypes.html)
@@ -260,6 +262,9 @@ freeze that copy. **These are the recommended parameters**.
 On the other hand, the interesting part is to define a custom on_freeze method.
 This method must return an object of the same type of the input.
 **This returned will be frozen, and returned to the caller of freeze**.
+
+Note this parameter has no interference with the structural sharing of the frozen objects.
+Any frozen object that have several references to it will be shared, not copied.
 
 ```python
 import copy

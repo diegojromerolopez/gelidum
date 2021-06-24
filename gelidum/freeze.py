@@ -4,7 +4,7 @@ import sys
 import warnings
 from typing import (
     List, Tuple, Set, Dict, Any,
-    Optional, Union, Type, TypeVar
+    Optional, Union, TypeVar
 )
 from frozendict import frozendict
 from gelidum.exceptions import FrozenException
@@ -73,7 +73,7 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
     raise ValueError(f"object of type {obj.__class__} not frozen")  # pragma: no cover
 
 
-def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:
+def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
     return bytes(obj)
 
 
@@ -146,11 +146,15 @@ def __on_freeze_func(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncTyp
         )
 
 
-def __on_update_exception(frozen_obj: FrozenBase, message: str, *args, **kwargs) -> None:
+def __on_update_exception(
+        frozen_obj: FrozenBase, message: str, *args, **kwargs  # noqa
+) -> None:
     raise FrozenException(message)
 
 
-def __on_update_warning(frozen_obj: FrozenBase, message: str, *args, **kwargs) -> None:
+def __on_update_warning(
+        frozen_obj: FrozenBase, message: str, *args, **kwargs  # noqa
+) -> None:
     warnings.warn(message)
 
 
