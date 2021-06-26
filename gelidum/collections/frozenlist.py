@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Sized, Union, Iterable, Reversible
+from typing import Any, Callable, Optional, Sized, Union, Iterable, Reversible, Iterator
 from gelidum import freeze, FrozenException
 from gelidum.frozen import FrozenBase
 
@@ -6,7 +6,7 @@ __all__ = [
     "frozenlist"
 ]
 
-FrozenList = Union[FrozenBase, Sized, Iterable, Reversible, "_List"]
+FrozenList = Union[FrozenBase, Sized, Iterable, Reversible,  "_List"]
 
 def frozenlist(  # noqa
         *args,
@@ -41,6 +41,12 @@ class _List(object): # noqa
 
     def __contains__(self, item) -> bool:
         return item in self.__items
+
+    def __iter__(self) -> Iterator[FrozenBase]:
+        yield from self.__items
+
+    def __next__(self) -> Iterator[FrozenBase]:
+        yield from self.__items
 
     def __reversed__(self) -> FrozenList:
         return frozenlist(

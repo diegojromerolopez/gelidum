@@ -1,7 +1,7 @@
 import unittest
 from typing import Any
 
-from gelidum import FrozenException
+from gelidum import FrozenException, freeze
 from gelidum.collections.frozenlist import frozenlist
 from gelidum.frozen import FrozenBase
 
@@ -50,6 +50,33 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertTrue(1 in frozen_list)
         self.assertFalse(9 in frozen_list)
+
+    def test_iter(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dummy = freeze(Dummy(9))
+        frozen_list = frozenlist(1, 2, 3, frozen_dummy)
+        items = []
+        for item in frozen_list:
+            items.append(item)
+
+        self.assertListEqual([1, 2, 3, frozen_dummy], items)
+
+    def test_next(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dummy = freeze(Dummy(9))
+        frozen_list = frozenlist(1, 2, 3, frozen_dummy)
+        frozen_list_iter = iter(frozen_list)
+
+        self.assertEqual(1, next(frozen_list_iter))
+        self.assertEqual(2, next(frozen_list_iter))
+        self.assertEqual(3, next(frozen_list_iter))
+        self.assertEqual(frozen_dummy, next(frozen_list_iter))
 
     def test_reversed(self):
         class Dummy:
