@@ -43,7 +43,7 @@ For dicts, it creates a new [frozendict](https://pypi.org/project/frozendict/)
 with the keys and frozen values of the original dict.
 
 This package, change the methods \_\_setattr\_\_, \_\_delattr\_\_, \_\_set\_\_,
-\_\_setitem\_\_, \_\_delitem\_\_, and \_\_reversed\_\_.
+\_\_setitem\_\_, and \_\_delitem\_\_.
 
 of the object argument and all of its attributed recursively,
 making them raise an exception if the developer tries to call them to modify
