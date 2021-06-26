@@ -51,12 +51,6 @@ class FrozenBase(object):
             message=f"Can't delete key '{key}' on immutable instance",
             key=key)
 
-    def __reversed__(self):
-        self.__gelidum_on_update(
-            frozen_obj=self,
-            message="Can't reverse on immutable instance"
-        )
-
     def __deepcopy__(self, *args, **kwargs) -> "FrozenBase":
         """
         No frozen object must need to be (deep) copied.

@@ -248,9 +248,6 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as delitem_context:
             del frozen_dummy["attr"]
 
-        with self.assertRaises(FrozenException) as reversed_context:
-            reversed(frozen_dummy)
-
         self.assertEqual(id(dummy), id(frozen_dummy))
         self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr)
@@ -274,10 +271,6 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(
             "Can't delete key 'attr' on immutable instance",
             str(delitem_context.exception)
-        )
-        self.assertEqual(
-            "Can't reverse on immutable instance",
-            str(reversed_context.exception)
         )
 
     def test_freeze_object_with_set_descriptor_method_exception(self):
