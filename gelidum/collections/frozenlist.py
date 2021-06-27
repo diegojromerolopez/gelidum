@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Sized, Union, Iterable, Reversible, Iterator
+from typing import Any, Callable, Optional, Sized, Union, Iterable, Reversible, Iterator, Tuple
 from gelidum import freeze, FrozenException
 from gelidum.frozen import FrozenBase
 
@@ -23,7 +23,7 @@ class _List(object): # noqa
         raise FrozenException("'frozenlist' object is immutable")
 
     def __init__(self, *args):
-        self.__items = tuple(args)
+        self.__items: Tuple[Any] = tuple(args)
 
     def __getitem__(self, key) -> Any:
         try:
@@ -43,10 +43,7 @@ class _List(object): # noqa
         return item in self.__items
 
     def __iter__(self) -> Iterator[FrozenBase]:
-        yield from self.__items
-
-    def __next__(self) -> Iterator[FrozenBase]:
-        yield from self.__items
+        return self.__items.__iter__()
 
     def __reversed__(self) -> FrozenList:
         return frozenlist(
