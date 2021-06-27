@@ -203,6 +203,9 @@ said function.
 - **get_gelidum_hot_class_name**: returns the name of hot class.
 - **get_gelidum_hot_class_module** returns the module reference where the hot class was.
 
+## Rationale and background information
+TODO Add the Show HN post
+
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
 - file handler attributes are not supported. An exception is raised when trying to freeze
@@ -284,11 +287,11 @@ Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
+- [ ] Add a context manager to freeze a variable in a block.
 - [x] Freeze only when attributes are modified? 
   Not exactly but structural sharing is used.
 - [ ] Include immutable collections.  
 - [ ] Make some use-cases with threading/async module (i.e. server)
-
 
 
 ## Collaborations
