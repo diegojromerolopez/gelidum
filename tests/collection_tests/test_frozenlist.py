@@ -26,6 +26,15 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_list[2], FrozenBase))
         self.assertEqual(3, frozen_list[2].value)
 
+    def test_setattr_exception(self):
+        frozen_list = frozenlist(1, 2, 3)
+
+        with self.assertRaises(FrozenException) as context:
+            setattr(frozen_list, "my_attr", "value")
+
+        self.assertEqual("Can't assign attribute 'my_attr' on immutable instance",
+                         str(context.exception))
+
     def test_len(self):
         frozen_list = frozenlist(1, 2, 3)
 
