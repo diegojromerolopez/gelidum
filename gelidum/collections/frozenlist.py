@@ -39,6 +39,11 @@ class _List(object): # noqa
             *(self.__items + (other,))
         )
 
+    def __mul__(self, times: int) -> FrozenList:
+        return frozenlist(
+            *(self.__items * times)
+        )
+
     def __contains__(self, item) -> bool:
         return item in self.__items
 

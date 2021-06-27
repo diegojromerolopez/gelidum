@@ -54,6 +54,25 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(3, frozen_list2[2])
         self.assertEqual(2, frozen_list2[3])
 
+    def test_mul(self):
+        frozen_list = frozenlist(1, 2, 3)
+        frozen_list2 = frozen_list * 2
+
+        self.assertNotEqual(id(frozen_list), id(frozen_list2))
+        self.assertTrue(isinstance(frozen_list, FrozenBase))
+        self.assertEqual(3, len(frozen_list))
+        self.assertEqual(1, frozen_list[0])
+        self.assertEqual(2, frozen_list[1])
+        self.assertEqual(3, frozen_list[2])
+        self.assertTrue(isinstance(frozen_list2, FrozenBase))
+        self.assertEqual(6, len(frozen_list2))
+        self.assertEqual(1, frozen_list2[0])
+        self.assertEqual(2, frozen_list2[1])
+        self.assertEqual(3, frozen_list2[2])
+        self.assertEqual(1, frozen_list2[3])
+        self.assertEqual(2, frozen_list2[4])
+        self.assertEqual(3, frozen_list2[5])
+
     def test_contains(self):
         frozen_list = frozenlist(1, 2, 3)
 
