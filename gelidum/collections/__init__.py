@@ -1,1 +1,1 @@
-from frozenlist import frozenlist  # noqa
+from gelidum.frozenlist import frozenlist  # noqa
