@@ -168,6 +168,13 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(2, reversed_frozen_list[2])
         self.assertEqual(1, reversed_frozen_list[3])
 
+    def test_copy(self):
+        frozen_list = frozenlist(1, 2, 3)
+
+        frozen_list_copy = frozen_list.copy()
+
+        self.assertEqual(id(frozen_list_copy), id(frozen_list))
+
     def test_getitem(self):
         frozen_list = frozenlist(1, 2, 3)
 
