@@ -53,10 +53,12 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         frozen_list = frozenlist(1, 2, 3)
         frozen_list2 = frozen_list + 2
 
+        self.assertTrue(isinstance(frozen_list, FrozenBase))
         self.assertEqual(3, len(frozen_list))
         self.assertEqual(1, frozen_list[0])
         self.assertEqual(2, frozen_list[1])
         self.assertEqual(3, frozen_list[2])
+        self.assertTrue(isinstance(frozen_list2, FrozenBase))
         self.assertEqual(4, len(frozen_list2))
         self.assertEqual(1, frozen_list2[0])
         self.assertEqual(2, frozen_list2[1])
