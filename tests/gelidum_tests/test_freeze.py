@@ -9,7 +9,7 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Dict, List, Union, Tuple, Any
+from typing import Dict, List, Union, Any
 from unittest.mock import patch
 from frozendict import frozendict
 from gelidum import FrozenException
