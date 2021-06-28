@@ -251,11 +251,23 @@ class TestFrozenlist(unittest.TestCase):  # noqa
                          str(context.exception))
 
     def test_index_ok(self):
-        frozen_list = frozenlist(1, 2, 3)
+        frozen_list = frozenlist(1, 2, 3, 4, 5, 6, 7)
 
-        index = frozen_list.index(2)
+        index_for_2 = frozen_list.index(2)
+        index_for_4_from_1_to_10 = frozen_list.index(4, 1, 10)
 
-        self.assertEqual(1, index)
+        with self.assertRaises(ValueError) as context_12:
+            frozen_list.index(12)
+
+        with self.assertRaises(ValueError) as context_2_from_5_to_10:
+            frozen_list.index(2, 5, 10)
+
+        self.assertEqual(1, index_for_2)
+        self.assertEqual(3, index_for_4_from_1_to_10)
+        self.assertEqual("12 is not in frozenlist",
+                         str(context_12.exception))
+        self.assertEqual("2 is not in frozenlist",
+                         str(context_2_from_5_to_10.exception))
 
     def test_sort_exception(self):
         frozen_list = frozenlist(1, 2, 3)
