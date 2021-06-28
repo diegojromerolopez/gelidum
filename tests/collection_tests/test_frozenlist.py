@@ -35,6 +35,15 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual("Can't assign attribute 'my_attr' on immutable instance",
                          str(context.exception))
 
+    def test_count(self):
+        frozen_list = frozenlist(1, 2, 3, 2, 3, 8, 3)
+
+        self.assertEqual(1, frozen_list.count(1))
+        self.assertEqual(2, frozen_list.count(2))
+        self.assertEqual(3, frozen_list.count(3))
+        self.assertEqual(1, frozen_list.count(8))
+        self.assertEqual(0, frozen_list.count(10))
+
     def test_len(self):
         frozen_list = frozenlist(1, 2, 3)
 
@@ -59,7 +68,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         frozen_list2 = frozen_list * 2
 
         self.assertNotEqual(id(frozen_list), id(frozen_list2))
-        self.assertTrue(isinstance(frozen_list, FrozenBase))
+        self.assertTrue(isinstance(frozen_list2, FrozenBase))
         self.assertEqual(3, len(frozen_list))
         self.assertEqual(1, frozen_list[0])
         self.assertEqual(2, frozen_list[1])
@@ -73,11 +82,38 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(2, frozen_list2[4])
         self.assertEqual(3, frozen_list2[5])
 
+    def test_slice(self):
+        frozen_list = frozenlist(1, 2, 3)
+        frozen_list_slice_2_items = frozen_list[0:2]
+        frozen_list_slice_all_items = frozen_list[0:6]
+
+        self.assertNotEqual(id(frozen_list), id(frozen_list_slice_2_items))
+        self.assertNotEqual(id(frozen_list), id(frozen_list_slice_all_items))
+        self.assertTrue(isinstance(frozen_list_slice_2_items, FrozenBase))
+        self.assertEqual(2, len(frozen_list_slice_2_items))
+        self.assertEqual(1, frozen_list_slice_2_items[0])
+        self.assertEqual(2, frozen_list_slice_2_items[1])
+        self.assertTrue(isinstance(frozen_list_slice_all_items, FrozenBase))
+        self.assertEqual(3, len(frozen_list_slice_all_items))
+        self.assertEqual(1, frozen_list_slice_all_items[0])
+        self.assertEqual(2, frozen_list_slice_all_items[1])
+        self.assertEqual(3, frozen_list_slice_all_items[2])
+
     def test_contains(self):
         frozen_list = frozenlist(1, 2, 3)
 
         self.assertTrue(1 in frozen_list)
         self.assertFalse(9 in frozen_list)
+
+    def test_min(self):
+        frozen_list = frozenlist(1, 2, 3)
+
+        self.assertEqual(1, min(frozen_list))
+
+    def test_max(self):
+        frozen_list = frozenlist(1, 2, 3)
+
+        self.assertEqual(3, max(frozen_list))
 
     def test_iter(self):
         class Dummy:

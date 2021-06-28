@@ -26,6 +26,10 @@ class _List(object): # noqa
         self.__items: Tuple[Any] = tuple(args)
 
     def __getitem__(self, key) -> Any:
+        if type(key) is slice:
+            return frozenlist(
+                *self.__items[key.start:key.stop:key.step]
+            )
         try:
             return self.__items[key]
         except IndexError:
@@ -84,8 +88,8 @@ class _List(object): # noqa
         except ValueError:
             raise ValueError(f"{x} is not in frozenlist")
 
-    def count(self, x):
-        pass
+    def count(self, item: Any) -> int:
+        return self.__items.count(item)
 
     def sort(self, *, key=None, reverse=False):
         self.__raise_immutable_exception()
