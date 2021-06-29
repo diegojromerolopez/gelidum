@@ -8,7 +8,7 @@ class TestTimePerformance(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    def _test_freeze_inplace_or_not(self):
+    def test_freeze_inplace_or_not(self):
         class DummyAttrLevel3(object):
             def __init__(self, attr: str):
                 self.attr = attr
@@ -22,17 +22,15 @@ class TestTimePerformance(unittest.TestCase):
                 self.attr = DummyAttrLevel2(attr)
 
         class Dummy(object):
-            def __init__(self, attr: str):
-                self.attr = DummyAttrLevel1(attr)
+            def __init__(self):
                 for attr_index in range(0, 100_000):
-                    setattr(self, f"attr{attr_index+1}", attr)
+                    setattr(self, f"attr{attr_index+1}", DummyAttrLevel1(str(attr_index) * 1_000))
 
-        value = "1" * 1_000_000
-        dummy1 = Dummy(attr=value)
+        dummy1 = Dummy()
         start_inplace = time.time()
         freeze(dummy1, on_freeze="inplace")
         spent_time_inplace = time.time() - start_inplace
-        dummy2 = Dummy(attr="1")
+        dummy2 = Dummy()
         start_not_inplace = time.time()
         freeze(dummy2, on_freeze="copy")
         spent_time_not_inplace = time.time() - start_not_inplace
