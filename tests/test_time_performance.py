@@ -8,7 +8,7 @@ class TestTimePerformance(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    def test_freeze_inplace_or_not(self):
+    def _test_freeze_inplace_or_not(self):
         class DummyAttrLevel3(object):
             def __init__(self, attr: str):
                 self.attr = attr
