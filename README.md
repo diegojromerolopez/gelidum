@@ -35,6 +35,7 @@ See more comments about this project in this [Show HN](https://news.ycombinator.
 - Frozen object creation is thread-safe.
 - Structural sharing: any frozen object is shared by all of its user objects. There is no copy
 performed, only reference.
+- cpython and pypy support.
 
 ## How it works
 In case of the [builtin types](https://docs.python.org/3/library/stdtypes.html)
