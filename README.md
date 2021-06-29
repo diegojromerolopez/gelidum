@@ -23,6 +23,8 @@ Inspired by the method freeze found in other languages like Javascript,
 this package tries to make immutable objects to make it easier avoid
 accidental modifications in your code.
 
+See more comments about this project in this [Show HN](https://news.ycombinator.com/item?id=27507524).
+
 ## Major highlights
 - **freeze** method creates objects with the same attributes of inputs that cannot be expanded or modified.
 - Frozen object creation is thread-safe.
