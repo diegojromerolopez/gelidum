@@ -13,6 +13,10 @@
 
 Freeze your objects in python.
 
+![Gelidum](resources/gelidum.jpg "Gelidum image")
+
+[CC-NC photo](https://www.flickr.com/photos/29040174@N02/6822916849/in/album-72157629184225893/) by Sofía Lens
+
 | Latin | English  |
 | -------------------------------------------------------- | -------------------------------------------------------- |
 | *Caelum est hieme frigidum et gelidum; myrtos oleas quaeque alia assiduo tepore laetantur, aspernatur ac respuit; laurum tamen patitur atque etiam nitidissimam profert, interdum sed non saepius quam sub urbe nostra necat.* | *In winter the air is cold and frosty: myrtles, olives and all other trees which require constant warmth for them to do well, the climate rejects and spurns, though it allows laurel to grow, and even brings it to a luxuriant leaf. Occasionally, however, it kills it, but that does not happen more frequently than in the neighbourhood of Rome.* |
