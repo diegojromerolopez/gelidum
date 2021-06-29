@@ -4,4 +4,4 @@ from gelidum.exceptions import FrozenException  # noqa
 from gelidum.typing import Final  # noqa
 
 
-__version__ = "0.4.8"
+__version__ = "0.4.9"
