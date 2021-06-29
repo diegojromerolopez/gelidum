@@ -13,7 +13,7 @@
 
 Freeze your objects in python.
 
-![Gelidum](resources/gelidum.jpg "Gelidum image")
+![Gelidum](https://raw.githubusercontent.com/diegojromerolopez/gelidum/main/resources/gelidum.jpg "Gelidum image")
 
 [CC-NC photo](https://www.flickr.com/photos/29040174@N02/6822916849/in/album-72157629184225893/) by [Sofía Lens](https://www.flickr.com/photos/29040174@N02/)
 
