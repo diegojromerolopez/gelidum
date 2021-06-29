@@ -20,7 +20,7 @@ Freeze your objects in python.
 
 ## Introduction
 Inspired by the method freeze found in other languages like Javascript,
-this package tries to make immutable objects to make it easier avoid
+this package tries to make immutable objects to make it easier avoiding
 accidental modifications in your code.
 
 See more comments about this project in this [Show HN](https://news.ycombinator.com/item?id=27507524).
@@ -289,7 +289,6 @@ Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
-- [ ] Add a context manager to freeze a variable in a block.
 - [x] Freeze only when attributes are modified? 
   Not exactly but structural sharing is used.
 - [ ] Include immutable collections.  
