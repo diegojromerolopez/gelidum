@@ -1,29 +1,29 @@
 from typing import Any, Callable, Optional, Sized, Union, Iterable, Reversible, Iterator, Tuple
-from gelidum import freeze, FrozenException
-from gelidum.frozen import FrozenBase
+from gelidum.freeze import freeze
+from gelidum.exceptions import FrozenException
+from gelidum.frozen import FrozenBase, make_frozen_class
 
 __all__ = [
     "frozenlist"
 ]
 
-FrozenList = Union[FrozenBase, Sized, Iterable, Reversible,  "_List"]
-
-def frozenlist(  # noqa
-        *args,
-        freeze_func: Optional[Callable[[Any], FrozenBase]] = None
-) -> FrozenList:
-    if freeze_func is None:
-        def freeze_func(item: Any) -> FrozenBase:
-            return freeze(item, on_update="exception", on_freeze="copy")
-    return freeze_func(_List(*args))
+FrozenList = Union[FrozenBase, Sized, Iterable, Reversible,  "frozenlist"]
 
 
-class _List(object): # noqa
-    def __raise_immutable_exception(self):
+class frozenlist(object): # noqa
+    def __raise_immutable_exception(self, *args, **kwargs):
         raise FrozenException("'frozenlist' object is immutable")
 
-    def __init__(self, *args):
-        self.__items: Tuple[Any] = tuple(args)
+    def __init__(self, *args, freeze_func: Optional[Callable[[Any], FrozenBase]] = None):
+        if freeze_func is None:
+            def freeze_func(item: Any) -> FrozenBase:
+                return freeze(item, on_update="exception", on_freeze="copy")
+        self.__items: Tuple[Any] = tuple(freeze_func(arg) for arg in args)
+        self.__class__ = make_frozen_class(
+            klass=self.__class__,
+            attrs=list(self.__dict__.keys()),
+            on_update=self.__raise_immutable_exception
+        )
 
     def __getitem__(self, key) -> Any:
         if type(key) is slice:
@@ -97,7 +97,7 @@ class _List(object): # noqa
     def reverse(self):
         self.__raise_immutable_exception()
 
-    def copy(self) -> "_List":
+    def copy(self) -> "frozenlist":
         """
         frozenlist objects will only be
         """

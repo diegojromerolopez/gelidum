@@ -32,7 +32,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         with self.assertRaises(FrozenException) as context:
             setattr(frozen_list, "my_attr", "value")
 
-        self.assertEqual("Can't assign attribute 'my_attr' on immutable instance",
+        self.assertEqual("'frozenlist' object is immutable",
                          str(context.exception))
 
     def test_count(self):
@@ -193,7 +193,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         with self.assertRaises(FrozenException) as context:
             frozen_list[0] = 11
 
-        self.assertEqual("Can't set key '0' on immutable instance",
+        self.assertEqual("'frozenlist' object is immutable",
                          str(context.exception))
 
     def test_append_exception(self):

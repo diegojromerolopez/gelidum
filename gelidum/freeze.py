@@ -4,23 +4,13 @@ import sys
 import warnings
 from typing import (
     List, Tuple, Set, Dict, Any,
-    Optional, Union, TypeVar
+    Optional, Union
 )
 from frozendict import frozendict
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.utils import isbuiltin
-from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType
-
-T = TypeVar('T')
-
-_FrozenType = Optional[
-    Union[
-        bool, int, float, bytes, complex, str,
-        bytes, frozendict, tuple, frozenset,
-        FrozenBase, T
-    ]
-]
+from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType
 
 
 def freeze(
@@ -28,7 +18,7 @@ def freeze(
         on_update: Union[str, OnUpdateFuncType] = "exception",
         on_freeze: Union[str, OnFreezeFuncType] = "copy",
         inplace: Optional[bool] = None,
-        ) -> _FrozenType:
+        ) -> FrozenType:
 
     # inplace argument will be removed from freeze in the next major version (0.5.0)
     if isinstance(inplace, bool):
