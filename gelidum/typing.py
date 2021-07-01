@@ -6,6 +6,7 @@ from frozendict import frozendict
 
 if TYPE_CHECKING:  # pragma: no cover
     from gelidum.frozen import FrozenBase  # noqa
+    from gelidum.collections import frozenlist  # noqa
 
 try:
     _SpecialForm = getattr(typing, "_SpecialForm")
