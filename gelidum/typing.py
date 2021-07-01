@@ -1,8 +1,8 @@
 import typing
-from typing import Any, Callable, Union, Optional, TYPE_CHECKING, TypeVar
+from typing import Any, Callable, Optional, Sized, Union, Iterable, Reversible
+from typing import TYPE_CHECKING, TypeVar
 
 from frozendict import frozendict
-
 
 if TYPE_CHECKING:  # pragma: no cover
     from gelidum.frozen import FrozenBase  # noqa
@@ -17,19 +17,19 @@ try:
 except AttributeError:  # pragma: no cover
     Final = typing.Final
 
-_FrozenBase = "FrozenBase"
+FrozenList = Union["FrozenBase", Sized, Iterable, Reversible,  "frozenlist"]
 
 T = TypeVar('T')
 
 FrozenType = Optional[
     Union[
         bool, int, float, bytes, complex, str,
-        bytes, frozendict, tuple, frozenset,
-        _FrozenBase, T
+        bytes, frozendict, FrozenList, tuple, frozenset,
+        "FrozenBase", T
     ]
 ]
 
-OnUpdateFuncType = Callable[[_FrozenBase, str, ...], None]
+OnUpdateFuncType = Callable[["FrozenBase", str, ...], None]
 
 
 OnFreezeFuncType = Callable[[Any], Any]

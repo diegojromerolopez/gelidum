@@ -3,14 +3,16 @@ import io
 import sys
 import warnings
 from typing import (
-    List, Tuple, Set, Dict, Any,
-    Optional, Union
+    List, Set, Dict, Any, Optional, Union, Tuple
+
 )
+
 from frozendict import frozendict
+from gelidum.collections import frozenlist
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
+from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
 from gelidum.utils import isbuiltin
-from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType
 
 
 def freeze(
@@ -74,9 +76,10 @@ def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType,
 
 
 def __freeze_list(obj: List, on_update: OnUpdateFuncType,
-                  on_freeze: OnFreezeFuncType) -> Tuple:
-    return tuple(__freeze(item, on_update=on_update, on_freeze=on_freeze)
-                 for item in obj)
+                  on_freeze: OnFreezeFuncType) -> FrozenList:
+    def freeze_func(item: Any) -> FrozenType:
+        return freeze(item, on_update=on_update, on_freeze=on_freeze)
+    return frozenlist(obj, freeze_func=freeze_func)
 
 
 def __freeze_tuple(obj: Tuple, on_update: OnUpdateFuncType,

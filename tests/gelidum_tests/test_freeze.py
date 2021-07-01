@@ -14,7 +14,9 @@ from unittest.mock import patch
 from frozendict import frozendict
 from gelidum import FrozenException
 from gelidum import freeze
+from gelidum.collections import frozenlist
 from gelidum.frozen import FrozenBase, clear_frozen_classes
+from gelidum.typing import FrozenList
 
 
 class TestFreeze(unittest.TestCase):
@@ -69,14 +71,29 @@ class TestFreeze(unittest.TestCase):
         )
 
     def test_freeze_list(self):
-        self.assertEqual(
-            ("one", 2, "three"), freeze(["one", 2, "three"]))
+        frozen_list = freeze(["one", 2, "three", ["a", "b", "c", 4, 5]])
+        self.assertTrue(isinstance(frozen_list, frozenlist))
+        self.assertEqual(4, len(frozen_list))
+        self.assertEqual("one", frozen_list[0])
+        self.assertEqual(2, frozen_list[1])
+        self.assertEqual("three", frozen_list[2])
+        self.assertTrue(isinstance(frozen_list[3], frozenlist))
+        self.assertEqual(5, len(frozen_list[3]))
+        self.assertEqual("a", frozen_list[3][0])
+        self.assertEqual("b", frozen_list[3][1])
+        self.assertEqual("c", frozen_list[3][2])
+        self.assertEqual(4, frozen_list[3][3])
+        self.assertEqual(5, frozen_list[3][4])
 
     def test_freeze_list_inplace_true_deprecated_parameter(self):
         with warnings.catch_warnings(record=True) as caught_warnings:
             frozen_list = freeze(["one", 2, "three"], inplace=True)
 
-        self.assertEqual(("one", 2, "three"), frozen_list)
+        self.assertTrue(isinstance(frozen_list, frozenlist))
+        self.assertEqual(3, len(frozen_list))
+        self.assertEqual("one", frozen_list[0])
+        self.assertEqual(2, frozen_list[1])
+        self.assertEqual("three", frozen_list[2])
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
             "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
