@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import functools
-from typing import Optional, Iterable, Set
+from typing import Optional, Iterable, Set, Any
 from gelidum import freeze
 
 
@@ -30,13 +30,13 @@ def freeze_final(func):
             i
             for i, (param_name, param_typing) in
             enumerate(func.__annotations__.items())
-            if str(param_typing).startswith("typing.Final")
+            if __param_is_final(param_typing)
         }
         named_params_to_freeze: Set[str] = {
             param_name
             for param_name, param_typing in
             func.__annotations__.items()
-            if str(param_typing).startswith("typing.Final")
+            if __param_is_final(param_typing)
         }
         func_args = tuple([
             (
@@ -56,3 +56,11 @@ def freeze_final(func):
         }
         return func(*func_args, **func_kwargs)
     return wrapper
+
+
+def __param_is_final(param_typing: Any) -> bool:
+    param_typing_str = str(param_typing)
+    return (
+        param_typing_str.startswith("typing.Final") or
+        param_typing_str.startswith("gelidum.typing.Final")
+    )

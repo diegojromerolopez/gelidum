@@ -1,5 +1,6 @@
 # gelidum
 
+![main](https://github.com/diegojromerolopez/gelidum/actions/workflows/main.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
@@ -12,6 +13,10 @@
 
 Freeze your objects in python.
 
+![Gelidum](https://raw.githubusercontent.com/diegojromerolopez/gelidum/main/resources/gelidum.jpg "Gelidum image")
+
+[CC-NC photo](https://www.flickr.com/photos/29040174@N02/6822916849/in/album-72157629184225893/) by [Sofía Lens](https://www.flickr.com/photos/29040174@N02/)
+
 | Latin | English  |
 | -------------------------------------------------------- | -------------------------------------------------------- |
 | *Caelum est hieme frigidum et gelidum; myrtos oleas quaeque alia assiduo tepore laetantur, aspernatur ac respuit; laurum tamen patitur atque etiam nitidissimam profert, interdum sed non saepius quam sub urbe nostra necat.* | *In winter the air is cold and frosty: myrtles, olives and all other trees which require constant warmth for them to do well, the climate rejects and spurns, though it allows laurel to grow, and even brings it to a luxuriant leaf. Occasionally, however, it kills it, but that does not happen more frequently than in the neighbourhood of Rome.* |
@@ -20,14 +25,17 @@ Freeze your objects in python.
 
 ## Introduction
 Inspired by the method freeze found in other languages like Javascript,
-this package tries to make immutable objects to make it easier avoid
+this package tries to make immutable objects to make it easier avoiding
 accidental modifications in your code.
+
+See more comments about this project in this [Show HN](https://news.ycombinator.com/item?id=27507524).
 
 ## Major highlights
 - **freeze** method creates objects with the same attributes of inputs that cannot be expanded or modified.
 - Frozen object creation is thread-safe.
 - Structural sharing: any frozen object is shared by all of its user objects. There is no copy
 performed, only reference.
+- cpython and pypy support.
 
 ## How it works
 In case of the [builtin types](https://docs.python.org/3/library/stdtypes.html)
@@ -43,7 +51,7 @@ For dicts, it creates a new [frozendict](https://pypi.org/project/frozendict/)
 with the keys and frozen values of the original dict.
 
 This package, change the methods \_\_setattr\_\_, \_\_delattr\_\_, \_\_set\_\_,
-\_\_setitem\_\_, \_\_delitem\_\_, and \_\_reversed\_\_.
+\_\_setitem\_\_, and \_\_delitem\_\_.
 
 of the object argument and all of its attributed recursively,
 making them raise an exception if the developer tries to call them to modify
@@ -203,6 +211,9 @@ said function.
 - **get_gelidum_hot_class_name**: returns the name of hot class.
 - **get_gelidum_hot_class_module** returns the module reference where the hot class was.
 
+## Rationale and background information
+TODO Add the Show HN post
+
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
 - file handler attributes are not supported. An exception is raised when trying to freeze
@@ -284,9 +295,10 @@ Packages on pypi gelidum uses:
 - [frozendict](https://pypi.org/project/frozendict/)
 
 ## Roadmap
-- [ ] Freeze only when attributes are modified?
+- [x] Freeze only when attributes are modified? 
+  Not exactly but structural sharing is used.
+- [ ] Include immutable collections.  
 - [ ] Make some use-cases with threading/async module (i.e. server)
-
 
 
 ## Collaborations
