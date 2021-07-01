@@ -2,6 +2,7 @@ from typing import Any, Callable, Optional, Sized, Union, Iterable, Reversible, 
 from gelidum.freeze import freeze
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase, make_frozen_class
+from gelidum.typing import FrozenType
 
 __all__ = [
     "frozenlist"
@@ -16,9 +17,9 @@ class frozenlist(object): # noqa
 
     def __init__(self, *args, freeze_func: Optional[Callable[[Any], FrozenBase]] = None):
         if freeze_func is None:
-            def freeze_func(item: Any) -> FrozenBase:
+            def freeze_func(item: Any) -> FrozenType:
                 return freeze(item, on_update="exception", on_freeze="copy")
-        self.__items: Tuple[Any] = tuple(freeze_func(arg) for arg in args)
+        self.__items: Tuple[FrozenType] = tuple(freeze_func(arg) for arg in args)
         self.__class__ = make_frozen_class(
             klass=self.__class__,
             attrs=list(self.__dict__.keys()),
