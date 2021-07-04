@@ -1,11 +1,11 @@
-name: Main Workflow
+name: Publish on PyPi Workflow
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', 'pypy-3.7']
+        python-version: ['3.9']
 
     steps:
       - uses: actions/checkout@v2
@@ -36,3 +36,13 @@ jobs:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
           coverageCommand: coverage report
+      - name: Create distribution package to PyPI
+        run: |
+          pip install pypandoc
+          python setup.py sdist
+      - name: Publish a Python distribution to PyPI
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
