@@ -7,7 +7,6 @@ if TYPE_CHECKING:  # pragma: no cover
 if python_implementation() == "PyPy":
     try:
         T = typing.TypeVar('T')
-
         class Final(Generic[T]):  # noqa
             pass
     except AttributeError:  # pragma: no cover
@@ -21,7 +20,12 @@ else:
         def Final(self, parameters):  # noqa
             return typing.Final[parameters]
     except AttributeError:  # pragma: no cover
-        Final = typing.Final
+        if hasattr(typing, "Final"):
+            Final = typing.Final
+        else:
+            T = typing.TypeVar('T')
+            class Final(Generic[T]):  # noqa
+                pass
 
 _FrozenBase = "FrozenBase"
 
