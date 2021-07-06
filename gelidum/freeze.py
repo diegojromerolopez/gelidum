@@ -7,8 +7,7 @@ from typing import (
 
 )
 
-from frozendict import frozendict
-from gelidum.collections import frozenlist
+from gelidum.collections import frozendict, frozenlist
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
@@ -71,8 +70,9 @@ def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
 
 def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType,
                   on_freeze: OnFreezeFuncType) -> frozendict:
-    return frozendict({key: __freeze(value, on_update=on_update, on_freeze=on_freeze)
-                       for key, value in obj.items()})
+    def freeze_func(item: Any) -> FrozenType:
+        return freeze(item, on_update=on_update, on_freeze=on_freeze)
+    return frozendict(obj, freeze_func=freeze_func)
 
 
 def __freeze_list(obj: List, on_update: OnUpdateFuncType,

@@ -4,11 +4,9 @@ from typing import Any, Callable, TYPE_CHECKING, Generic
 from typing import Optional, Sized, Union, Iterable, Reversible, Mapping
 from typing import TypeVar
 
-from frozendict import frozendict
-
 if TYPE_CHECKING:  # pragma: no cover
     from gelidum.frozen import FrozenBase  # noqa
-    from gelidum.collections import frozenlist  # noqa
+    from gelidum.collections import frozendict, frozenlist  # noqa
 
 if python_implementation() == "PyPy":
     try:
@@ -37,7 +35,7 @@ T = TypeVar('T')
 FrozenType = Optional[
     Union[
         bool, int, float, bytes, complex, str,
-        bytes, frozendict, FrozenList, tuple, frozenset,
+        bytes, FrozenDict, FrozenList, tuple, frozenset,
         "FrozenBase", T
     ]
 ]

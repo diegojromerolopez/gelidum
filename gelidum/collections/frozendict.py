@@ -9,20 +9,21 @@ __all__ = [
 ]
 
 
-_FrozenDictParameterType = Optional[Union[Sequence, Generator]]
-
-
 class frozendict(dict, FrozenBase): # noqa
     def __raise_immutable_exception(self, *args, **kwargs):
-        raise FrozenException("'frozenlist' object is immutable")
+        raise FrozenException("'frozendict' object is immutable")
 
-    def __new__(cls, mapping: Dict, freeze_func: Optional[Callable[[Any], FrozenBase]] = None) -> "frozendict":
+    def __new__(
+            cls, mapping: Optional[Dict] = None,
+            freeze_func: Optional[Callable[[Any], FrozenBase]] = None
+    ) -> "frozendict":
         if freeze_func is None:
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
                 return freeze(item, on_update="exception", on_freeze="copy")
         if mapping:
-            self = dict.__new__(cls, {key: freeze_func(value) for key, value in mapping.items()})
+            mappingx = {key: freeze_func(value) for key, value in mapping.items()}
+            self = dict.__new__(cls, mappingx)
         else:
             self = dict.__new__(cls, dict())
         return self

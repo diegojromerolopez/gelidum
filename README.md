@@ -291,8 +291,8 @@ def on_freeze(self, obj: object) -> object:
 
 
 ## Dependencies
-Packages on pypi gelidum uses:
-- [frozendict](https://pypi.org/project/frozendict/)
+This package has no dependencies.
+
 
 ## Roadmap
 - [x] Freeze only when attributes are modified? 
