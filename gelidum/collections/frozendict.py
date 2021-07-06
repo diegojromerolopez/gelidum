@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Sequence, Generator, Union, Dict
+from typing import Any, Callable, Optional, Dict
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
@@ -13,20 +13,20 @@ class frozendict(dict, FrozenBase): # noqa
     def __raise_immutable_exception(self, *args, **kwargs):
         raise FrozenException("'frozendict' object is immutable")
 
-    def __new__(
-            cls, mapping: Optional[Dict] = None,
-            freeze_func: Optional[Callable[[Any], FrozenBase]] = None
-    ) -> "frozendict":
+    def __init__(
+            self,
+            mapping: Optional[Dict] = None,
+            freeze_func: Optional[Callable[[Any], FrozenBase]] = None):
         if freeze_func is None:
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
                 return freeze(item, on_update="exception", on_freeze="copy")
         if mapping:
-            mappingx = {key: freeze_func(value) for key, value in mapping.items()}
-            self = dict.__new__(cls, mappingx)
+            super().__init__(
+                {key: freeze_func(value) for key, value in mapping.items()}
+            )
         else:
-            self = dict.__new__(cls, dict())
-        return self
+            super().__init__()
 
     @classmethod
     def _gelidum_on_update(cls, *args, **kwargs):
