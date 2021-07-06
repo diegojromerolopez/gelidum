@@ -1,10 +1,10 @@
 import os
-from gelidum import __version__
 from setuptools import setup
 
 root_dir_path = os.path.dirname(os.path.abspath(__file__))
 
 long_description = open(os.path.join(root_dir_path, "README.md")).read()
+version = open(os.path.join(root_dir_path, "version.txt")).read()
 
 requirements_path = os.path.join(root_dir_path, "requirements.txt")
 with open(requirements_path) as requirements_file:
@@ -12,7 +12,7 @@ with open(requirements_path) as requirements_file:
 
 setup(
     name="gelidum",
-    version=__version__,
+    version=version,
     author="Diego J. Romero López",
     author_email="diegojromerolopez@gmail.com",
     description="Freeze your python objects",
@@ -34,7 +34,7 @@ setup(
     url="https://github.com/diegojromerolopez/gelidum",
     packages=["gelidum"],
     package_dir={"gelidum": "gelidum"},
-    data_files=[],
+    data_files=["version.txt"],
     include_package_data=True,
     scripts=[]
 )
