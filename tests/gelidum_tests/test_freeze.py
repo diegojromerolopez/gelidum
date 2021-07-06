@@ -40,33 +40,37 @@ class TestFreeze(unittest.TestCase):
     def test_freeze_dict(self):
         frozen_obj: frozendict = freeze({"one": 1, "two": 2})
 
-        with self.assertRaises(TypeError) as context_assignment:
+        with self.assertRaises(FrozenException) as context_assignment:
             frozen_obj["one"] = "another value"  # noqa
 
-        with self.assertRaises(AttributeError) as context_clear:
+        with self.assertRaises(FrozenException) as context_clear:
             frozen_obj.clear()  # noqa
 
-        with self.assertRaises(AttributeError) as context_update:
+        with self.assertRaises(FrozenException) as context_update:
             frozen_obj.update({"three": 3})  # noqa
 
-        with self.assertRaises(TypeError) as context_deletion:
+        with self.assertRaises(FrozenException) as context_deletion:
             del frozen_obj["one"]  # noqa
 
-        self.assertEqual(frozendict({"one": 1, "two": 2}), frozen_obj)
+        self.assertEqual(2, len(frozen_obj))
+        self.assertTrue("one" in frozen_obj)
+        self.assertTrue("two" in frozen_obj)
+        self.assertEqual(1, frozen_obj["one"])
+        self.assertEqual(2, frozen_obj["two"])
         self.assertEqual(
-            "'frozendict' object doesn't support item assignment",
+            "'frozendict' object is immutable",
             str(context_assignment.exception)
         )
         self.assertEqual(
-            "'frozendict' object is read-only",
+            "'frozendict' object is immutable",
             str(context_clear.exception)
         )
         self.assertEqual(
-            "'frozendict' object is read-only",
+            "'frozendict' object is immutable",
             str(context_update.exception)
         )
         self.assertEqual(
-            "'frozendict' object doesn't support item deletion",
+            "'frozendict' object is immutable",
             str(context_deletion.exception)
         )
 

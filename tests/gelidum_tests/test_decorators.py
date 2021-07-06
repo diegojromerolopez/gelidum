@@ -24,7 +24,7 @@ class TestDecorator(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             add_to_dict({}, ("key", "value"))
 
-        self.assertEqual("'frozendict' object doesn't support item assignment",
+        self.assertEqual("'frozendict' object is immutable",
                          str(context.exception))
 
     def test_decorator_with_object_input_param_object_frozen(self):
