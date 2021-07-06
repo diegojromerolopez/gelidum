@@ -25,3 +25,43 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertEqual("2", frozen_dict["two"])
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_getitem(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
+
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual(1, frozen_dict.get("one"))
+        self.assertEqual(None, frozen_dict.get("four"))
+        self.assertEqual(4, frozen_dict.get("four", 4))
+
+    def test_setitem(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
+
+        with self.assertRaises(FrozenException) as context_setitem:
+            frozen_dict["four"] = 4
+
+        self.assertEqual(
+            "'frozendict' object is immutable",
+            str(context_setitem.exception)
+        )
+
+    def test_del(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
+        with self.assertRaises(FrozenException) as context_del:
+            del frozen_dict["one"]
+        self.assertEqual(
+            "'frozendict' object is immutable",
+            str(context_del.exception)
+        )
