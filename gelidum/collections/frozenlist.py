@@ -103,7 +103,7 @@ class frozenlist(tuple, FrozenBase): # noqa
 
     def copy(self) -> "frozenlist":
         """
-        frozenlist objects will only be
+        frozendlist objects are only shallow-copied.
         """
         return self
 
