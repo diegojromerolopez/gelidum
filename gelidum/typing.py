@@ -1,7 +1,7 @@
 import typing
 from platform import python_implementation
 from typing import Any, Callable, TYPE_CHECKING, Generic
-from typing import Optional, Sized, Union, Iterable, Reversible
+from typing import Optional, Sized, Union, Iterable, Reversible, Mapping
 from typing import TypeVar
 
 from frozendict import frozendict
@@ -30,6 +30,7 @@ else:
         Final = typing.Final
 
 FrozenList = Union["FrozenBase", Sized, Iterable, Reversible,  "frozenlist"]
+FrozenDict = Union["FrozenBase", Mapping, "frozendict"]
 
 T = TypeVar('T')
 
