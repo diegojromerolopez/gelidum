@@ -34,7 +34,7 @@ setup(
     url="https://github.com/diegojromerolopez/gelidum",
     packages=["gelidum"],
     package_dir={"gelidum": "gelidum"},
-    data_files=["version.txt"],
+    data_files=["version.txt", "requirements.txt"],
     include_package_data=True,
     scripts=[]
 )
