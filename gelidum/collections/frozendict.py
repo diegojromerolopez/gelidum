@@ -51,16 +51,16 @@ class frozendict(dict, FrozenBase): # noqa
             raise IndexError("frozendict index out of range")
 
     def __add__(self, other: FrozenDict) -> FrozenDict:
-        joined_dict = {}
-        joined_dict.update(self)
-        joined_dict.update(other)
+        joined_dict = self | other
         return frozendict(joined_dict)
 
-    def __ior__(self, other: FrozenDict) -> FrozenDict:
-        joined_dict = {}
-        joined_dict.update(self)
-        joined_dict.update(other)
-        return frozendict(joined_dict)
+    def __or__(self, other: FrozenDict) -> FrozenDict:
+        return super().__or__(other)
+
+    def __sub__(self, other: FrozenDict) -> FrozenDict:
+        return frozendict({k: v
+                           for k, v in self.items()
+                           if k not in other})
 
     def remove(self, x):
         self.__raise_immutable_exception()

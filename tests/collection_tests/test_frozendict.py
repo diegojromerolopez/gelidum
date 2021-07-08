@@ -2,7 +2,7 @@ import unittest
 from collections import ValuesView, KeysView
 from typing import Any
 
-from gelidum import FrozenException
+from gelidum import FrozenException, freeze
 from gelidum.collections.frozendict import frozendict
 from gelidum.frozen import FrozenBase
 
@@ -26,6 +26,42 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertEqual("2", frozen_dict["two"])
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_add(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dummy = freeze(Dummy(3))
+        frozen_dict1 = frozendict({"one": 1, "two": "2", "three": frozen_dummy})
+        frozen_dict2 = frozendict({"one": 1, "two": "2.5"})
+        joined_frozen_dict = frozendict({"one": 1, "two": "2.5", "three": frozen_dummy})
+
+        self.assertDictEqual(joined_frozen_dict, frozen_dict1 + frozen_dict2)
+
+    def test_or(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dummy = freeze(Dummy(3))
+        frozen_dict1 = frozendict({"one": 1, "two": "2", "three": frozen_dummy})
+        frozen_dict2 = frozendict({"one": 1, "two": "2.5"})
+        joined_frozen_dict = frozendict({"one": 1, "two": "2.5", "three": frozen_dummy})
+
+        self.assertDictEqual(joined_frozen_dict, frozen_dict1 | frozen_dict2)
+
+    def test_sub(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dummy = freeze(Dummy(3))
+        frozen_dict1 = frozendict({"one": 1, "two": "2", "three": frozen_dummy})
+        frozen_dict2 = frozendict({"one": 1, "two": "2.5"})
+        joined_frozen_dict = frozendict({"three": frozen_dummy})
+
+        self.assertDictEqual(joined_frozen_dict, frozen_dict1 - frozen_dict2)
 
     def test_getitem(self):
         class Dummy:
