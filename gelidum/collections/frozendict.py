@@ -55,7 +55,13 @@ class frozendict(dict, FrozenBase): # noqa
         return frozendict(joined_dict)
 
     def __or__(self, other: FrozenDict) -> FrozenDict:
-        return super().__or__(other)
+        if hasattr(super, "__or__"):
+            return super().__or__(other)
+        # Python version < 3.9
+        result_dict = dict()
+        result_dict.update(self)
+        result_dict.update(other)
+        return frozendict(result_dict)
 
     def __sub__(self, other: FrozenDict) -> FrozenDict:
         return frozendict({k: v
