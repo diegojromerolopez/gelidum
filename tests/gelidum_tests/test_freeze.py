@@ -13,7 +13,7 @@ from typing import Dict, List, Union, Any
 from unittest.mock import patch
 from gelidum import FrozenException
 from gelidum import freeze
-from gelidum.collections import frozenlist
+from gelidum.collections import frozendict, frozenlist
 from gelidum.frozen import FrozenBase, clear_frozen_classes
 
 
