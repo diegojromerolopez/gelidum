@@ -1130,3 +1130,22 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_4[2]))
         self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_6[2]))
         self.assertEqual(id(immutable_list_size_4[3]), id(immutable_list_size_6[3]))
+
+    def test_use_frozen_object_as_dict_key(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy1 = Dummy(value=1)
+        frozen_dummy1 = freeze(dummy1, on_freeze="copy")
+        dummy2 = Dummy(value=2)
+        frozen_dummy2 = freeze(dummy2, on_freeze="copy")
+        my_dict = {frozen_dummy1: dummy1, frozen_dummy2: dummy2}
+
+        self.assertEqual(2, len(my_dict))
+        self.assertEqual({frozen_dummy1, frozen_dummy2},
+                         set(my_dict.keys()))
+        self.assertTrue(frozen_dummy1 in my_dict)
+        self.assertEqual(dummy1, my_dict[frozen_dummy1])
+        self.assertTrue(frozen_dummy2 in my_dict)
+        self.assertEqual(dummy2, my_dict[frozen_dummy2])
