@@ -212,14 +212,36 @@ said function.
 - **get_gelidum_hot_class_module** returns the module reference where the hot class was.
 
 ## Rationale and background information
-TODO Add the Show HN post
+Inspired by my old work with Ruby on Rails, I decided to create a mechanism to make
+objects immutable in Python. The first aim was to do a tool to avoid accidental
+modifications on the objects while passing them through an execution flow.
+
+Anyways, as time passed I thought that an implementation of a programming language
+with real threading support (i.e. not cpython) could be benefited from this feature.
+I know that both cpython and pypy implementations of the Python programming
+language have a [GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock) but IronPython
+and [Graalpython](https://github.com/oracle/graalpython) don't.
+IronPython3 has no support for typehintings yet,
+but Graalpython seems to work fine, so more experiments will be coming.
+
+On the other hand, I'm also interested in creating functional data structures
+in this package, easing the life of developers that do not want side effects.
+
+It's true that the complexity of Python does not play well with this kind of library.
+Thus, Python usually serves as easy interface with native libraries (pandas, numpy, etc.)
+However, this project is fun to develop and maybe with the popularity of alternative
+implementations of Python some work can be done to improve performance.
+
+More information can be seen in this [Show HN post](https://news.ycombinator.com/item?id=27507524)
+and some appreciated feedback of the users of that great community.
 
 ## Limitations
 - dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
 - file handler attributes are not supported. An exception is raised when trying to freeze
-  an object with them
+  an object with them.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
-- frozen objects cannot be (deep)-copied. This limitation is inteded to make structural sharing easier.
+- frozen objects cannot be (deep)-copied. This limitation is intended to make structural sharing easier.
+- Classes with \_\_slots\_\_ cannot be frozen.
 
 ## Advice & comments on use
 ### On_update parameter of freeze function
@@ -297,7 +319,8 @@ Packages on pypi gelidum uses:
 ## Roadmap
 - [x] Freeze only when attributes are modified? 
   Not exactly but structural sharing is used.
-- [ ] Include immutable collections.  
+- [ ] Include immutable collections.
+- [ ] [Graalpython](https://github.com/oracle/graalpython) support.
 - [ ] Make some use-cases with threading/async module (i.e. server)
 
 
