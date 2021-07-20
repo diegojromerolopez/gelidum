@@ -220,11 +220,17 @@ Anyways, as time passed I thought that an implementation of a programming langua
 with real threading support (i.e. not cpython) could be benefited from this feature.
 I know that both cpython and pypy implementations of the Python programming
 language have a [GIL](https://en.wikipedia.org/wiki/Global_interpreter_lock) but IronPython
-and Graalpython don't. IronPython3 has no support for typehintings yet,
+and [Graalpython](https://github.com/oracle/graalpython) don't.
+IronPython3 has no support for typehintings yet,
 but Graalpython seems to work fine, so more experiments will be coming.
 
 On the other hand, I'm also interested in creating functional data structures
-in this package, easing the life of developers that do not want side-effects.
+in this package, easing the life of developers that do not want side effects.
+
+It's true that the complexity of Python does not play well with this kind of library.
+Thus, Python usually serves as easy interface with native libraries (pandas, numpy, etc.)
+However, this project is fun to develop and maybe with the popularity of alternative
+implementations of Python some work can be done to improve performance.
 
 More information can be seen in this [Show HN post](https://news.ycombinator.com/item?id=27507524)
 and some appreciated feedback of the users of that great community.
