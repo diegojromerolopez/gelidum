@@ -116,11 +116,13 @@ def __freeze_object(obj: object, on_update: OnUpdateFuncType,
     for attr, value in frozen_obj.__dict__.items():
         attr_value = getattr(frozen_obj, attr)
         setattr(frozen_obj, attr, freeze(attr_value, on_update=on_update, on_freeze=on_freeze))
-    frozen_obj.__class__ = make_frozen_class(
+
+    frozen_class = make_frozen_class(
         klass=obj.__class__,
         attrs=list(obj.__dict__.keys()),
         on_update=on_update
     )
+    frozen_obj.__class__ = frozen_class
     return frozen_obj
 
 
