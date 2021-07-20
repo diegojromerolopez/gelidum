@@ -129,6 +129,23 @@ class TestFreeze(unittest.TestCase):
 
         self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__)
 
+    def test_freeze_simple_object_with_unsupported__slots__attribute(self):
+        class Dummy(object):
+            __slots__ = ("attr",)
+
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy = Dummy(value=1)
+
+        with self.assertRaises(FrozenException) as setattr_context:
+            freeze(dummy, on_freeze="copy")
+
+        self.assertEqual(
+            "gelidum does not support classes with __slots__",
+            str(setattr_context.exception)
+        )
+
     def test_freeze_simple_object_inplace_true_deprecated_parameter(self):
         class Dummy(object):
             def __init__(self, attr1: int, attr2: int, attr3: int):

@@ -219,7 +219,8 @@ TODO Add the Show HN post
 - file handler attributes are not supported. An exception is raised when trying to freeze
   an object with them
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
-- frozen objects cannot be (deep)-copied. This limitation is inteded to make structural sharing easier.
+- frozen objects cannot be (deep)-copied. This limitation is intended to make structural sharing easier.
+- Classes with \_\_slots\_\_ cannot be frozen.
 
 ## Advice & comments on use
 ### On_update parameter of freeze function

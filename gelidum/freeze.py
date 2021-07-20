@@ -112,6 +112,9 @@ def __freeze_BufferedWriter(*args, **kwargs) -> None:  # noqa
 def __freeze_object(obj: object, on_update: OnUpdateFuncType,
                     on_freeze: OnFreezeFuncType) -> FrozenBase:
 
+    if hasattr(obj.__class__, "__slots__"):
+        raise FrozenException("gelidum does not support classes with __slots__")
+
     frozen_obj = on_freeze(obj)
     for attr, value in frozen_obj.__dict__.items():
         attr_value = getattr(frozen_obj, attr)
