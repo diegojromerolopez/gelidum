@@ -192,11 +192,11 @@ class TestFrozenzet(unittest.TestCase):  # noqa
 
         frozen_dummy = freeze(Dummy(9))
         frozen_zet = frozenzet([1, 2, 3, frozen_dummy])
-        items = []
+        items = set()
         for item in frozen_zet:
-            items.append(item)
+            items.add(item)
 
-        self.assertListEqual([1, 2, 3, frozen_dummy], items)
+        self.assertSetEqual({1, 2, 3, frozen_dummy}, items)
 
     def test_next(self):
         class Dummy:
@@ -207,10 +207,11 @@ class TestFrozenzet(unittest.TestCase):  # noqa
         frozen_zet = frozenzet([1, 2, 3, frozen_dummy])
         frozen_list_iter = iter(frozen_zet)
 
-        self.assertEqual(1, next(frozen_list_iter))
-        self.assertEqual(2, next(frozen_list_iter))
-        self.assertEqual(3, next(frozen_list_iter))
-        self.assertEqual(frozen_dummy, next(frozen_list_iter))
+        items = set()
+        for _ in frozen_zet:
+            items.add(next(frozen_list_iter))
+
+        self.assertSetEqual({1, 2, 3, frozen_dummy}, items)
 
     def test_copy(self):
         frozen_zet = frozenzet([1, 2, 3])
