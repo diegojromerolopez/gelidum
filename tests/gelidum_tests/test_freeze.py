@@ -15,6 +15,7 @@ from gelidum import FrozenException
 from gelidum import freeze
 from gelidum.collections import frozendict, frozenlist
 from gelidum.frozen import FrozenBase, clear_frozen_classes
+from gelidum.frozen import FrozenBase, get_frozen_classes, clear_frozen_classes
 
 
 class TestFreeze(unittest.TestCase):
@@ -147,6 +148,23 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy2 = freeze(dummy2, on_freeze="copy")
 
         self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__)
+
+    def test_freeze_simple_object_with_unsupported__slots__attribute(self):
+        class Dummy(object):
+            __slots__ = ("attr",)
+
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy = Dummy(value=1)
+
+        with self.assertRaises(FrozenException) as setattr_context:
+            freeze(dummy, on_freeze="copy")
+
+        self.assertEqual(
+            "gelidum does not support classes with __slots__",
+            str(setattr_context.exception)
+        )
 
     def test_freeze_simple_object_inplace_true_deprecated_parameter(self):
         class Dummy(object):
@@ -970,10 +988,6 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())
 
     def test_count_frozen_classes(self):
-        import gelidum.frozen
-
-        frozen_classes = getattr(gelidum.frozen, "__FROZEN_CLASSES")
-
         class Dummy(object):
             def __init__(self, attr: int):
                 self.attr = attr
@@ -984,8 +998,9 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy1 = freeze(dummy1, on_freeze="copy")
         frozen_dummy2 = freeze(dummy2, on_freeze="copy")
         frozen_dummy3 = freeze(dummy3, on_freeze="copy")
+        frozen_classes = get_frozen_classes()
 
-        self.assertSetEqual({frozen_dummy1.__class__}, set(frozen_classes.values()))
+        self.assertSetEqual({frozen_dummy1.__class__}, frozen_classes)
         self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__, frozen_dummy3.__class__)
 
     def test_invalid_str_for_on_freeze_parameter(self):
@@ -1149,3 +1164,22 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_4[2]))
         self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_6[2]))
         self.assertEqual(id(immutable_list_size_4[3]), id(immutable_list_size_6[3]))
+
+    def test_use_frozen_object_as_dict_key(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy1 = Dummy(value=1)
+        frozen_dummy1 = freeze(dummy1, on_freeze="copy")
+        dummy2 = Dummy(value=2)
+        frozen_dummy2 = freeze(dummy2, on_freeze="copy")
+        my_dict = {frozen_dummy1: dummy1, frozen_dummy2: dummy2}
+
+        self.assertEqual(2, len(my_dict))
+        self.assertEqual({frozen_dummy1, frozen_dummy2},
+                         set(my_dict.keys()))
+        self.assertTrue(frozen_dummy1 in my_dict)
+        self.assertEqual(dummy1, my_dict[frozen_dummy1])
+        self.assertTrue(frozen_dummy2 in my_dict)
+        self.assertEqual(dummy2, my_dict[frozen_dummy2])
