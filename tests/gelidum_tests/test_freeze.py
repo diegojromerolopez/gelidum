@@ -13,7 +13,7 @@ from typing import Dict, List, Union, Any
 from unittest.mock import patch
 from gelidum import FrozenException
 from gelidum import freeze
-from gelidum.collections import frozendict, frozenlist
+from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.frozen import FrozenBase, clear_frozen_classes
 from gelidum.frozen import FrozenBase, get_frozen_classes, clear_frozen_classes
 
@@ -109,7 +109,7 @@ class TestFreeze(unittest.TestCase):
 
     def test_freeze_set(self):
         self.assertEqual(
-            frozenset(["one", 2, "three"]), freeze({"one", 2, "three"}))
+            frozenzet(["one", 2, "three"]), freeze({"one", 2, "three"}))
 
     def test_freeze_simple_dataclass(self):
         from dataclasses import dataclass

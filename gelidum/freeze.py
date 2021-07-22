@@ -7,7 +7,7 @@ from typing import (
 
 )
 
-from gelidum.collections import frozendict, frozenlist
+from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
@@ -89,9 +89,10 @@ def __freeze_tuple(obj: Tuple, on_update: OnUpdateFuncType,
 
 
 def __freeze_set(obj: Set, on_update: OnUpdateFuncType,
-                 on_freeze: OnFreezeFuncType) -> frozenset:
-    return frozenset([freeze(item, on_update=on_update, on_freeze=on_freeze)
-                      for item in obj])
+                 on_freeze: OnFreezeFuncType) -> frozenzet:
+    def freeze_func(item: Any) -> FrozenType:
+        return freeze(item, on_update=on_update, on_freeze=on_freeze)
+    return frozenzet(obj, freeze_func=freeze_func)
 
 
 def __freeze_TextIOWrapper(*args, **kwargs) -> None:  # noqa
