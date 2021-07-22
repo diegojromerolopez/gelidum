@@ -73,6 +73,30 @@ class frozenzet(frozenset, FrozenBase): # noqa
     def clear(self) -> None:
         self.__raise_immutable_exception()
 
+    def update(self, *others) -> None:
+        self.__raise_immutable_exception()
+
+    def __ior__(self, *others) -> None:
+        self.__raise_immutable_exception()
+
+    def intersection_update(self, *others) -> None:
+        self.__raise_immutable_exception()
+
+    def __iand__(self, *others) -> None:
+        self.__raise_immutable_exception()
+
+    def difference_update(self, *others) -> None:
+        self.__raise_immutable_exception()
+
+    def __isub__(self, *others) -> None:
+        self.__raise_immutable_exception()
+
+    def symmetric_difference_update(self, others) -> None:
+        self.__raise_immutable_exception()
+
+    def __ixor__(self, *others) -> None:
+        self.__raise_immutable_exception()
+
     def copy(self) -> "frozenzet":
         """
         frozenzet objects are only shallow-copied.

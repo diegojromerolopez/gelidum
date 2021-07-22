@@ -155,7 +155,25 @@ class TestFrozenzet(unittest.TestCase):  # noqa
         frozen_zet = frozenzet([1, 2, 3])
 
         self.assertTrue(1 in frozen_zet)
+        self.assertFalse(1 not in frozen_zet)
+        self.assertTrue(9 not in frozen_zet)
         self.assertFalse(9 in frozen_zet)
+
+    def test_subset_superset(self):
+        frozen_zet = frozenzet([1, 2, 3])
+        frozen_zet_copy = frozenzet([1, 2, 3])
+        superset_frozen_zet = frozenzet([1, 2, 3, 4, 5,6])
+
+        self.assertTrue(superset_frozen_zet.issuperset(frozen_zet))
+        self.assertTrue(superset_frozen_zet >= frozen_zet)
+        self.assertFalse(frozen_zet_copy > frozen_zet)
+        self.assertTrue(frozen_zet_copy >= frozen_zet)
+        self.assertTrue(superset_frozen_zet > frozen_zet)
+        self.assertTrue(frozen_zet.issubset(superset_frozen_zet))
+        self.assertTrue(frozen_zet <= superset_frozen_zet)
+        self.assertTrue(frozen_zet < superset_frozen_zet)
+        self.assertFalse(frozen_zet_copy < frozen_zet)
+        self.assertTrue(frozen_zet_copy <= frozen_zet)
 
     def test_min(self):
         frozen_zet = frozenzet([1, 2, 3])
@@ -236,3 +254,63 @@ class TestFrozenzet(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenzet' object is immutable",
                          str(context.exception))
+
+    def test_update_exception(self):
+        frozen_zet = frozenzet([1, 2, 3])
+        frozen_zet2 = frozenzet([4, 5, 6])
+
+        with self.assertRaises(FrozenException) as context1:
+            frozen_zet.update(frozen_zet2)
+
+        with self.assertRaises(FrozenException) as context2:
+            frozen_zet |= frozen_zet2
+
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context1.exception))
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context2.exception))
+
+    def test_intersection_update_exception(self):
+        frozen_zet = frozenzet([1, 2, 3])
+        frozen_zet2 = frozenzet([4, 5, 6])
+
+        with self.assertRaises(FrozenException) as context1:
+            frozen_zet.intersection_update(frozen_zet2)
+
+        with self.assertRaises(FrozenException) as context2:
+            frozen_zet &= frozen_zet2
+
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context1.exception))
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context2.exception))
+
+    def test_difference_update_exception(self):
+        frozen_zet = frozenzet([1, 2, 3])
+        frozen_zet2 = frozenzet([4, 5, 6])
+
+        with self.assertRaises(FrozenException) as context1:
+            frozen_zet.difference_update(frozen_zet2)
+
+        with self.assertRaises(FrozenException) as context2:
+            frozen_zet -= frozen_zet2
+
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context1.exception))
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context2.exception))
+
+    def test_symmetric_difference_update_exception(self):
+        frozen_zet = frozenzet([1, 2, 3])
+        frozen_zet2 = frozenzet([4, 5, 6])
+
+        with self.assertRaises(FrozenException) as context1:
+            frozen_zet.symmetric_difference_update(frozen_zet2)
+
+        with self.assertRaises(FrozenException) as context2:
+            frozen_zet ^= frozen_zet2
+
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context1.exception))
+        self.assertEqual("'frozenzet' object is immutable",
+                         str(context2.exception))
