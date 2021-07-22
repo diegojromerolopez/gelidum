@@ -98,6 +98,15 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(3, frozen_list2[2])
         self.assertEqual(2, frozen_list2[3])
 
+    def test_hash(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_list = frozenlist([1, 2, 3, [4, 5, 6], Dummy(2)])
+
+        self.assertTrue(isinstance(hash(frozen_list), int))
+
     def test_mul(self):
         frozen_list = frozenlist([1, 2, 3])
         frozen_list2 = frozen_list * 2
