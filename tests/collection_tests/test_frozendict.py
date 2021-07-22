@@ -75,6 +75,17 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertEqual(None, frozen_dict.get("four"))
         self.assertEqual(4, frozen_dict.get("four", 4))
 
+    def test_hash(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict(
+            {"one": 1, "two": "2", "three": Dummy(3), "four": {"a": "1"}}
+        )
+
+        self.assertTrue(isinstance(hash(frozen_dict), int))
+
     def test_setitem(self):
         class Dummy:
             def __init__(self, value: Any):

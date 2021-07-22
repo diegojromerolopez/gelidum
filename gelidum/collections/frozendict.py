@@ -40,6 +40,9 @@ class frozendict(dict, FrozenBase): # noqa
     def get_gelidum_hot_class_module(cls) -> str:
         return "builtins.dict"
 
+    def __hash__(self) -> int:
+        return hash(tuple((k, v) for k, v in self.items()))
+
     def __getitem__(self, key) -> Any:
         if type(key) is slice:
             return frozendict(
