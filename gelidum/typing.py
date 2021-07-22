@@ -1,8 +1,12 @@
 import typing
 from platform import python_implementation, python_version_tuple
 from typing import Any, Callable, TYPE_CHECKING, Generic
+from typing import Optional, Sized, Union, Iterable, Reversible, Mapping
+from typing import TypeVar
+
 if TYPE_CHECKING:  # pragma: no cover
     from gelidum.frozen import FrozenBase  # noqa
+    from gelidum.collections import frozendict, frozenlist  # noqa
 
 
 python_interpreter = python_implementation()
@@ -31,12 +35,21 @@ else:
     except AttributeError:  # pragma: no cover
         Final = typing.Final
 
+FrozenList = Union["FrozenBase", Sized, Iterable, Reversible,  "frozenlist"]
+FrozenDict = Union["FrozenBase", Mapping, "frozendict"]
 
-_FrozenBase = "FrozenBase"
+T = TypeVar('T')
 
+FrozenType = Optional[
+    Union[
+        bool, int, float, bytes, complex, str,
+        bytes, FrozenDict, FrozenList, tuple, frozenset,
+        "FrozenBase", T
+    ]
+]
 
 try:
-    OnUpdateFuncType = Callable[[_FrozenBase, str, ...], None]
+    OnUpdateFuncType = Callable[["FrozenBase", str, ...], None]
 except TypeError:
     OnUpdateFuncType = Callable
 

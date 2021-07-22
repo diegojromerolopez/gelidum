@@ -3,24 +3,15 @@ import io
 import sys
 import warnings
 from typing import (
-    List, Tuple, Set, Dict, Any,
-    Optional, Union, TypeVar
+    List, Set, Dict, Any, Optional, Union, Tuple
+
 )
-from frozendict import frozendict
+
+from gelidum.collections import frozendict, frozenlist
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
+from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
 from gelidum.utils import isbuiltin
-from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType
-
-T = TypeVar('T')
-
-_FrozenType = Optional[
-    Union[
-        bool, int, float, bytes, complex, str,
-        bytes, frozendict, tuple, frozenset,
-        FrozenBase, T
-    ]
-]
 
 
 def freeze(
@@ -28,7 +19,7 @@ def freeze(
         on_update: Union[str, OnUpdateFuncType] = "exception",
         on_freeze: Union[str, OnFreezeFuncType] = "copy",
         inplace: Optional[bool] = None,
-        ) -> _FrozenType:
+        ) -> FrozenType:
 
     # inplace argument will be removed from freeze in the next major version (0.5.0)
     if isinstance(inplace, bool):
@@ -79,14 +70,16 @@ def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
 
 def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType,
                   on_freeze: OnFreezeFuncType) -> frozendict:
-    return frozendict({key: __freeze(value, on_update=on_update, on_freeze=on_freeze)
-                       for key, value in obj.items()})
+    def freeze_func(item: Any) -> FrozenType:
+        return freeze(item, on_update=on_update, on_freeze=on_freeze)
+    return frozendict(obj, freeze_func=freeze_func)
 
 
 def __freeze_list(obj: List, on_update: OnUpdateFuncType,
-                  on_freeze: OnFreezeFuncType) -> Tuple:
-    return tuple(__freeze(item, on_update=on_update, on_freeze=on_freeze)
-                 for item in obj)
+                  on_freeze: OnFreezeFuncType) -> FrozenList:
+    def freeze_func(item: Any) -> FrozenType:
+        return freeze(item, on_update=on_update, on_freeze=on_freeze)
+    return frozenlist(obj, freeze_func=freeze_func)
 
 
 def __freeze_tuple(obj: Tuple, on_update: OnUpdateFuncType,

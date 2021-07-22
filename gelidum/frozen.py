@@ -6,7 +6,7 @@ from gelidum.typing import OnUpdateFuncType
 
 class FrozenBase(object):
     @classmethod
-    def __gelidum_on_update(cls, *args, **kwargs):  # pragma: no cover
+    def _gelidum_on_update(cls, *args, **kwargs):  # pragma: no cover
         raise NotImplementedError("Implement in derived class")
 
     @classmethod
@@ -18,35 +18,35 @@ class FrozenBase(object):
         raise NotImplementedError("Implement in derived class")
 
     def __setattr__(self, key, value):
-        self.__gelidum_on_update(
+        self._gelidum_on_update(
             frozen_obj=self,
             message=f"Can't assign attribute '{key}' on immutable instance",
             key=key, value=value
         )
 
     def __set__(self, obj, value):
-        self.__gelidum_on_update(
+        self._gelidum_on_update(
             frozen_obj=self,
             message=f"Can't assign setter on immutable instance",
             obj=obj, value=value
         )
 
     def __delattr__(self, name):
-        self.__gelidum_on_update(
+        self._gelidum_on_update(
             frozen_obj=self,
             message=f"Can't delete attribute '{name}' on immutable instance",
             name=name
         )
 
     def __setitem__(self, key, value):
-        self.__gelidum_on_update(
+        self._gelidum_on_update(
             frozen_obj=self,
             message=f"Can't set key '{key}' on immutable instance",
             key=key, value=value
         )
 
     def __delitem__(self, key):
-        self.__gelidum_on_update(
+        self._gelidum_on_update(
             frozen_obj=self,
             message=f"Can't delete key '{key}' on immutable instance",
             key=key)
@@ -107,7 +107,7 @@ def __create_frozen_class(
                 **{
                     "get_gelidum_hot_class_name": lambda _: klass.__name__,
                     "get_gelidum_hot_class_module": lambda _: klass.__module__,
-                    "_FrozenBase__gelidum_on_update":
+                    "_gelidum_on_update":
                         lambda _self, *args, **kwargs:
                         on_update_func(*args, **kwargs),
                     **{attr: None for attr in attrs}
