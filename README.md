@@ -217,7 +217,6 @@ There are four immutable collections in the gelidum.collections module.
 - frozendict
 - frozenlist
 - frozenzet (frozenset is already a builtin type in Python)
-- frozentree
 
 All of these classes can be used to make sure a collection of objects
 is not modified. Indeed, when creating a new collection object, you

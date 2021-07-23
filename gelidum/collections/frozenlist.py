@@ -16,7 +16,10 @@ class frozenlist(tuple, FrozenBase): # noqa
     def __raise_immutable_exception(self, *args, **kwargs):
         raise FrozenException("'frozenlist' object is immutable")
 
-    def __new__(cls, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None) -> "frozenlist":
+    def __new__(
+            cls, seq: Optional[_FrozenListParameterType] = None,
+            freeze_func: Optional[Callable[[Any], FrozenBase]] = None
+    ) -> "frozenlist":
         if freeze_func is None:
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
@@ -27,7 +30,10 @@ class frozenlist(tuple, FrozenBase): # noqa
             self = tuple.__new__(cls, [])
         return self
 
-    def __init__(self,  seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None):
+    def __init__(
+            self,  seq: Optional[_FrozenListParameterType] = None,
+            freeze_func: Optional[Callable[[Any], FrozenBase]] = None
+    ):
         pass
 
     @classmethod

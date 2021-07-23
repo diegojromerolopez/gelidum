@@ -37,15 +37,15 @@ else:
 
 FrozenList = Union["FrozenBase", Sized, Iterable, Reversible,  "frozenlist"]
 FrozenDict = Union["FrozenBase", Mapping, "frozendict"]
-FrozenZet = Union["FrozenBase", Mapping, "frozenzet"]
+FrozenZet = Union["FrozenBase", Sized, Iterable, "frozenzet"]
 
 T = TypeVar('T')
 
 FrozenType = Optional[
     Union[
-        bool, int, float, bytes, complex, str,
-        bytes, FrozenDict, FrozenList, tuple, frozenset,
-        "FrozenBase", T
+        bool, int, float, bytes, complex, str, bytes,
+        FrozenDict, FrozenList, FrozenZet,
+        tuple, frozenset, "FrozenBase", T
     ]
 ]
 
