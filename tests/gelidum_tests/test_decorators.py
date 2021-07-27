@@ -10,10 +10,10 @@ class TestDecorator(unittest.TestCase):
         def append_to_list(a_list: List, new_item: int):
             a_list.append(new_item)
 
-        with self.assertRaises(AttributeError) as context:
+        with self.assertRaises(FrozenException) as context:
             append_to_list([], 3)
 
-        self.assertEqual("'tuple' object has no attribute 'append'",
+        self.assertEqual("'frozenlist' object is immutable",
                          str(context.exception))
 
     def test_decorator_with_dict_input_param(self):
@@ -24,7 +24,7 @@ class TestDecorator(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             add_to_dict({}, ("key", "value"))
 
-        self.assertEqual("'frozendict' object doesn't support item assignment",
+        self.assertEqual("'frozendict' object is immutable",
                          str(context.exception))
 
     def test_decorator_with_object_input_param_object_frozen(self):
@@ -95,15 +95,15 @@ class TestDecorator(unittest.TestCase):
             one.extend(two)
             return one  # pragma: no cover
 
-        with self.assertRaises(AttributeError) as context_unnamed_arguments:
+        with self.assertRaises(FrozenException) as context_unnamed_arguments:
             join_lists_bad_implementation([], [])
 
-        with self.assertRaises(AttributeError) as context_named_arguments:
+        with self.assertRaises(FrozenException) as context_named_arguments:
             join_lists_bad_implementation(one=[], two=[])
 
-        self.assertEqual("'tuple' object has no attribute 'extend'",
+        self.assertEqual("'frozenlist' object is immutable",
                          str(context_unnamed_arguments.exception))
-        self.assertEqual("'tuple' object has no attribute 'extend'",
+        self.assertEqual("'frozenlist' object is immutable",
                          str(context_named_arguments.exception))
 
     def test_freeze_final_object_params(self):

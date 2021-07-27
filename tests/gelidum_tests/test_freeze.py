@@ -11,9 +11,10 @@ import unittest
 import warnings
 from typing import Dict, List, Union, Any
 from unittest.mock import patch
-from frozendict import frozendict
 from gelidum import FrozenException
 from gelidum import freeze
+from gelidum.collections import frozendict, frozenlist, frozenzet
+from gelidum.frozen import FrozenBase, clear_frozen_classes
 from gelidum.frozen import FrozenBase, get_frozen_classes, clear_frozen_classes
 
 
@@ -38,45 +39,64 @@ class TestFreeze(unittest.TestCase):
     def test_freeze_dict(self):
         frozen_obj: frozendict = freeze({"one": 1, "two": 2})
 
-        with self.assertRaises(TypeError) as context_assignment:
+        with self.assertRaises(FrozenException) as context_assignment:
             frozen_obj["one"] = "another value"  # noqa
 
-        with self.assertRaises(AttributeError) as context_clear:
+        with self.assertRaises(FrozenException) as context_clear:
             frozen_obj.clear()  # noqa
 
-        with self.assertRaises(AttributeError) as context_update:
+        with self.assertRaises(FrozenException) as context_update:
             frozen_obj.update({"three": 3})  # noqa
 
-        with self.assertRaises(TypeError) as context_deletion:
+        with self.assertRaises(FrozenException) as context_deletion:
             del frozen_obj["one"]  # noqa
 
-        self.assertEqual(frozendict({"one": 1, "two": 2}), frozen_obj)
+        self.assertEqual(2, len(frozen_obj))
+        self.assertTrue("one" in frozen_obj)
+        self.assertTrue("two" in frozen_obj)
+        self.assertEqual(1, frozen_obj["one"])
+        self.assertEqual(2, frozen_obj["two"])
         self.assertEqual(
-            "'frozendict' object doesn't support item assignment",
+            "'frozendict' object is immutable",
             str(context_assignment.exception)
         )
         self.assertEqual(
-            "'frozendict' object is read-only",
+            "'frozendict' object is immutable",
             str(context_clear.exception)
         )
         self.assertEqual(
-            "'frozendict' object is read-only",
+            "'frozendict' object is immutable",
             str(context_update.exception)
         )
         self.assertEqual(
-            "'frozendict' object doesn't support item deletion",
+            "'frozendict' object is immutable",
             str(context_deletion.exception)
         )
 
     def test_freeze_list(self):
-        self.assertEqual(
-            ("one", 2, "three"), freeze(["one", 2, "three"]))
+        frozen_list = freeze(["one", 2, "three", ["a", "b", "c", 4, 5]])
+        self.assertTrue(isinstance(frozen_list, frozenlist))
+        self.assertEqual(4, len(frozen_list))
+        self.assertEqual("one", frozen_list[0])
+        self.assertEqual(2, frozen_list[1])
+        self.assertEqual("three", frozen_list[2])
+        self.assertTrue(isinstance(frozen_list[3], frozenlist))
+        self.assertEqual(5, len(frozen_list[3]))
+        self.assertEqual("a", frozen_list[3][0])
+        self.assertEqual("b", frozen_list[3][1])
+        self.assertEqual("c", frozen_list[3][2])
+        self.assertEqual(4, frozen_list[3][3])
+        self.assertEqual(5, frozen_list[3][4])
 
     def test_freeze_list_inplace_true_deprecated_parameter(self):
         with warnings.catch_warnings(record=True) as caught_warnings:
             frozen_list = freeze(["one", 2, "three"], inplace=True)
 
-        self.assertEqual(("one", 2, "three"), frozen_list)
+        self.assertTrue(isinstance(frozen_list, frozenlist))
+        self.assertEqual(3, len(frozen_list))
+        self.assertEqual("one", frozen_list[0])
+        self.assertEqual(2, frozen_list[1])
+        self.assertEqual("three", frozen_list[2])
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
             "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
@@ -89,7 +109,7 @@ class TestFreeze(unittest.TestCase):
 
     def test_freeze_set(self):
         self.assertEqual(
-            frozenset(["one", 2, "three"]), freeze({"one", 2, "three"}))
+            frozenzet(["one", 2, "three"]), freeze({"one", 2, "three"}))
 
     def test_freeze_simple_dataclass(self):
         from dataclasses import dataclass

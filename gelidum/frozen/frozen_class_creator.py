@@ -23,7 +23,7 @@ def __create_frozen_class(
                 **{
                     "get_gelidum_hot_class_name": lambda _: klass.__name__,
                     "get_gelidum_hot_class_module": lambda _: klass.__module__,
-                    "_FrozenBase__gelidum_on_update":
+                    "_gelidum_on_update":
                         lambda _self, *args, **kwargs:
                         on_update_func(*args, **kwargs),
                     **{attr: None for attr in attrs}

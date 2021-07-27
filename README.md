@@ -211,6 +211,33 @@ said function.
 - **get_gelidum_hot_class_name**: returns the name of hot class.
 - **get_gelidum_hot_class_module** returns the module reference where the hot class was.
 
+## Collections
+There are four immutable collections in the gelidum.collections module.
+
+- frozendict
+- frozenlist
+- frozenzet (frozenset is already a builtin type in Python)
+
+All of these classes can be used to make sure a collection of objects
+is not modified. Indeed, when creating a new collection object, you
+can pass a custom freeze function, to customize the freezing process
+of each of its items, e.g.:
+
+```python
+import logging
+from gelidum.freeze import freeze
+from gelidum.collections import frozenzet
+from gelidum.typing import FrozenType
+from typing import Any
+
+
+def my_freeze_func(item: Any) -> FrozenType:
+  logging.debug(f"Freezing item {item}")
+  return freeze(item, on_update="exception", on_freeze="copy")
+
+frozen_zet = frozenzet([1, 2, 3], freeze_func=my_freeze_func)
+```
+
 ## Rationale and background information
 Inspired by my old work with Ruby on Rails, I decided to create a mechanism to make
 objects immutable in Python. The first aim was to do a tool to avoid accidental
@@ -313,8 +340,8 @@ def on_freeze(self, obj: object) -> object:
 
 
 ## Dependencies
-Packages on pypi gelidum uses:
-- [frozendict](https://pypi.org/project/frozendict/)
+This package has no dependencies.
+
 
 ## Roadmap
 - [x] Freeze only when attributes are modified? 
