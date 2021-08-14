@@ -32,8 +32,14 @@ setup(
     license="MIT",
     keywords="freeze python object",
     url="https://github.com/diegojromerolopez/gelidum",
-    packages=["gelidum"],
-    package_dir={"gelidum": "gelidum"},
+    packages=[
+        "gelidum",
+        "gelidum.collections"
+    ],
+    package_dir={
+        "gelidum": "gelidum",
+        "gelidum.collections": "gelidum/collections"
+    },
     data_files=["version.txt", "requirements.txt"],
     include_package_data=True,
     scripts=[]
