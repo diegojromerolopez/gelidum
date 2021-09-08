@@ -901,11 +901,11 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(1, frozen_dummy.attr, unpickled_frozen_dummy.attr)
 
     def test_pickle_object_of_same_name_classes(self):
-        import tests.gelidum_tests.utils.dummy1
-        import tests.gelidum_tests.utils.dummy2
+        import gelidum.tests.gelidum_tests.utils.dummy1
+        import gelidum.tests.gelidum_tests.utils.dummy2
 
-        dummy1 = tests.gelidum_tests.utils.dummy1.Dummy(attr1=1)
-        dummy2 = tests.gelidum_tests.utils.dummy2.Dummy(attr2=2)
+        dummy1 = gelidum.tests.gelidum_tests.utils.dummy1.Dummy(attr1=1)
+        dummy2 = gelidum.tests.gelidum_tests.utils.dummy2.Dummy(attr2=2)
 
         frozen_dummy1 = freeze(dummy1)
         frozen_dummy2 = freeze(dummy2)
@@ -945,15 +945,15 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(1, frozen_dummy1.attr1, unpickled_frozen_dummy1.attr1)
         self.assertEqual(2, frozen_dummy2.attr2, unpickled_frozen_dummy2.attr2)
 
-        self.assertEqual("tests.gelidum_tests.utils.dummy1",
+        self.assertEqual("gelidum.tests.gelidum_tests.utils.dummy1",
                          frozen_dummy1.get_gelidum_hot_class_module())
-        self.assertEqual("tests.gelidum_tests.utils.dummy2",
+        self.assertEqual("gelidum.tests.gelidum_tests.utils.dummy2",
                          frozen_dummy2.get_gelidum_hot_class_module())
         self.assertEqual("Dummy", frozen_dummy1.get_gelidum_hot_class_name())
         self.assertEqual("Dummy", frozen_dummy2.get_gelidum_hot_class_name())
 
     def test_hot_class_module_class(self):
-        from tests.gelidum_tests.utils.dummy1 import Dummy
+        from gelidum.tests.gelidum_tests.utils.dummy1 import Dummy
 
         dummy1 = Dummy(1)
         dummy2 = Dummy(2)
