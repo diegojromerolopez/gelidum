@@ -1,6 +1,6 @@
 # gelidum
 
-![main](https://github.com/diegojromerolopez/gelidum/actions/workflows/main.yml/badge.svg)
+![test](https://github.com/diegojromerolopez/gelidum/actions/workflows/test.yml/badge.svg)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/diegojromerolopez/gelidum/graphs/commit-activity)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
