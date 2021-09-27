@@ -10,7 +10,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 python_interpreter = python_implementation()
-python_interpreter_version = tuple(int(number) for number in python_version_tuple())
+python_interpreter_version = tuple(int(number) for number in python_version_tuple()[:2])
 
 
 if (
