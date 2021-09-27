@@ -1,4 +1,4 @@
-name: Main Workflow
+name: Test Coverage Workflow
 on: [push]
 jobs:
   build:
