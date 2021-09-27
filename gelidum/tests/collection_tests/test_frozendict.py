@@ -1,5 +1,5 @@
 import unittest
-from collections import ValuesView, KeysView
+from collections.abc import ValuesView, KeysView
 from typing import Any
 
 from gelidum import FrozenException, freeze
