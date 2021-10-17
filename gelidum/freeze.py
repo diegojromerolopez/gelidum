@@ -12,6 +12,7 @@ from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
 from gelidum.utils import isbuiltin
+from gelidum.on_freeze import on_freeze_func_creator
 
 
 def freeze(
@@ -21,20 +22,19 @@ def freeze(
         inplace: Optional[bool] = None,
         ) -> FrozenType:
 
-    # inplace argument will be removed from freeze in the next major version (0.5.0)
+    # inplace argument will be removed from freeze in the next major version (0.6.0)
     if isinstance(inplace, bool):
         warnings.warn(
             DeprecationWarning(
-                "Use of inplace is deprecated and will be removed in next major version (0.5.0)"
+                "Use of inplace is deprecated and will be removed in next major version (0.6.0)"
             )
         )
-        if inplace:
-            on_freeze_func: OnFreezeFuncType = __on_freeze_func(on_freeze="inplace")
-        else:
-            on_freeze_func: OnFreezeFuncType = __on_freeze_func(on_freeze="copy")
+        on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(
+            on_freeze="inplace" if inplace else "copy"
+        )
 
     else:
-        on_freeze_func: OnFreezeFuncType = __on_freeze_func(on_freeze=on_freeze)
+        on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze=on_freeze)
 
     on_update_func: OnUpdateFuncType = __on_update_func(on_update=on_update)
 
@@ -121,28 +121,6 @@ def __freeze_object(obj: object, on_update: OnUpdateFuncType,
     )
     frozen_obj.__class__ = frozen_class
     return frozen_obj
-
-
-def __on_freeze_func(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncType:
-    if isinstance(on_freeze, str):
-        if on_freeze == "copy":
-            return lambda obj: copy.deepcopy(obj)
-        elif on_freeze == "inplace":
-            return lambda obj: obj
-        else:
-            raise AttributeError(
-                f"Invalid value for on_freeze parameter, '{on_freeze}' found, "
-                f"only 'copy' and 'inplace' are valid options if passed a string"
-            )
-
-    elif callable(on_freeze):
-        return on_freeze
-
-    else:
-        raise AttributeError(
-            f"Invalid value for on_freeze parameter, '{on_freeze}' found, "
-            f"only 'copy', 'inplace' or a function are valid options"
-        )
 
 
 def __on_update_exception(

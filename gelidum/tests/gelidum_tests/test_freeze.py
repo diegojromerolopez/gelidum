@@ -14,7 +14,6 @@ from unittest.mock import patch
 from gelidum import FrozenException
 from gelidum import freeze
 from gelidum.collections import frozendict, frozenlist, frozenzet
-from gelidum.frozen import FrozenBase, clear_frozen_classes
 from gelidum.frozen import FrozenBase, get_frozen_classes, clear_frozen_classes
 
 
@@ -99,7 +98,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual("three", frozen_list[2])
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
-            "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
+            "Use of inplace is deprecated and will be removed in next major version (0.6.0)",
             str(caught_warnings[0].message)
         )
 
@@ -180,7 +179,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy), id(frozen_dummy))
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
-            "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
+            "Use of inplace is deprecated and will be removed in next major version (0.6.0)",
             str(caught_warnings[0].message)
         )
 
@@ -198,7 +197,7 @@ class TestFreeze(unittest.TestCase):
         self.assertNotEqual(id(dummy), id(frozen_dummy))
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
-            "Use of inplace is deprecated and will be removed in next major version (0.5.0)",
+            "Use of inplace is deprecated and will be removed in next major version (0.6.0)",
             str(caught_warnings[0].message)
         )
 
@@ -1019,7 +1018,7 @@ class TestFreeze(unittest.TestCase):
 
         self.assertEqual(
             "Invalid value for on_freeze parameter, '99' found, "
-            "only 'copy', 'inplace' or a function are valid options",
+            "only 'copy', 'inplace' or a callable are valid options",
             str(context.exception)
         )
 
