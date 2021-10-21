@@ -41,19 +41,18 @@ performed, only reference.
 In case of the [builtin types](https://docs.python.org/3/library/stdtypes.html)
 (bool, None, int, float, bytes, complex, str) it does nothing, as they are already immutable.
 
-For the list type, a tuple with frozen items is returned.
+For the list type, a [frozenlist](/gelidum/collections/frozenlist.py) with frozen items is returned.
 
 Tuples are already immutable, so a new tuple with frozen items is returned.
 
-For sets, frozensets of frozen items are returned.
+When freezing a set, a [frozenzet](/gelidum/collections/frozenzet.py) of frozen items is returned.
 
-For dicts, it creates a new [frozendict](https://pypi.org/project/frozendict/)
+In the case of dicts, freezing one of them creates
+a new [frozendict](/gelidum/collections/frozendict.py)
 with the keys and frozen values of the original dict.
 
 This package, change the methods \_\_setattr\_\_, \_\_delattr\_\_, \_\_set\_\_,
-\_\_setitem\_\_, and \_\_delitem\_\_.
-
-of the object argument and all of its attributed recursively,
+\_\_setitem\_\_, and \_\_delitem\_\_ of the object argument and all of its attributed recursively,
 making them raise an exception if the developer tries to call them to modify
 the attributes of the instance.
 
@@ -97,11 +96,11 @@ class Dummy(object):
     self.attr2 = attr2
 
 dummy = Dummy(1, [2, 3, 4])
-# inplace=False by default
+# on_freeze="copy" by default
 frozen_dummy = freeze(dummy)
 assert(id(dummy) != id(frozen_dummy))
 
-# inplace=False by default
+# on_freeze="copy" by default
 frozen_object_dummy2 = freeze(dummy, on_freeze="copy")
 
 # It doesn't raise an exception,
@@ -113,6 +112,35 @@ dummy.attr1 = new_attr1_value
 # frozen_dummy is an immutable object
 frozen_dummy.attr1 = new_attr1_value
 ```
+
+#### Access to original object
+The parameter on_freeze admits a callable, so you can have
+some side effects when freezing objects.
+
+There is a particular callable class that allows
+returning the original object:
+
+```python
+from gelidum import freeze
+from gelidum.on_freeze import OnFreezeOriginalObjTracker
+
+class Dummy(object):
+    def __init__(self, value1: int, value2: int):
+        self.attr1 = value1
+        self.attr2 = value2
+
+dummy = Dummy(value1=1, value2=2)
+
+freezer = OnFreezeOriginalObjTracker()
+
+frozen_dummy = freeze(dummy, on_freeze=freezer)
+original_obj = freezer.original_obj
+
+assert(dummy == original_obj)
+```
+
+Note that in the earlier case the original object is not frozen
+but a copy of it.
 
 #### What to do when trying to update an attribute
 ```python
@@ -263,7 +291,7 @@ More information can be seen in this [Show HN post](https://news.ycombinator.com
 and some appreciated feedback of the users of that great community.
 
 ## Limitations
-- dict, list, tuple and set cannot be modified inplace although the flag inplace is set.
+- dict, list, tuple and set objects cannot be modified inplace although the flag inplace is set.
 - file handler attributes are not supported. An exception is raised when trying to freeze
   an object with them.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
@@ -312,7 +340,7 @@ frozen_dummy.attr = 4
 ```
 
 ### On_freeze parameter of freeze function
-The parameter on_freeze of the function freeze must be a string or a function.
+The parameter on_freeze of the function freeze must be a string or a callable.
 This parameter informs of what to do with the object that will be frozen.
 Should it be the same input object frozen or a copy of it?
 
@@ -337,7 +365,15 @@ def on_freeze(self, obj: object) -> object:
     # custom action in this function
     return frozen_object
 ```
+As seen earlier, there is also the possibility to
+pass a callable object. If you would like you can even
+define your own on_freeze functions by inheriting
+from classes:
 
+- OnFreezeCopier
+- OnFreezeIdentityFunc
+
+See some examples in [on_freeze.py](/gelidum/on_freeze.py) file.
 
 ## Dependencies
 This package has no dependencies.
@@ -346,7 +382,7 @@ This package has no dependencies.
 ## Roadmap
 - [x] Freeze only when attributes are modified? 
   Not exactly but structural sharing is used.
-- [ ] Include immutable collections.
+- [x] Include immutable collections.
 - [ ] [Graalpython](https://github.com/oracle/graalpython) support.
 - [ ] Make some use-cases with threading/async module (i.e. server)
 
