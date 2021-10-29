@@ -15,7 +15,7 @@ Freeze your objects in python.
 
 ![Gelidum](https://raw.githubusercontent.com/diegojromerolopez/gelidum/main/resources/gelidum.jpg "Gelidum image")
 
-[CC-NC photo](https://www.flickr.com/photos/29040174@N02/6822916849/in/album-72157629184225893/) by [Sofía Lens](https://www.flickr.com/photos/29040174@N02/)
+[Public domain photo](https://www.flickr.com/photos/140296773@N07/45771062385) by [Katsujiro Maekawa](https://www.flickr.com/photos/hjppo/)
 
 | Latin | English  |
 | -------------------------------------------------------- | -------------------------------------------------------- |
