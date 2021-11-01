@@ -21,6 +21,7 @@ def __create_frozen_class(
             (FrozenBase, klass),
             {
                 **{
+                    "get_hot_class": lambda _: klass,
                     "get_gelidum_hot_class_name": lambda _: klass.__name__,
                     "get_gelidum_hot_class_module": lambda _: klass.__module__,
                     "_gelidum_on_update":
