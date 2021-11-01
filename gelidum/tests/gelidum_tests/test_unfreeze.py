@@ -1,17 +1,5 @@
-import copy
-import datetime
-import io
-import json
-import logging
-import pickle
-import sys
-import tempfile
-import threading
 import unittest
-import warnings
-from typing import Dict, List, Union, Any
-from unittest.mock import patch
-from gelidum import FrozenException
+
 from gelidum import freeze
 from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.frozen import clear_frozen_classes
@@ -21,6 +9,16 @@ from gelidum.unfreeze import unfreeze
 class TestUnfreeze(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
+
+    def test_freeze_builtins(self):
+        self.assertEqual(3, unfreeze(freeze(3)))
+        self.assertEqual(3.9, unfreeze(freeze(3.9)))
+        self.assertEqual(True, unfreeze(freeze(True)))
+        self.assertEqual(False, unfreeze(freeze(False)))
+        self.assertEqual(None, unfreeze(freeze(None)))
+        self.assertEqual(complex(1, 2), unfreeze(freeze(complex(1, 2))))
+        self.assertEqual(b"Bytes", unfreeze(freeze(b"Bytes")))
+        self.assertEqual("String", unfreeze(freeze("String")))
 
     def test_unfreeze_simple_case_copy_on_freeze(self):
         class Dummy(object):
@@ -73,7 +71,7 @@ class TestUnfreeze(unittest.TestCase):
         self.assertEqual(1, unfrozen_dummy1.attr.attr)
 
     def test_frozendict(self):
-        frozen_dict = frozendict({"a": 1 ,"b": 2, "c": 3})
+        frozen_dict = frozendict({"a": 1, "b": 2, "c": 3})
         unfrozen_dict = unfreeze(frozen_dict)
 
         self.assertEqual({"a": 1, "b": 2, "c": 3}, unfrozen_dict)

@@ -1,5 +1,3 @@
-import sys
-
 from gelidum.frozen import FrozenBase
 from gelidum.utils import isbuiltin
 
