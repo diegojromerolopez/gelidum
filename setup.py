@@ -33,7 +33,7 @@ setup(
     keywords="freeze python object",
     url="https://github.com/diegojromerolopez/gelidum",
     packages=find_packages(),
-    data_files=["version.txt", "requirements.txt"],
+    data_files=[],
     include_package_data=True,
     scripts=[]
 )
