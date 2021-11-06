@@ -4,6 +4,7 @@ import io
 import json
 import logging
 import pickle
+import numpy as np
 import sys
 import tempfile
 import threading
@@ -1182,3 +1183,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(dummy1, my_dict[frozen_dummy1])
         self.assertTrue(frozen_dummy2 in my_dict)
         self.assertEqual(dummy2, my_dict[frozen_dummy2])
+
+    def test_freeze_numpy_array(self):
+        array = np.array([1, 2, 3])
+        frozen_array = freeze(array, on_freeze="copy")
