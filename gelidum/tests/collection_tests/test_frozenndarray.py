@@ -9,7 +9,7 @@ from gelidum.frozen import FrozenBase
 
 class TestFrozenndarray(unittest.TestCase):  # noqa
     def test_freeze_int64_ndarray(self):
-        array = np.ndarray([1, 2, 3], dtype=np.int64)
+        array = np.array([1, 2, 3], dtype=np.int64).reshape((1, 3))
         frozen_array = freeze(array, on_freeze="copy")
         frozen_array_copy = frozen_array.copy()
 
@@ -23,7 +23,7 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_array_copy, np.ndarray))
 
     def test_freeze_int64_custom_shape_ndarray(self):
-        array = np.ndarray(buffer=np.ndarray([1, 2, 3, 4]), shape=(2, 2), dtype=np.int64)
+        array = np.array([1, 2, 3, 4], dtype=np.int64).reshape((2, 2))
         frozen_array = freeze(array, on_freeze="copy")
         frozen_array_copy = frozen_array.copy()
 
