@@ -9,7 +9,7 @@ from typing import (
 
 import numpy as np
 
-from gelidum.collections import frozendict, frozenlist, frozenzet
+from gelidum.collections import frozendict, frozenlist, frozenzet, frozenndarray
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
@@ -60,7 +60,7 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
         return freeze_func(obj, on_update=on_update, on_freeze=on_freeze)
 
     if isinstance(obj, np.ndarray):
-        return freeze_ndarray(obj, on_update=on_update, on_freeze=on_freeze)
+        return __freeze_ndarray(obj, on_update=on_update, on_freeze=on_freeze)
 
     if isinstance(obj, object):
         return __freeze_object(obj, on_update=on_update, on_freeze=on_freeze)
@@ -72,10 +72,12 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
 def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
     return bytes(obj)
 
+
 def __freeze_ndarray(obj: np.ndarray, on_update: OnUpdateFuncType,
                      on_freeze: OnFreezeFuncType) -> FrozenList:
     def freeze_func(item: Any) -> FrozenType:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
+
     return frozenndarray(obj, freeze_func=freeze_func)
 
 
