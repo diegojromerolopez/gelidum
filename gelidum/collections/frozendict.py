@@ -33,6 +33,10 @@ class frozendict(dict, FrozenBase): # noqa
         raise FrozenException("'frozendict' object is immutable")
 
     @classmethod
+    def get_hot_class(cls) -> object:
+        return dict
+
+    @classmethod
     def get_gelidum_hot_class_name(cls) -> str:
         return "dict"
 
