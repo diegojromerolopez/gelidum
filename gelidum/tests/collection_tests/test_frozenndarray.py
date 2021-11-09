@@ -35,3 +35,31 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_array, np.ndarray))
         self.assertTrue(isinstance(frozen_array_copy, FrozenBase))
         self.assertTrue(isinstance(frozen_array_copy, np.ndarray))
+
+    def test_assignment_single_value(self):
+        array = np.array([1, 2, 3, 4], dtype=np.int64).reshape((2, 2))
+        frozen_array = freeze(array, on_freeze="copy")
+
+        with self.assertRaises(ValueError) as context:
+            frozen_array[0, 1] = 99
+
+        array[0, 1] = 99
+
+        self.assertEqual("assignment destination is read-only", str(context.exception))
+        self.assertEqual(2, frozen_array[0, 1])
+        self.assertEqual(99, array[0, 1])
+
+    def test_assignment_multiple_values(self):
+        array = np.array([1, 2, 3, 4], dtype=int).reshape((2, 2))
+        frozen_array = freeze(array, on_freeze="copy")
+
+        with self.assertRaises(ValueError) as context:
+            frozen_array[:, 0] = 99
+
+        array[:, 0] = 99
+
+        self.assertEqual("assignment destination is read-only", str(context.exception))
+        self.assertEqual(99, array[0, 0])
+        self.assertEqual(99, array[1, 0])
+        self.assertEqual(1, frozen_array[0, 0])
+        self.assertEqual(3, frozen_array[1, 0])
