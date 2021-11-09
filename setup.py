@@ -5,10 +5,6 @@ root_dir_path = os.path.dirname(os.path.abspath(__file__))
 
 long_description = open(os.path.join(root_dir_path, "README.md")).read()
 
-requirements_path = os.path.join(root_dir_path, "requirements.txt")
-with open(requirements_path) as requirements_file:
-    requirements = requirements_file.readlines()
-
 setup(
     name="gelidum",
     version="0.5.6",
@@ -27,7 +23,7 @@ setup(
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: MIT License"
     ],
-    install_requires=requirements,
+    install_requires=[],
     license="MIT",
     keywords="freeze python object",
     url="https://github.com/diegojromerolopez/gelidum",
