@@ -16,7 +16,8 @@ class frozendict(dict, FrozenBase): # noqa
 
     def __init__(
             self,
-            mapping: Optional[Union[Mapping, Tuple[Hashable, Any]]] = None, /,
+            mapping: Optional[Union[Mapping, Tuple[Hashable, Any]]] = None,
+            /,  # noqa
             freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
             **kwargs
     ):
