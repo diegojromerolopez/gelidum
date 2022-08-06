@@ -35,9 +35,6 @@ class TestFrozenzet(unittest.TestCase):  # noqa
             def __init__(self, value: Any):
                 self.value = value
 
-            def __lt__(self, other):
-                return self.value < int(other)
-
         dummy = Dummy(3)
         frozen_dummy = freeze(dummy)
         frozen_zet = frozenzet((1, "2", frozen_dummy))

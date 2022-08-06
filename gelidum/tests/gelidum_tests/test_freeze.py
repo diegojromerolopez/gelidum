@@ -1138,7 +1138,8 @@ class TestFreeze(unittest.TestCase):
                     *(self._items + (frozen_other,))
                 )
 
-        immutable_list_size_1 = ConsList(1)
+        immutable_list_size_0 = ConsList()
+        immutable_list_size_1 = immutable_list_size_0 + 1
         immutable_list_size_2 = immutable_list_size_1 + 2
         immutable_list_size_3 = immutable_list_size_2 + 3
         immutable_list_size_4 = immutable_list_size_3 + Dummy(5)
