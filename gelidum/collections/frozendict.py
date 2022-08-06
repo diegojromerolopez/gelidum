@@ -1,5 +1,9 @@
-from collections import Mapping
 from typing import Any, Callable, Optional, Union, Tuple, Hashable
+try:
+    from collections import Mapping
+except ImportError:
+    # For python > 3.10
+    from collections.abc import Mapping
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
