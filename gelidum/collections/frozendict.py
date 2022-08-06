@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, Dict
+from collections import Mapping
+from typing import Any, Callable, Optional, Union, Tuple, Hashable
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
@@ -15,15 +16,27 @@ class frozendict(dict, FrozenBase): # noqa
 
     def __init__(
             self,
-            mapping: Optional[Dict] = None,
-            freeze_func: Optional[Callable[[Any], FrozenBase]] = None):
+            mapping: Optional[Union[Mapping, Tuple[Hashable, Any]]] = None,
+            /,
+            freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
+            **kwargs
+    ):
         if freeze_func is None:
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
                 return freeze(item, on_update="exception", on_freeze="copy")
         if mapping:
+            if isinstance(mapping, Mapping):
+                super().__init__(
+                    {key: freeze_func(value) for key, value in mapping.items()}
+                )
+            else:
+                super().__init__(
+                    {key: freeze_func(value) for key, value in mapping}
+                )
+        elif mapping is None and kwargs:
             super().__init__(
-                {key: freeze_func(value) for key, value in mapping.items()}
+                {key: freeze_func(value) for key, value in kwargs.items()}
             )
         else:
             super().__init__()

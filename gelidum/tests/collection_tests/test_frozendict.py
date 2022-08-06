@@ -1,6 +1,6 @@
 import unittest
 from collections.abc import ValuesView, KeysView
-from typing import Any
+from typing import Any, Tuple
 
 from gelidum import FrozenException, freeze
 from gelidum.collections.frozendict import frozendict
@@ -19,6 +19,39 @@ class TestFrozendict(unittest.TestCase):  # noqa
                 self.value = value
 
         frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(3, len(frozen_dict))
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual("2", frozen_dict["two"])
+        self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
+        self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_from_generator(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        def test_generator() -> Tuple[str, int]:
+            yield "one", 1
+            yield "two", "2"
+            yield "three", Dummy(3)
+
+        frozen_dict = frozendict(test_generator())
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(3, len(frozen_dict))
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual("2", frozen_dict["two"])
+        self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
+        self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_from_kwargs(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict(one=1, two="2", three=Dummy(3))
 
         self.assertTrue(isinstance(frozen_dict, FrozenBase))
         self.assertEqual(3, len(frozen_dict))
