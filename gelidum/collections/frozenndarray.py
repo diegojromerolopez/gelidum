@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 
-class frozenndarray(np.ndarray, FrozenBase):
+class frozenndarray(np.ndarray, FrozenBase): # noqa
     """
     Read https://numpy.org/devdocs/user/basics.subclassing.html for more
     information about numpy.ndarray subclassing.
