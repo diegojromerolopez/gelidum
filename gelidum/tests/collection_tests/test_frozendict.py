@@ -13,7 +13,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
 
         self.assertEqual(0, len(frozen_list))
 
-    def test_construction(self):
+    def test_construction_from_dict(self):
         class Dummy:
             def __init__(self, value: Any):
                 self.value = value
@@ -26,6 +26,12 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertEqual("2", frozen_dict["two"])
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_from_empty_dict(self):
+        frozen_dict = frozendict({})
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(0, len(frozen_dict))
 
     def test_construction_from_generator(self):
         class Dummy:
@@ -52,6 +58,91 @@ class TestFrozendict(unittest.TestCase):  # noqa
                 self.value = value
 
         frozen_dict = frozendict(one=1, two="2", three=Dummy(3))
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(3, len(frozen_dict))
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual("2", frozen_dict["two"])
+        self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
+        self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_from_dict_and_kwargs(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict(
+            {"k0": "v0", "k1": "v1"},
+            one=1, two="2", three=Dummy(3)
+        )
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(5, len(frozen_dict))
+        self.assertEqual("v0", frozen_dict["k0"])
+        self.assertEqual("v1", frozen_dict["k1"])
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual("2", frozen_dict["two"])
+        self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
+        self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_empty_dict_and_kwargs(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict({}, one=1, two="2", three=Dummy(3))
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(3, len(frozen_dict))
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual("2", frozen_dict["two"])
+        self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
+        self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_from_list_of_pairs_and_kwargs(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict(
+            [("k0", "v0"), ("k1", "v1")],
+            one=1, two="2", three=Dummy(3)
+        )
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(5, len(frozen_dict))
+        self.assertEqual("v0", frozen_dict["k0"])
+        self.assertEqual("v1", frozen_dict["k1"])
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual("2", frozen_dict["two"])
+        self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
+        self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_list_of_strings_and_kwargs(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict(
+            ["k0", "v0", "k1", "v1"],
+            one=1, two="2", three=Dummy(3)
+        )
+
+        self.assertTrue(isinstance(frozen_dict, FrozenBase))
+        self.assertEqual(5, len(frozen_dict))
+        self.assertEqual("1", frozen_dict["k"])
+        self.assertEqual("1", frozen_dict["v"])
+        self.assertEqual(1, frozen_dict["one"])
+        self.assertEqual("2", frozen_dict["two"])
+        self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
+        self.assertEqual(3, frozen_dict["three"].value)
+
+    def test_construction_empty_list_and_kwargs(self):
+        class Dummy:
+            def __init__(self, value: Any):
+                self.value = value
+
+        frozen_dict = frozendict([], one=1, two="2", three=Dummy(3))
 
         self.assertTrue(isinstance(frozen_dict, FrozenBase))
         self.assertEqual(3, len(frozen_dict))

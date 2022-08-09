@@ -1,4 +1,5 @@
-from typing import Any, Callable, Optional, Union, Tuple, Hashable
+from typing import Any, Callable, Optional, Union, Tuple, Hashable, Sequence
+
 try:
     from collections import Mapping
 except ImportError:
@@ -20,7 +21,7 @@ class frozendict(dict, FrozenBase): # noqa
 
     def __init__(
             self,
-            mapping: Optional[Union[Mapping, Tuple[Hashable, Any]]] = None,
+            seq: Optional[Union[Mapping, Sequence, Tuple[Hashable, Any]]] = None,
             freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
             **kwargs
     ):
@@ -28,16 +29,23 @@ class frozendict(dict, FrozenBase): # noqa
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
                 return freeze(item, on_update="exception", on_freeze="copy")
-        if mapping:
-            if isinstance(mapping, Mapping):
+        if seq is not None:
+            items = None
+            if isinstance(seq, Mapping):
+                items = seq.items()
+            elif isinstance(seq, Sequence):
+                items = seq
+
+            if items is not None:
                 super().__init__(
-                    {key: freeze_func(value) for key, value in mapping.items()}
+                    {key: freeze_func(value) for key, value in items},
+                    **{key: freeze_func(value) for key, value in kwargs.items()}
                 )
             else:
                 super().__init__(
-                    {key: freeze_func(value) for key, value in mapping}
+                    {key: freeze_func(value) for key, value in seq}
                 )
-        elif mapping is None and kwargs:
+        elif kwargs:
             super().__init__(
                 {key: freeze_func(value) for key, value in kwargs.items()}
             )
