@@ -1,4 +1,3 @@
-import copy
 import io
 import sys
 import warnings
@@ -114,6 +113,8 @@ def __freeze_BufferedWriter(*args, **kwargs) -> None:  # noqa
 def __freeze_object(obj: object, on_update: OnUpdateFuncType,
                     on_freeze: OnFreezeFuncType) -> FrozenBase:
 
+    # If the object has a class with __slots__ an unique class is created whose class attributes
+    # are the object attributes that we want to freeze
     if hasattr(obj.__class__, "__slots__"):
         attrs = tuple(obj.__class__.__slots__)
         on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze="copy")
