@@ -290,6 +290,39 @@ class TestFreeze(unittest.TestCase):
             [str(warn.message) for warn in caught_warnings]
         )
 
+    def test_freeze_object_with_class_with_slots_whose_attributes_are_objects_with_class_with_slots(self):
+        class Attr(object):
+            __slots__ = ("value", )
+
+            def __init__(self, value: int):
+                self.value = value
+
+        class ClassWithSlots(object):
+            __slots__ = ("attr1", "attr2")
+
+            def __init__(self, attr1: Attr, attr2: Attr):
+                self.attr1 = attr1
+                self.attr2 = attr2
+
+        obj = ClassWithSlots(attr1=Attr(1), attr2=Attr(2))
+        frozen_obj = freeze(obj, on_update="warning", on_freeze="copy")
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            frozen_obj.attr1 = 99
+            frozen_obj.attr2 = 99
+
+        self.assertNotEqual(id(obj), id(frozen_obj))
+        self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj.__class__.__bases__)
+        self.assertEqual(1, frozen_obj.attr1.value)
+        self.assertEqual(2, frozen_obj.attr2.value)
+        self.assertListEqual(
+            [
+                "Can't assign attribute 'attr1' on immutable instance",
+                "Can't assign attribute 'attr2' on immutable instance"
+            ],
+            [str(warn.message) for warn in caught_warnings]
+        )
+
     def test_freeze_object_of_class_with_slots_inplace(self):
         class ClassWithSlots(object):
             __slots__ = ("attr1", "_attr2")
