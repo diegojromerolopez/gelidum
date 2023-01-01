@@ -277,6 +277,7 @@ class TestFreeze(unittest.TestCase):
         with warnings.catch_warnings(record=True) as caught_warnings:
             frozen_obj.attr1 = 99
             frozen_obj._attr2 = 99
+            frozen_obj.new_attribute = 99
 
         self.assertNotEqual(id(obj), id(frozen_obj))
         self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj.__class__.__bases__)
@@ -285,7 +286,8 @@ class TestFreeze(unittest.TestCase):
         self.assertListEqual(
             [
                 "Can't assign attribute 'attr1' on immutable instance",
-                "Can't assign attribute '_attr2' on immutable instance"
+                "Can't assign attribute '_attr2' on immutable instance",
+                "Can't assign attribute 'new_attribute' on immutable instance"
             ],
             [str(warn.message) for warn in caught_warnings]
         )
