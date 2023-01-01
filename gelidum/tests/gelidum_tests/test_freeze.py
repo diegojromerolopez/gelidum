@@ -290,6 +290,28 @@ class TestFreeze(unittest.TestCase):
             [str(warn.message) for warn in caught_warnings]
         )
 
+    def test_freeze_two_object_of_the_same_class_with_slots(self):
+        class ClassWithSlots(object):
+            __slots__ = ("attr1", "_attr2")
+
+            def __init__(self, attr1: int, attr2: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+
+        obj1 = ClassWithSlots(attr1=1, attr2=2)
+        frozen_obj1 = freeze(obj1, on_update="warning", on_freeze="copy")
+
+        obj2 = ClassWithSlots(attr1=3, attr2=4)
+        frozen_obj2 = freeze(obj2, on_update="warning", on_freeze="copy")
+
+        self.assertNotEqual(id(frozen_obj1.__class__), id(frozen_obj2.__class__))
+        self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj1.__class__.__bases__)
+        self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj2.__class__.__bases__)
+        self.assertEqual(1, frozen_obj1.attr1)
+        self.assertEqual(2, frozen_obj1._attr2)
+        self.assertEqual(3, frozen_obj2.attr1)
+        self.assertEqual(4, frozen_obj2._attr2)
+
     def test_freeze_object_with_class_with_slots_whose_attributes_are_objects_with_class_with_slots(self):
         class Attr(object):
             __slots__ = ("value", )
