@@ -296,7 +296,9 @@ and some appreciated feedback of the users of that great community.
   an object with them.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).
 - frozen objects cannot be (deep)-copied. This limitation is intended to make structural sharing easier.
-- Classes with \_\_slots\_\_ cannot be frozen.
+- Classes with \_\_slots\_\_:
+  - cannot be frozen in-place.
+  - will be frozen with a unique class. The frozen class will not be shared by instances of the same class.
 
 ## Advice & comments on use
 ### On_update parameter of freeze function
