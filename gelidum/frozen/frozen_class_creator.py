@@ -1,6 +1,7 @@
 import sys
 import threading
-from typing import cast, Type, Dict, Optional, Set, Iterable
+import uuid
+from typing import cast, Type, Dict, Optional, Set, Iterable, Any
 from gelidum.typing import OnUpdateFuncType
 from gelidum.frozen.frozen_base import FrozenBase
 
@@ -46,6 +47,36 @@ def make_frozen_class(klass: Type[object], attrs: Iterable[str],
             klass=klass, attrs=attrs,
             on_update_func=on_update
         )
+
+    return frozen_class
+
+
+def make_unique_class(klass: Type[object], attrs: Dict[str, Any],
+                      on_update: OnUpdateFuncType) -> Type[FrozenBase]:
+
+    camel_case_module = (
+        klass.__module__.title().replace(".", "").replace("_", "")
+    )
+    unique_suffix = str(uuid.uuid4()).replace("-", "")
+    frozen_class_name = f"Frozen{klass.__name__}From{camel_case_module}{unique_suffix}"
+    frozen_class: Type[FrozenBase] = cast(
+        Type[FrozenBase],
+        type(
+            frozen_class_name,
+            (FrozenBase, klass),
+            {
+                **{
+                    "get_gelidum_hot_class_name": lambda _: klass.__name__,
+                    "get_gelidum_hot_class_module": lambda _: klass.__module__,
+                    "_gelidum_on_update":
+                        lambda _self, *args, **kwargs:
+                        on_update(*args, **kwargs),
+                    **attrs,
+                    "__init__": lambda _: None
+                }
+            }
+        )
+    )
 
     return frozen_class
 

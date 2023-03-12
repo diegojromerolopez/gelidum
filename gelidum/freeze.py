@@ -1,20 +1,23 @@
-import copy
 import io
 import sys
 import warnings
 from typing import (
     List, Set, Dict, Any, Optional, Union, Tuple
-
 )
 
-import numpy as np
-
-from gelidum.collections import frozendict, frozenlist, frozenzet, frozenndarray
+from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
+from gelidum.frozen.frozen_class_creator import make_unique_class
+from gelidum.package import package_is_installed
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
 from gelidum.utils import isbuiltin
 from gelidum.on_freeze import on_freeze_func_creator
+
+if package_is_installed('numpy'):
+    from gelidum.collections import frozenndarray
+
+NpArrayType = Any
 
 
 def freeze(
@@ -31,11 +34,18 @@ def freeze(
                 "Use of inplace is deprecated and will be removed in next major version (0.6.0)"
             )
         )
+
+        if hasattr(obj.__class__, "__slots__") and inplace:
+            raise FrozenException("Objects of classes with __slots__ cannot be frozen inplace")
+
         on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(
             on_freeze="inplace" if inplace else "copy"
         )
 
     else:
+        if hasattr(obj.__class__, "__slots__") and on_freeze == "inplace":
+            raise FrozenException("Objects of classes with __slots__ cannot be frozen inplace")
+
         on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze=on_freeze)
 
     on_update_func: OnUpdateFuncType = __on_update_func(on_update=on_update)
@@ -59,8 +69,10 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
         freeze_func = getattr(this_module, freeze_func_name)
         return freeze_func(obj, on_update=on_update, on_freeze=on_freeze)
 
-    if isinstance(obj, np.ndarray):
-        return __freeze_ndarray(obj, on_update=on_update, on_freeze=on_freeze)
+    if package_is_installed('numpy'):
+        import numpy as np
+        if isinstance(obj, np.ndarray):
+            return __freeze_ndarray(obj, on_update=on_update, on_freeze=on_freeze)
 
     if isinstance(obj, object):
         return __freeze_object(obj, on_update=on_update, on_freeze=on_freeze)
@@ -73,7 +85,7 @@ def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
     return bytes(obj)
 
 
-def __freeze_ndarray(obj: np.ndarray, on_update: OnUpdateFuncType,
+def __freeze_ndarray(obj: NpArrayType, on_update: OnUpdateFuncType,
                      on_freeze: OnFreezeFuncType) -> FrozenList:
     def freeze_func(item: Any) -> FrozenType:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
@@ -119,21 +131,32 @@ def __freeze_BufferedWriter(*args, **kwargs) -> None:  # noqa
 def __freeze_object(obj: object, on_update: OnUpdateFuncType,
                     on_freeze: OnFreezeFuncType) -> FrozenBase:
 
+    # If the object has a class with __slots__ an unique class is created whose class attributes
+    # are the object attributes that we want to freeze
     if hasattr(obj.__class__, "__slots__"):
-        raise FrozenException("gelidum does not support classes with __slots__")
+        attrs = tuple(obj.__class__.__slots__)
+        on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze="copy")
+        frozen_class = make_unique_class(
+            klass=obj.__class__,
+            attrs={attr: freeze(getattr(obj, attr), on_update=on_update, on_freeze=on_freeze) for attr in attrs},
+            on_update=on_update
+        )
+        return frozen_class()
+    else:
+        attrs = tuple(obj.__dict__.keys())
 
-    frozen_obj = on_freeze(obj)
-    for attr, value in frozen_obj.__dict__.items():
-        attr_value = getattr(frozen_obj, attr)
-        setattr(frozen_obj, attr, freeze(attr_value, on_update=on_update, on_freeze=on_freeze))
+        frozen_obj = on_freeze(obj)
+        for attr in attrs:
+            attr_value = getattr(frozen_obj, attr)
+            setattr(frozen_obj, attr, freeze(attr_value, on_update=on_update, on_freeze=on_freeze))
 
-    frozen_class = make_frozen_class(
-        klass=obj.__class__,
-        attrs=list(obj.__dict__.keys()),
-        on_update=on_update
-    )
-    frozen_obj.__class__ = frozen_class
-    return frozen_obj
+        frozen_class = make_frozen_class(
+            klass=obj.__class__,
+            attrs=attrs,
+            on_update=on_update
+        )
+        frozen_obj.__class__ = frozen_class
+        return frozen_obj
 
 
 def __on_update_exception(

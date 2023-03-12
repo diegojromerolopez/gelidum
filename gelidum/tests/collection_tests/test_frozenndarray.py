@@ -1,14 +1,18 @@
-import numpy as np
 import unittest
-from typing import Any, Iterator
 
-from gelidum import FrozenException, freeze
-from gelidum.collections.frozenndarray import frozenndarray
+from gelidum import freeze
+from gelidum.package import package_is_installed
 from gelidum.frozen import FrozenBase
 
 
+@unittest.skipIf(
+    lambda _: not package_is_installed('numpy'),
+    'numpy is not installed, TestFrozenndarray tests skipped'
+)
 class TestFrozenndarray(unittest.TestCase):  # noqa
     def test_freeze_int64_ndarray(self):
+        import numpy as np
+
         array = np.array([1, 2, 3], dtype=np.int64).reshape((1, 3))
         frozen_array = freeze(array, on_freeze="copy")
         frozen_array_copy = frozen_array.copy()
@@ -23,6 +27,8 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_array_copy, np.ndarray))
 
     def test_freeze_int64_custom_shape_ndarray(self):
+        import numpy as np
+
         array = np.array([1, 2, 3, 4], dtype=np.int64).reshape((2, 2))
         frozen_array = freeze(array, on_freeze="copy")
         frozen_array_copy = frozen_array.copy()
@@ -37,6 +43,8 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_array_copy, np.ndarray))
 
     def test_assignment_single_value(self):
+        import numpy as np
+
         array = np.array([1, 2, 3, 4], dtype=np.int64).reshape((2, 2))
         frozen_array = freeze(array, on_freeze="copy")
 
@@ -50,6 +58,8 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertEqual(99, array[0, 1])
 
     def test_assignment_multiple_values(self):
+        import numpy as np
+
         array = np.array([1, 2, 3, 4], dtype=int).reshape((2, 2))
         frozen_array = freeze(array, on_freeze="copy")
 
