@@ -136,6 +136,56 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy), id(frozen_dummy_on_freeze_copy))
 
+    def test_freeze_nested_dataclass(self):
+        from dataclasses import dataclass
+
+        @dataclass
+        class ItemType:
+            id: int
+            name: str
+
+        @dataclass
+        class Item:
+            id: int
+            name: str
+            order: int
+            type: ItemType
+
+        @dataclass
+        class Database:
+            items: List[Item]
+
+        item_type1 = ItemType(1, "item type 1")
+        item_type2 = ItemType(2, "item type 2")
+
+        dummy_database = Database(
+            items=[
+                Item(1, "item 1", 5, item_type1),
+                Item(2, "item 2", 1, item_type1),
+                Item(3, "item 3", 99, item_type2)
+            ]
+        )
+        frozen_dummy_on_freeze_copy = freeze(dummy_database, on_freeze="copy")
+        frozen_dummy_inplace = freeze(dummy_database, on_freeze="inplace")
+
+        with self.assertRaises(FrozenException) as context_on_freeze_copy_items_assignment:
+            frozen_dummy_on_freeze_copy.items = []
+
+        with self.assertRaises(FrozenException) as context_on_freeze_copy_item_assignment:
+            frozen_dummy_on_freeze_copy.items[0] = Item(9, "item 9", 99, item_type1)
+
+        with self.assertRaises(FrozenException) as context_inplace:
+            frozen_dummy_inplace.attr2 = "2"
+
+        self.assertEqual("Can't assign attribute 'items' on immutable instance",
+                         str(context_on_freeze_copy_items_assignment.exception))
+        self.assertEqual("'frozenlist' object is immutable",
+                         str(context_on_freeze_copy_item_assignment.exception))
+        self.assertEqual("Can't assign attribute 'attr2' on immutable instance",
+                         str(context_inplace.exception))
+        self.assertEqual(id(dummy_database), id(frozen_dummy_inplace))
+        self.assertNotEqual(id(dummy_database), id(frozen_dummy_on_freeze_copy))
+
     def test_freeze_objects_of_same_class(self):
         class Dummy(object):
             def __init__(self, value: int):
@@ -147,23 +197,6 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy2 = freeze(dummy2, on_freeze="copy")
 
         self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__)
-
-    def test_freeze_simple_object_with_unsupported__slots__attribute(self):
-        class Dummy(object):
-            __slots__ = ("attr",)
-
-            def __init__(self, value: int):
-                self.attr = value
-
-        dummy = Dummy(value=1)
-
-        with self.assertRaises(FrozenException) as setattr_context:
-            freeze(dummy, on_freeze="copy")
-
-        self.assertEqual(
-            "gelidum does not support classes with __slots__",
-            str(setattr_context.exception)
-        )
 
     def test_freeze_simple_object_inplace_true_deprecated_parameter(self):
         class Dummy(object):
@@ -229,6 +262,120 @@ class TestFreeze(unittest.TestCase):
             ],
             [str(warn.message) for warn in caught_warnings]
         )
+
+    def test_freeze_object_of_class_with_slots(self):
+        class ClassWithSlots(object):
+            __slots__ = ("attr1", "_attr2")
+
+            def __init__(self, attr1: int, attr2: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+
+        obj = ClassWithSlots(attr1=1, attr2=2)
+        frozen_obj = freeze(obj, on_update="warning", on_freeze="copy")
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            frozen_obj.attr1 = 99
+            frozen_obj._attr2 = 99
+            frozen_obj.new_attribute = 99
+
+        self.assertNotEqual(id(obj), id(frozen_obj))
+        self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj.__class__.__bases__)
+        self.assertEqual(1, frozen_obj.attr1)
+        self.assertEqual(2, frozen_obj._attr2)
+        self.assertListEqual(
+            [
+                "Can't assign attribute 'attr1' on immutable instance",
+                "Can't assign attribute '_attr2' on immutable instance",
+                "Can't assign attribute 'new_attribute' on immutable instance"
+            ],
+            [str(warn.message) for warn in caught_warnings]
+        )
+
+    def test_freeze_two_object_of_the_same_class_with_slots(self):
+        class ClassWithSlots(object):
+            __slots__ = ("attr1", "_attr2")
+
+            def __init__(self, attr1: int, attr2: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+
+        obj1 = ClassWithSlots(attr1=1, attr2=2)
+        frozen_obj1 = freeze(obj1, on_update="warning", on_freeze="copy")
+
+        obj2 = ClassWithSlots(attr1=3, attr2=4)
+        frozen_obj2 = freeze(obj2, on_update="warning", on_freeze="copy")
+
+        self.assertNotEqual(id(frozen_obj1.__class__), id(frozen_obj2.__class__))
+        self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj1.__class__.__bases__)
+        self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj2.__class__.__bases__)
+        self.assertEqual(1, frozen_obj1.attr1)
+        self.assertEqual(2, frozen_obj1._attr2)
+        self.assertEqual(3, frozen_obj2.attr1)
+        self.assertEqual(4, frozen_obj2._attr2)
+
+    def test_freeze_object_with_class_with_slots_whose_attributes_are_objects_with_class_with_slots(self):
+        class Attr(object):
+            __slots__ = ("value", )
+
+            def __init__(self, value: int):
+                self.value = value
+
+        class ClassWithSlots(object):
+            __slots__ = ("attr1", "attr2")
+
+            def __init__(self, attr1: Attr, attr2: Attr):
+                self.attr1 = attr1
+                self.attr2 = attr2
+
+        obj = ClassWithSlots(attr1=Attr(1), attr2=Attr(2))
+        frozen_obj = freeze(obj, on_update="warning", on_freeze="copy")
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            frozen_obj.attr1 = 99
+            frozen_obj.attr2 = 99
+
+        self.assertNotEqual(id(obj), id(frozen_obj))
+        self.assertEqual((FrozenBase, ClassWithSlots), frozen_obj.__class__.__bases__)
+        self.assertEqual(1, frozen_obj.attr1.value)
+        self.assertEqual(2, frozen_obj.attr2.value)
+        self.assertListEqual(
+            [
+                "Can't assign attribute 'attr1' on immutable instance",
+                "Can't assign attribute 'attr2' on immutable instance"
+            ],
+            [str(warn.message) for warn in caught_warnings]
+        )
+
+    def test_freeze_object_of_class_with_slots_inplace(self):
+        class ClassWithSlots(object):
+            __slots__ = ("attr1", "_attr2")
+
+            def __init__(self, attr1: int, attr2: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+
+        obj = ClassWithSlots(attr1=1, attr2=2)
+        with self.assertRaises(FrozenException) as freeze_context:
+            freeze(obj, on_update="warning", on_freeze="inplace")
+
+        self.assertEqual("Objects of classes with __slots__ cannot be frozen inplace",
+                         str(freeze_context.exception))
+
+    def test_freeze_object_of_class_with_slots_inplace_deprecated_parameter(self):
+        class ClassWithSlots(object):
+            __slots__ = ("attr1", "_attr2")
+
+            def __init__(self, attr1: int, attr2: int):
+                self.attr1 = attr1
+                self._attr2 = attr2
+
+        obj = ClassWithSlots(attr1=1, attr2=2)
+        with self.assertRaises(FrozenException) as freeze_context:
+            freeze(obj, on_update="warning", inplace=True)
+
+        self.assertEqual("Objects of classes with __slots__ cannot be frozen inplace",
+                         str(freeze_context.exception))
 
     def test_freeze_simple_object_on_update_nothing_on_freeze_inplace(self):
         class Dummy(object):
