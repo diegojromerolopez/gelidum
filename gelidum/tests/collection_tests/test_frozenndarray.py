@@ -1,14 +1,10 @@
 import unittest
 
-from gelidum import freeze
-from gelidum.package import package_is_installed
+from gelidum import NUMPY_INSTALLED, freeze
 from gelidum.frozen import FrozenBase
 
 
-@unittest.skipIf(
-    lambda _: not package_is_installed('numpy'),
-    'numpy is not installed, TestFrozenndarray tests skipped'
-)
+@unittest.skipUnless(NUMPY_INSTALLED, 'numpy is not installed, TestFrozenndarray tests skipped')
 class TestFrozenndarray(unittest.TestCase):  # noqa
     def test_freeze_int64_ndarray(self):
         import numpy as np

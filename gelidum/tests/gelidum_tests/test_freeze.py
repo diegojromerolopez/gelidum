@@ -13,9 +13,9 @@ from typing import Dict, List, Union, Any
 from unittest.mock import patch
 from gelidum import FrozenException
 from gelidum import freeze
+from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.frozen import FrozenBase, get_frozen_classes, clear_frozen_classes
-from gelidum.package import package_is_installed
 
 
 class TestFreeze(unittest.TestCase):
@@ -1332,10 +1332,7 @@ class TestFreeze(unittest.TestCase):
         self.assertTrue(frozen_dummy2 in my_dict)
         self.assertEqual(dummy2, my_dict[frozen_dummy2])
 
-    @unittest.skipIf(
-        lambda _: not package_is_installed('numpy'),
-        'numpy is not installed, TestFreeze.test_freeze_ndarray test skipped'
-    )
+    @unittest.skipUnless(NUMPY_INSTALLED, 'numpy is not installed, TestFreeze.test_freeze_ndarray test skipped')
     def test_freeze_ndarray(self):
         import numpy as np
 

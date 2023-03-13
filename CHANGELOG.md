@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 0.6.0 (2023-03-12)
 ### Features
-- Allow freezing numpy ndarrays.
+- Beta support for freezing [numpy arrays](https://numpy.org/doc/stable/reference/arrays.html).
 
 ## 0.5.9 (2023-01-01)
 ### Features
