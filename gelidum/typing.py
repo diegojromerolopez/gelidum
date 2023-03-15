@@ -6,7 +6,7 @@ from typing import TypeVar
 
 if TYPE_CHECKING:  # pragma: no cover
     from gelidum.frozen import FrozenBase  # noqa
-    from gelidum.collections import frozendict, frozenlist, frozenzet  # noqa
+    from gelidum.collections import frozendict, frozenlist, frozenzet, frozenndarray  # noqa
 
 
 python_interpreter = python_implementation()
@@ -38,13 +38,14 @@ else:
 FrozenList = Union["FrozenBase", Sized, Iterable, Reversible,  "frozenlist"]
 FrozenDict = Union["FrozenBase", Mapping, "frozendict"]
 FrozenZet = Union["FrozenBase", Sized, Iterable, "frozenzet"]
+FrozenNdArray = Union["FrozenBase", Sized, Iterable, "frozenndarray"]
 
 T = TypeVar('T')
 
 FrozenType = Optional[
     Union[
         bool, int, float, bytes, complex, str, bytes,
-        FrozenDict, FrozenList, FrozenZet,
+        FrozenDict, FrozenList, FrozenZet, FrozenNdArray,
         tuple, frozenset, "FrozenBase", T
     ]
 ]

@@ -13,6 +13,7 @@ from typing import Dict, List, Union, Any
 from unittest.mock import patch
 from gelidum import FrozenException
 from gelidum import freeze
+from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.frozen import FrozenBase, get_frozen_classes, clear_frozen_classes
 
@@ -1330,3 +1331,24 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(dummy1, my_dict[frozen_dummy1])
         self.assertTrue(frozen_dummy2 in my_dict)
         self.assertEqual(dummy2, my_dict[frozen_dummy2])
+
+    @unittest.skipUnless(NUMPY_INSTALLED, 'numpy is not installed, TestFreeze.test_freeze_ndarray test skipped')
+    def test_freeze_ndarray(self):
+        import numpy as np
+
+        array = np.array([1, 2, 3])
+        frozen_array = freeze(array, on_freeze="copy")
+        frozen_array_copy = frozen_array.copy()
+
+        self.assertEqual(array.shape, frozen_array.shape)
+        self.assertEqual(array.shape, frozen_array_copy.shape)
+        self.assertEqual(array[0], frozen_array[0])
+        self.assertEqual(array[1], frozen_array[1])
+        self.assertEqual(array[2], frozen_array[2])
+        self.assertEqual(array[0], frozen_array_copy[0])
+        self.assertEqual(array[1], frozen_array_copy[1])
+        self.assertEqual(array[2], frozen_array_copy[2])
+        self.assertTrue(isinstance(frozen_array, FrozenBase))
+        self.assertTrue(isinstance(frozen_array, np.ndarray))
+        self.assertTrue(isinstance(frozen_array_copy, FrozenBase))
+        self.assertTrue(isinstance(frozen_array_copy, np.ndarray))

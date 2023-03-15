@@ -3,9 +3,9 @@ import sys
 import warnings
 from typing import (
     List, Set, Dict, Any, Optional, Union, Tuple
-
 )
 
+from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import make_frozen_class, FrozenBase
@@ -13,6 +13,11 @@ from gelidum.frozen.frozen_class_creator import make_unique_class
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
 from gelidum.utils import isbuiltin
 from gelidum.on_freeze import on_freeze_func_creator
+
+if NUMPY_INSTALLED:
+    from gelidum.collections import frozenndarray
+
+NpArrayType = Any
 
 
 def freeze(
@@ -64,6 +69,11 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
         freeze_func = getattr(this_module, freeze_func_name)
         return freeze_func(obj, on_update=on_update, on_freeze=on_freeze)
 
+    if NUMPY_INSTALLED:
+        import numpy as np
+        if isinstance(obj, np.ndarray):
+            return __freeze_ndarray(obj, on_update=on_update, on_freeze=on_freeze)
+
     if isinstance(obj, object):
         return __freeze_object(obj, on_update=on_update, on_freeze=on_freeze)
 
@@ -73,6 +83,14 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
 
 def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
     return bytes(obj)
+
+
+def __freeze_ndarray(obj: NpArrayType, on_update: OnUpdateFuncType,
+                     on_freeze: OnFreezeFuncType) -> FrozenList:
+    def freeze_func(item: Any) -> FrozenType:
+        return freeze(item, on_update=on_update, on_freeze=on_freeze)
+
+    return frozenndarray(obj, freeze_func=freeze_func)
 
 
 def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType,

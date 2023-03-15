@@ -26,3 +26,9 @@ jobs:
       - name: Test with unittest
         run: |
           python -m unittest discover -s ./gelidum/tests
+      - name: Install optional dependency (numpy)
+        run: |
+          pip install numpy
+      - name: Test optional dependency (numpy) with unittest
+        run: |
+          python -m unittest discover -s ./gelidum/tests
