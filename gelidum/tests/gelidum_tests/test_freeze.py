@@ -187,6 +187,51 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy_database), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy_database), id(frozen_dummy_on_freeze_copy))
 
+    def test_freeze_objects_by_copying_and_access_original_object(self):
+        class DummyChild(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+        class Dummy(object):
+            def __init__(self, child: DummyChild):
+                self.child = child
+
+        dummy_child = DummyChild(value=1)
+        dummy = Dummy(child=dummy_child)
+        frozen_dummy = freeze(dummy, on_freeze="copy", save_original_on_copy=True)
+
+        self.assertNotEqual(frozen_dummy.__class__, dummy.__class__)
+        self.assertEqual(frozen_dummy.original_obj.__class__, dummy.__class__)
+        self.assertEqual(id(frozen_dummy.original_obj), id(dummy))
+        self.assertEqual(frozen_dummy.child.original_obj, None)
+
+    def test_freeze_objects_by_copying_but_not_saving_original_object(self):
+        class DummyChild(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+        class Dummy(object):
+            def __init__(self, child: DummyChild):
+                self.child = child
+
+        dummy_child = DummyChild(value=1)
+        dummy = Dummy(child=dummy_child)
+        frozen_dummy = freeze(dummy, on_freeze="copy", save_original_on_copy=False)
+
+        self.assertNotEqual(frozen_dummy.__class__, dummy.__class__)
+        self.assertIsNone(frozen_dummy.original_obj)
+
+    def test_freeze_objects_inplace_and_no_access_to_original_object(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy = Dummy(value=1)
+        frozen_dummy = freeze(dummy, on_freeze="inplace")
+
+        self.assertEqual(frozen_dummy.__class__, dummy.__class__)
+        self.assertIsNone(frozen_dummy.original_obj)
+
     def test_freeze_objects_of_same_class(self):
         class Dummy(object):
             def __init__(self, value: int):
