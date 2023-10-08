@@ -12,7 +12,7 @@ from gelidum.frozen import make_frozen_class, FrozenBase
 from gelidum.frozen.frozen_class_creator import make_unique_class
 from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
 from gelidum.utils import isbuiltin
-from gelidum.on_freeze import on_freeze_func_creator
+from gelidum.on_freeze import on_freeze_func_creator, OnFreezeCopier
 
 if NUMPY_INSTALLED:
     from gelidum.collections import frozenndarray
@@ -24,7 +24,8 @@ def freeze(
         obj: T,
         on_update: Union[str, OnUpdateFuncType] = "exception",
         on_freeze: Union[str, OnFreezeFuncType] = "copy",
-        inplace: Optional[bool] = None,
+        save_original_on_copy: bool = False,
+        inplace: Optional[bool] = None
         ) -> FrozenType:
 
     # inplace argument will be removed from freeze in the next major version (0.6.0)
@@ -50,11 +51,11 @@ def freeze(
 
     on_update_func: OnUpdateFuncType = __on_update_func(on_update=on_update)
 
-    return __freeze(obj=obj, on_update=on_update_func, on_freeze=on_freeze_func)
+    return __freeze(obj=obj, on_update=on_update_func, on_freeze=on_freeze_func, save_original_on_copy=save_original_on_copy)
 
 
 def __freeze(obj: Any, on_update: OnUpdateFuncType,
-             on_freeze: OnFreezeFuncType) -> Any:
+             on_freeze: OnFreezeFuncType, save_original_on_copy: bool = False) -> Any:
 
     if isbuiltin(obj):
         return obj
@@ -75,7 +76,7 @@ def __freeze(obj: Any, on_update: OnUpdateFuncType,
             return __freeze_ndarray(obj, on_update=on_update, on_freeze=on_freeze)
 
     if isinstance(obj, object):
-        return __freeze_object(obj, on_update=on_update, on_freeze=on_freeze)
+        return __freeze_object(obj, on_update=on_update, on_freeze=on_freeze, save_original_on_copy=save_original_on_copy)
 
     # Actually, this code is unreachable
     raise ValueError(f"object of type {obj.__class__} not frozen")  # pragma: no cover
@@ -129,16 +130,16 @@ def __freeze_BufferedWriter(*args, **kwargs) -> None:  # noqa
 
 
 def __freeze_object(obj: object, on_update: OnUpdateFuncType,
-                    on_freeze: OnFreezeFuncType) -> FrozenBase:
+                    on_freeze: OnFreezeFuncType, save_original_on_copy: bool = False) -> FrozenBase:
 
-    # If the object has a class with __slots__ an unique class is created whose class attributes
+    # If the object has a class with __slots__ a unique class is created whose class attributes
     # are the object attributes that we want to freeze
     if hasattr(obj.__class__, "__slots__"):
         attrs = tuple(obj.__class__.__slots__)
         on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze="copy")
         frozen_class = make_unique_class(
             klass=obj.__class__,
-            attrs={attr: freeze(getattr(obj, attr), on_update=on_update, on_freeze=on_freeze) for attr in attrs},
+            attrs={attr: freeze(getattr(obj, attr), on_update=on_update, on_freeze=on_freeze, save_original_on_copy=False) for attr in attrs},
             on_update=on_update
         )
         return frozen_class()
@@ -148,7 +149,14 @@ def __freeze_object(obj: object, on_update: OnUpdateFuncType,
         frozen_obj = on_freeze(obj)
         for attr in attrs:
             attr_value = getattr(frozen_obj, attr)
-            setattr(frozen_obj, attr, freeze(attr_value, on_update=on_update, on_freeze=on_freeze))
+            setattr(frozen_obj, attr, freeze(attr_value, on_update=on_update, on_freeze=on_freeze, save_original_on_copy=False))
+
+        # Only when the frozen method is copying the objects we can get the original object
+        # save_original_on_copy is used to save only the original object (the first-level object whose
+        # save_original_on_copy is set to True). Descendant attributes are not saved in other original_obj attributes,
+        # i.e. there is no copy of hierarchy, only the first-level object is saved.
+        if save_original_on_copy and on_freeze.__class__ == OnFreezeCopier:
+            setattr(frozen_obj, "original_obj", obj)
 
         frozen_class = make_frozen_class(
             klass=obj.__class__,

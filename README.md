@@ -114,6 +114,28 @@ frozen_dummy.attr1 = new_attr1_value
 ```
 
 #### Access to original object
+##### Passing flag to freezer
+If you are freezing custom objects, you can pass the flag `save_original_on_copy` to the freeze method to
+ensure you have an attribute original_obj in the frozen method.
+
+```python
+from gelidum import freeze
+
+class Dummy(object):
+  def __init__(self, attr1: int, attr2: int):
+    self.attr1 = attr1
+    self.attr2 = attr2
+
+dummy = Dummy(1, 2)
+frozen_dummy = freeze(dummy, save_original_on_copy=True)
+
+# We are copying the object and freezing it:
+assert(id(dummy) != id(frozen_dummy))
+# But we are keeping the original object inside it:
+assert(id(dummy) == id(frozen_dummy.original_obj))
+```
+
+##### Custom freezer
 The parameter on_freeze admits a callable, so you can have
 some side effects when freezing objects.
 
