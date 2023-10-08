@@ -27,6 +27,7 @@ def __create_frozen_class(
                     "_gelidum_on_update":
                         lambda _self, *args, **kwargs:
                         on_update_func(*args, **kwargs),
+                    "original_obj": None,
                     **{attr: None for attr in attrs}
                 }
             }
