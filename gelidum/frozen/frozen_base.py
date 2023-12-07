@@ -1,5 +1,9 @@
 class FrozenBase(object):
     @classmethod
+    def get_hot_class(cls, *args, **kwargs):  # pragma: no cover
+        raise NotImplementedError("Implement in derived class")
+
+    @classmethod
     def _gelidum_on_update(cls, *args, **kwargs):  # pragma: no cover
         raise NotImplementedError("Implement in derived class")
 
