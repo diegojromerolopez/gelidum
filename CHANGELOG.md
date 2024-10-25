@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.7.1 (2024-10-25)
+### Fixes
+- Add support for cpython 3.13 and pypy 3.10.
+
 ## 0.7.0 (2023-10-08)
 ### Features
 - Adding `original_obj` attribute to **frozen by copying objects** to get the original object.
