@@ -13,37 +13,26 @@ class FrozenBase(object):
 
     def __setattr__(self, key, value):
         self._gelidum_on_update(
-            frozen_obj=self,
-            message=f"Can't assign attribute '{key}' on immutable instance",
-            key=key, value=value
+            frozen_obj=self, message=f"Can't assign attribute '{key}' on immutable instance", key=key, value=value
         )
 
     def __set__(self, obj, value):
         self._gelidum_on_update(
-            frozen_obj=self,
-            message=f"Can't assign setter on immutable instance",
-            obj=obj, value=value
+            frozen_obj=self, message="Can't assign setter on immutable instance", obj=obj, value=value
         )
 
     def __delattr__(self, name):
         self._gelidum_on_update(
-            frozen_obj=self,
-            message=f"Can't delete attribute '{name}' on immutable instance",
-            name=name
+            frozen_obj=self, message=f"Can't delete attribute '{name}' on immutable instance", name=name
         )
 
     def __setitem__(self, key, value):
         self._gelidum_on_update(
-            frozen_obj=self,
-            message=f"Can't set key '{key}' on immutable instance",
-            key=key, value=value
+            frozen_obj=self, message=f"Can't set key '{key}' on immutable instance", key=key, value=value
         )
 
     def __delitem__(self, key):
-        self._gelidum_on_update(
-            frozen_obj=self,
-            message=f"Can't delete key '{key}' on immutable instance",
-            key=key)
+        self._gelidum_on_update(frozen_obj=self, message=f"Can't delete key '{key}' on immutable instance", key=key)
 
     def __deepcopy__(self, *args, **kwargs) -> "FrozenBase":
         """

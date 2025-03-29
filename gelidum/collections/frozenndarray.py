@@ -6,20 +6,16 @@ from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 
 
-__all__ = [
-    "frozenndarray"
-]
+__all__ = ["frozenndarray"]
 
 
-class frozenndarray(np.ndarray, FrozenBase): # noqa
+class frozenndarray(np.ndarray, FrozenBase):  # noqa
     """
     Read https://numpy.org/devdocs/user/basics.subclassing.html for more
     information about numpy.ndarray subclassing.
     """
 
-    def __new__(cls, ndarray: np.ndarray,
-                freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
-                *args, **kwargs):
+    def __new__(cls, ndarray: np.ndarray, freeze_func: Optional[Callable[[Any], FrozenBase]] = None, *args, **kwargs):
         obj = ndarray.copy().view(cls)
         obj.flags.writeable = False
         return obj

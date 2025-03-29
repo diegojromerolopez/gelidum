@@ -86,10 +86,8 @@ class TestOnFreeze(unittest.TestCase):
         frozen_dummy1 = freeze(dummy1, on_freeze=freezer)
 
         self.assertEqual(
-            [call('Dummy object frozen'),
-             call('DummyAttr1 object frozen'),
-             call('DummyAttr2 object frozen')],
-            mock_log.debug.call_args_list
+            [call("Dummy object frozen"), call("DummyAttr1 object frozen"), call("DummyAttr2 object frozen")],
+            mock_log.debug.call_args_list,
         )
         self.assertTrue(isinstance(frozen_dummy1, Dummy))
         self.assertTrue(isinstance(frozen_dummy1.attr1, DummyAttr1))

@@ -33,8 +33,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual("String", freeze("String"))
 
     def test_freeze_bytearray(self):
-        self.assertEqual(
-            b"Byte array", freeze(bytearray(b"Byte array")))
+        self.assertEqual(b"Byte array", freeze(bytearray(b"Byte array")))
 
     def test_freeze_dict(self):
         frozen_obj: frozendict = freeze({"one": 1, "two": 2})
@@ -56,22 +55,10 @@ class TestFreeze(unittest.TestCase):
         self.assertTrue("two" in frozen_obj)
         self.assertEqual(1, frozen_obj["one"])
         self.assertEqual(2, frozen_obj["two"])
-        self.assertEqual(
-            "'frozendict' object is immutable",
-            str(context_assignment.exception)
-        )
-        self.assertEqual(
-            "'frozendict' object is immutable",
-            str(context_clear.exception)
-        )
-        self.assertEqual(
-            "'frozendict' object is immutable",
-            str(context_update.exception)
-        )
-        self.assertEqual(
-            "'frozendict' object is immutable",
-            str(context_deletion.exception)
-        )
+        self.assertEqual("'frozendict' object is immutable", str(context_assignment.exception))
+        self.assertEqual("'frozendict' object is immutable", str(context_clear.exception))
+        self.assertEqual("'frozendict' object is immutable", str(context_update.exception))
+        self.assertEqual("'frozendict' object is immutable", str(context_deletion.exception))
 
     def test_freeze_list(self):
         frozen_list = freeze(["one", 2, "three", ["a", "b", "c", 4, 5]])
@@ -100,16 +87,14 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
             "Use of inplace is deprecated and will be removed in next major version (0.6.0)",
-            str(caught_warnings[0].message)
+            str(caught_warnings[0].message),
         )
 
     def test_freeze_tuple(self):
-        self.assertEqual(
-            ("one", 2, "three"), freeze(("one", 2, "three")))
+        self.assertEqual(("one", 2, "three"), freeze(("one", 2, "three")))
 
     def test_freeze_set(self):
-        self.assertEqual(
-            frozenzet(["one", 2, "three"]), freeze({"one", 2, "three"}))
+        self.assertEqual(frozenzet(["one", 2, "three"]), freeze({"one", 2, "three"}))
 
     def test_freeze_simple_dataclass(self):
         from dataclasses import dataclass
@@ -130,10 +115,8 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_inplace:
             frozen_dummy_inplace.attr2 = "2"
 
-        self.assertEqual("Can't assign attribute 'attr1' on immutable instance",
-                         str(context_on_freeze_copy.exception))
-        self.assertEqual("Can't assign attribute 'attr2' on immutable instance",
-                         str(context_inplace.exception))
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance", str(context_on_freeze_copy.exception))
+        self.assertEqual("Can't assign attribute 'attr2' on immutable instance", str(context_inplace.exception))
         self.assertEqual(id(dummy), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy), id(frozen_dummy_on_freeze_copy))
 
@@ -163,7 +146,7 @@ class TestFreeze(unittest.TestCase):
             items=[
                 Item(1, "item 1", 5, item_type1),
                 Item(2, "item 2", 1, item_type1),
-                Item(3, "item 3", 99, item_type2)
+                Item(3, "item 3", 99, item_type2),
             ]
         )
         frozen_dummy_on_freeze_copy = freeze(dummy_database, on_freeze="copy")
@@ -178,12 +161,12 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_inplace:
             frozen_dummy_inplace.attr2 = "2"
 
-        self.assertEqual("Can't assign attribute 'items' on immutable instance",
-                         str(context_on_freeze_copy_items_assignment.exception))
-        self.assertEqual("'frozenlist' object is immutable",
-                         str(context_on_freeze_copy_item_assignment.exception))
-        self.assertEqual("Can't assign attribute 'attr2' on immutable instance",
-                         str(context_inplace.exception))
+        self.assertEqual(
+            "Can't assign attribute 'items' on immutable instance",
+            str(context_on_freeze_copy_items_assignment.exception),
+        )
+        self.assertEqual("'frozenlist' object is immutable", str(context_on_freeze_copy_item_assignment.exception))
+        self.assertEqual("Can't assign attribute 'attr2' on immutable instance", str(context_inplace.exception))
         self.assertEqual(id(dummy_database), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy_database), id(frozen_dummy_on_freeze_copy))
 
@@ -259,7 +242,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
             "Use of inplace is deprecated and will be removed in next major version (0.6.0)",
-            str(caught_warnings[0].message)
+            str(caught_warnings[0].message),
         )
 
     def test_freeze_simple_object_inplace_false_deprecated_parameter(self):
@@ -277,7 +260,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(1, len(caught_warnings))
         self.assertEqual(
             "Use of inplace is deprecated and will be removed in next major version (0.6.0)",
-            str(caught_warnings[0].message)
+            str(caught_warnings[0].message),
         )
 
     def test_freeze_simple_object_on_update_warning_on_freeze_inplace(self):
@@ -304,9 +287,9 @@ class TestFreeze(unittest.TestCase):
             [
                 "Can't assign attribute 'attr1' on immutable instance",
                 "Can't assign attribute '_attr2' on immutable instance",
-                "Can't assign attribute '_Dummy__attr3' on immutable instance"
+                "Can't assign attribute '_Dummy__attr3' on immutable instance",
             ],
-            [str(warn.message) for warn in caught_warnings]
+            [str(warn.message) for warn in caught_warnings],
         )
 
     def test_freeze_object_of_class_with_slots(self):
@@ -333,9 +316,9 @@ class TestFreeze(unittest.TestCase):
             [
                 "Can't assign attribute 'attr1' on immutable instance",
                 "Can't assign attribute '_attr2' on immutable instance",
-                "Can't assign attribute 'new_attribute' on immutable instance"
+                "Can't assign attribute 'new_attribute' on immutable instance",
             ],
-            [str(warn.message) for warn in caught_warnings]
+            [str(warn.message) for warn in caught_warnings],
         )
 
     def test_freeze_two_object_of_the_same_class_with_slots(self):
@@ -362,7 +345,7 @@ class TestFreeze(unittest.TestCase):
 
     def test_freeze_object_with_class_with_slots_whose_attributes_are_objects_with_class_with_slots(self):
         class Attr(object):
-            __slots__ = ("value", )
+            __slots__ = ("value",)
 
             def __init__(self, value: int):
                 self.value = value
@@ -388,9 +371,9 @@ class TestFreeze(unittest.TestCase):
         self.assertListEqual(
             [
                 "Can't assign attribute 'attr1' on immutable instance",
-                "Can't assign attribute 'attr2' on immutable instance"
+                "Can't assign attribute 'attr2' on immutable instance",
             ],
-            [str(warn.message) for warn in caught_warnings]
+            [str(warn.message) for warn in caught_warnings],
         )
 
     def test_freeze_object_of_class_with_slots_inplace(self):
@@ -405,8 +388,7 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as freeze_context:
             freeze(obj, on_update="warning", on_freeze="inplace")
 
-        self.assertEqual("Objects of classes with __slots__ cannot be frozen inplace",
-                         str(freeze_context.exception))
+        self.assertEqual("Objects of classes with __slots__ cannot be frozen inplace", str(freeze_context.exception))
 
     def test_freeze_object_of_class_with_slots_inplace_deprecated_parameter(self):
         class ClassWithSlots(object):
@@ -420,8 +402,7 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as freeze_context:
             freeze(obj, on_update="warning", inplace=True)
 
-        self.assertEqual("Objects of classes with __slots__ cannot be frozen inplace",
-                         str(freeze_context.exception))
+        self.assertEqual("Objects of classes with __slots__ cannot be frozen inplace", str(freeze_context.exception))
 
     def test_freeze_simple_object_on_update_nothing_on_freeze_inplace(self):
         class Dummy(object):
@@ -459,8 +440,7 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy = freeze(dummy, on_update="exception", on_freeze="inplace")
 
         dummy_with_property = DummyWithProperty(value=1)
-        frozen_dummy_with_property = freeze(dummy_with_property, on_update="exception",
-                                            on_freeze="inplace")
+        frozen_dummy_with_property = freeze(dummy_with_property, on_update="exception", on_freeze="inplace")
 
         with self.assertRaises(FrozenException) as setattr_context:
             setattr(frozen_dummy, "attr", 99)
@@ -481,33 +461,18 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr)
         self.assertEqual(1, frozen_dummy_with_property.attr)
-        self.assertEqual(
-            "Can't assign attribute 'attr' on immutable instance",
-            str(setattr_context.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute 'attr' on immutable instance",
-            str(setattr_context2.exception)
-        )
-        self.assertEqual(
-            "Can't delete attribute 'attr' on immutable instance",
-            str(delattr_context.exception)
-        )
-        self.assertEqual(
-            "Can't set key 'attr' on immutable instance",
-            str(setitem_context.exception)
-        )
-        self.assertEqual(
-            "Can't delete key 'attr' on immutable instance",
-            str(delitem_context.exception)
-        )
+        self.assertEqual("Can't assign attribute 'attr' on immutable instance", str(setattr_context.exception))
+        self.assertEqual("Can't assign attribute 'attr' on immutable instance", str(setattr_context2.exception))
+        self.assertEqual("Can't delete attribute 'attr' on immutable instance", str(delattr_context.exception))
+        self.assertEqual("Can't set key 'attr' on immutable instance", str(setitem_context.exception))
+        self.assertEqual("Can't delete key 'attr' on immutable instance", str(delitem_context.exception))
 
     def test_freeze_object_with_set_descriptor_method_exception(self):
         class DummyCounter(object):
             def __init__(self, name: str):
                 self.name = name
 
-            def __get__(self, obj, type=None) -> object:    # noqa
+            def __get__(self, obj, type=None) -> object:  # noqa
                 return obj.__dict__.get(self.name) or 0  # pragma: no cover
 
             def __set__(self, obj, value) -> None:
@@ -524,10 +489,7 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as set_context:
             dummy1.counter = 1
 
-        self.assertEqual(
-            "Can't assign setter on immutable instance",
-            str(set_context.exception)
-        )
+        self.assertEqual("Can't assign setter on immutable instance", str(set_context.exception))
 
     @patch("datetime.datetime")
     def test_freeze_simple_object_on_update_function_freeze_inplace(self, mock_datetime):
@@ -543,36 +505,35 @@ class TestFreeze(unittest.TestCase):
         writing_tries = []
 
         def on_update_func(message, *args, **kwargs):
-            writing_tries.append({
-                "message": message,
-                "args": args,
-                "kwargs": kwargs,
-                "time": datetime.datetime.utcnow()
-            })
+            writing_tries.append(
+                {"message": message, "args": args, "kwargs": kwargs, "time": datetime.datetime.utcnow()}
+            )
 
         dummy = Dummy(attr1=1, attr2=2, attr3=3)
-        frozen_dummy = freeze(
-            dummy,
-            on_update=on_update_func,
-            on_freeze="inplace"
-        )
+        frozen_dummy = freeze(dummy, on_update=on_update_func, on_freeze="inplace")
         frozen_dummy.attr1 = 99
         frozen_dummy._attr2 = 99
         frozen_dummy._Dummy__attr3 = 99
 
         expected_writing_tries = [
-            {'args': (),
-             'kwargs': {'key': 'attr1', 'value': 99, 'frozen_obj': frozen_dummy},
-             'message': "Can't assign attribute 'attr1' on immutable instance",
-             'time': fixed_utcnow},
-            {'args': (),
-             'kwargs': {'key': '_attr2', 'value': 99, 'frozen_obj': frozen_dummy},
-             'message': "Can't assign attribute '_attr2' on immutable instance",
-             'time': fixed_utcnow},
-            {'args': (),
-             'kwargs': {'key': '_Dummy__attr3', 'value': 99, 'frozen_obj': frozen_dummy},
-             'message': "Can't assign attribute '_Dummy__attr3' on immutable instance",
-             'time': fixed_utcnow}
+            {
+                "args": (),
+                "kwargs": {"key": "attr1", "value": 99, "frozen_obj": frozen_dummy},
+                "message": "Can't assign attribute 'attr1' on immutable instance",
+                "time": fixed_utcnow,
+            },
+            {
+                "args": (),
+                "kwargs": {"key": "_attr2", "value": 99, "frozen_obj": frozen_dummy},
+                "message": "Can't assign attribute '_attr2' on immutable instance",
+                "time": fixed_utcnow,
+            },
+            {
+                "args": (),
+                "kwargs": {"key": "_Dummy__attr3", "value": 99, "frozen_obj": frozen_dummy},
+                "message": "Can't assign attribute '_Dummy__attr3' on immutable instance",
+                "time": fixed_utcnow,
+            },
         ]
 
         self.assertEqual(id(dummy), id(frozen_dummy))
@@ -602,34 +563,31 @@ class TestFreeze(unittest.TestCase):
                 self.original_obj = obj
                 return frozen_object
 
-            def on_update(self, frozen_obj: "FrozenBase",
-                          message: str, *args, **kwargs):
+            def on_update(self, frozen_obj: "FrozenBase", message: str, *args, **kwargs):
                 self.log.warning(message)
                 with self.lock:
-                    self.writing_tries.append({
-                        "frozen_obj": frozen_obj,
-                        "args": args,
-                        "kwargs": kwargs,
-                        "datetime": datetime.datetime.utcnow()
-                    })
+                    self.writing_tries.append(
+                        {
+                            "frozen_obj": frozen_obj,
+                            "args": args,
+                            "kwargs": kwargs,
+                            "datetime": datetime.datetime.utcnow(),
+                        }
+                    )
 
-        update_try_recorder = FrozenDummyUpdateTryRecorder(
-            log=mock_logger
-        )
+        update_try_recorder = FrozenDummyUpdateTryRecorder(log=mock_logger)
 
         dummy = Dummy(attr1=1, attr2=2, attr3=3)
-        frozen_dummy = freeze(
-            dummy,
-            on_freeze=update_try_recorder.on_freeze,
-            on_update=update_try_recorder.on_update
-        )
+        frozen_dummy = freeze(dummy, on_freeze=update_try_recorder.on_freeze, on_update=update_try_recorder.on_update)
 
-        expected_writing_tries = [{
-            "args": tuple(),
-            "datetime": unittest.mock.ANY,
-            "frozen_obj": frozen_dummy,
-            "kwargs": {"key": "attr1", "value": 99}
-        }]
+        expected_writing_tries = [
+            {
+                "args": tuple(),
+                "datetime": unittest.mock.ANY,
+                "frozen_obj": frozen_dummy,
+                "kwargs": {"key": "attr1", "value": 99},
+            }
+        ]
 
         frozen_dummy.attr1 = 99
 
@@ -639,8 +597,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(2, frozen_dummy.attr2)
         self.assertEqual(3, frozen_dummy.attr3)
         self.assertEqual(
-            unittest.mock.call("Can't assign attribute 'attr1' on immutable instance"),
-            mock_logger.warning.call_args
+            unittest.mock.call("Can't assign attribute 'attr1' on immutable instance"), mock_logger.warning.call_args
         )
         self.assertEqual(id(dummy), id(update_try_recorder.original_obj))
         self.assertEqual(expected_writing_tries, update_try_recorder.writing_tries)
@@ -680,40 +637,23 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_assign_attr1.exception)
+            "Can't assign attribute 'attr1' on immutable instance", str(context_exc_assign_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_assign_attr2.exception)
+            "Can't assign attribute '_attr2' on immutable instance", str(context_exc_assign_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_assign_attr3.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_assign_attr3.exception)
         )
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance", str(context_exc_inc_attr1.exception))
+        self.assertEqual("Can't assign attribute '_attr2' on immutable instance", str(context_exc_inc_attr2.exception))
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_inc_attr1.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_inc_attr3.exception)
         )
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance", str(context_exc_dec_attr1.exception))
+        self.assertEqual("Can't assign attribute '_attr2' on immutable instance", str(context_exc_dec_attr2.exception))
         self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_inc_attr2.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_inc_attr3.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_dec_attr1.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_dec_attr2.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_dec_attr3.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_dec_attr3.exception)
         )
 
     def test_freeze_simple_object_on_freeze_copy(self):
@@ -751,40 +691,23 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(2, frozen_dummy._attr2)
         self.assertEqual(3, frozen_dummy._Dummy__attr3)
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_assign_attr1.exception)
+            "Can't assign attribute 'attr1' on immutable instance", str(context_exc_assign_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_assign_attr2.exception)
+            "Can't assign attribute '_attr2' on immutable instance", str(context_exc_assign_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_assign_attr3.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_assign_attr3.exception)
         )
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance", str(context_exc_inc_attr1.exception))
+        self.assertEqual("Can't assign attribute '_attr2' on immutable instance", str(context_exc_inc_attr2.exception))
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_inc_attr1.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_inc_attr3.exception)
         )
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance", str(context_exc_dec_attr1.exception))
+        self.assertEqual("Can't assign attribute '_attr2' on immutable instance", str(context_exc_dec_attr2.exception))
         self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_inc_attr2.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_inc_attr3.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_dec_attr1.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_dec_attr2.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_dec_attr3.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_dec_attr3.exception)
         )
 
     def test_freeze_deep_object_on_freeze_inplace(self):
@@ -803,7 +726,7 @@ class TestFreeze(unittest.TestCase):
         deep_dummy = DeepDummy(
             dummy1=Dummy(attr1=11, attr2=12, attr3=13),
             dummy2=Dummy(attr1=21, attr2=22, attr3=23),
-            dummy3=Dummy(attr1=31, attr2=32, attr3=33)
+            dummy3=Dummy(attr1=31, attr2=32, attr3=33),
         )
 
         frozen_deep_dummy = freeze(deep_dummy, on_freeze="inplace")
@@ -818,11 +741,9 @@ class TestFreeze(unittest.TestCase):
             frozen_deep_dummy.dummy1._Dummy__attr3 = 99
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1:
             setattr(frozen_deep_dummy, "dummy1", 99)
-        with self.assertRaises(FrozenException) as \
-                context_exc_setattr_dummy1_attr1:
+        with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr1:
             setattr(frozen_deep_dummy.dummy1, "attr1", 99)
-        with self.assertRaises(FrozenException) as \
-                context_exc_setattr_dummy1_attr2:
+        with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr2:
             setattr(frozen_deep_dummy.dummy1, "_attr2", 99)
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr3:
             setattr(frozen_deep_dummy.dummy1, "_Dummy__attr3", 99)
@@ -831,37 +752,28 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(11, frozen_deep_dummy.dummy1.attr1)
         self.assertEqual(12, frozen_deep_dummy.dummy1._attr2)
         self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)
+        self.assertEqual("Can't assign attribute 'dummy1' on immutable instance", str(context_exc_dummy1.exception))
         self.assertEqual(
-            "Can't assign attribute 'dummy1' on immutable instance",
-            str(context_exc_dummy1.exception)
+            "Can't assign attribute 'attr1' on immutable instance", str(context_exc_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_dummy1_attr1.exception)
+            "Can't assign attribute '_attr2' on immutable instance", str(context_exc_dummy1_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_dummy1_attr2.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_dummy1_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_dummy1_attr3.exception)
+            "Can't assign attribute 'dummy1' on immutable instance", str(context_exc_setattr_dummy1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute 'dummy1' on immutable instance",
-            str(context_exc_setattr_dummy1.exception)
+            "Can't assign attribute 'attr1' on immutable instance", str(context_exc_setattr_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_setattr_dummy1_attr1.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_setattr_dummy1_attr2.exception)
+            "Can't assign attribute '_attr2' on immutable instance", str(context_exc_setattr_dummy1_attr2.exception)
         )
         self.assertEqual(
             "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_setattr_dummy1_attr3.exception)
+            str(context_exc_setattr_dummy1_attr3.exception),
         )
 
     def test_freeze_deep_object_on_freeze_copy(self):
@@ -880,7 +792,7 @@ class TestFreeze(unittest.TestCase):
         deep_dummy = DeepDummy(
             dummy1=Dummy(attr1=11, attr2=12, attr3=13),
             dummy2=Dummy(attr1=21, attr2=22, attr3=23),
-            dummy3=Dummy(attr1=31, attr2=32, attr3=33)
+            dummy3=Dummy(attr1=31, attr2=32, attr3=33),
         )
 
         frozen_deep_dummy = freeze(deep_dummy, on_freeze="copy")
@@ -895,11 +807,9 @@ class TestFreeze(unittest.TestCase):
             frozen_deep_dummy.dummy1._Dummy__attr3 = 99
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1:
             setattr(frozen_deep_dummy, "dummy1", 99)
-        with self.assertRaises(FrozenException) as \
-                context_exc_setattr_dummy1_attr1:
+        with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr1:
             setattr(frozen_deep_dummy.dummy1, "attr1", 99)
-        with self.assertRaises(FrozenException) as \
-                context_exc_setattr_dummy1_attr2:
+        with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr2:
             setattr(frozen_deep_dummy.dummy1, "_attr2", 99)
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr3:
             setattr(frozen_deep_dummy.dummy1, "_Dummy__attr3", 99)
@@ -908,42 +818,34 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(11, frozen_deep_dummy.dummy1.attr1)
         self.assertEqual(12, frozen_deep_dummy.dummy1._attr2)
         self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)
+        self.assertEqual("Can't assign attribute 'dummy1' on immutable instance", str(context_exc_dummy1.exception))
         self.assertEqual(
-            "Can't assign attribute 'dummy1' on immutable instance",
-            str(context_exc_dummy1.exception)
+            "Can't assign attribute 'attr1' on immutable instance", str(context_exc_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_dummy1_attr1.exception)
+            "Can't assign attribute '_attr2' on immutable instance", str(context_exc_dummy1_attr2.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_dummy1_attr2.exception)
+            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_dummy1_attr3.exception)
         )
         self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_dummy1_attr3.exception)
+            "Can't assign attribute 'dummy1' on immutable instance", str(context_exc_setattr_dummy1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute 'dummy1' on immutable instance",
-            str(context_exc_setattr_dummy1.exception)
+            "Can't assign attribute 'attr1' on immutable instance", str(context_exc_setattr_dummy1_attr1.exception)
         )
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context_exc_setattr_dummy1_attr1.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance",
-            str(context_exc_setattr_dummy1_attr2.exception)
+            "Can't assign attribute '_attr2' on immutable instance", str(context_exc_setattr_dummy1_attr2.exception)
         )
         self.assertEqual(
             "Can't assign attribute '_Dummy__attr3' on immutable instance",
-            str(context_exc_setattr_dummy1_attr3.exception)
+            str(context_exc_setattr_dummy1_attr3.exception),
         )
 
     def test_freeze_object_with_file_handler_attribute(self):
         with tempfile.TemporaryFile("w") as temp_text_file:
             with tempfile.TemporaryFile("wb") as temp_bin_file:
+
                 class DummyWithTextFile(object):
                     def __init__(self):
                         self.text_file = temp_text_file
@@ -961,10 +863,8 @@ class TestFreeze(unittest.TestCase):
                 with self.assertRaises(io.UnsupportedOperation) as binary_write_context:
                     freeze(dummy_with_binary_file, on_freeze="inplace")
 
-        self.assertEqual("Text file handlers can't be frozen",
-                         str(text_write_context.exception))
-        self.assertEqual("Binary file handlers can't be frozen",
-                         str(binary_write_context.exception))
+        self.assertEqual("Text file handlers can't be frozen", str(text_write_context.exception))
+        self.assertEqual("Binary file handlers can't be frozen", str(binary_write_context.exception))
 
     def test_hash_on_freeze_inplace(self):
         class Dummy(object):
@@ -1029,8 +929,7 @@ class TestFreeze(unittest.TestCase):
         frozen_dummy = freeze(dummy)
         with self.assertRaises(FrozenException) as context:
             frozen_dummy.new_attribute = 99
-        self.assertEqual(
-            "Can't assign attribute 'new_attribute' on immutable instance", str(context.exception))
+        self.assertEqual("Can't assign attribute 'new_attribute' on immutable instance", str(context.exception))
 
     def test_cannot_use_modifying_attribute_method_in_frozen_object(self):
         class Dummy(object):
@@ -1057,12 +956,9 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as context3:
             frozen_dummy.inc_attr3()
 
-        self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance", str(context1.exception))
-        self.assertEqual(
-            "Can't assign attribute '_attr2' on immutable instance", str(context2.exception))
-        self.assertEqual(
-            "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context3.exception))
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance", str(context1.exception))
+        self.assertEqual("Can't assign attribute '_attr2' on immutable instance", str(context2.exception))
+        self.assertEqual("Can't assign attribute '_Dummy__attr3' on immutable instance", str(context3.exception))
 
     def test_json(self):
         data_list = [{"a": 1, "b": 2}, {"a": 11, "b": 22}]
@@ -1086,10 +982,7 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as context:
             unpickled_frozen_dummy.attr = 8
 
-        self.assertEqual(
-            "Can't assign attribute 'attr' on immutable instance",
-            str(context.exception)
-        )
+        self.assertEqual("Can't assign attribute 'attr' on immutable instance", str(context.exception))
         self.assertEqual(1, frozen_dummy.attr, unpickled_frozen_dummy.attr)
 
     def test_pickle_object_of_same_name_classes(self):
@@ -1118,29 +1011,21 @@ class TestFreeze(unittest.TestCase):
         with self.assertRaises(FrozenException) as context2_get_gelidum_hot_class_module:
             unpickled_frozen_dummy2.get_gelidum_hot_class_module = 99
 
+        self.assertEqual("Can't assign attribute 'attr1' on immutable instance", str(context1.exception))
+        self.assertEqual("Can't assign attribute 'attr2' on immutable instance", str(context2.exception))
         self.assertEqual(
-            "Can't assign attribute 'attr1' on immutable instance",
-            str(context1.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute 'attr2' on immutable instance",
-            str(context2.exception)
+            "Can't assign attribute 'get_gelidum_hot_class_module' on immutable instance",
+            str(context1_get_gelidum_hot_class_module.exception),
         )
         self.assertEqual(
             "Can't assign attribute 'get_gelidum_hot_class_module' on immutable instance",
-            str(context1_get_gelidum_hot_class_module.exception)
-        )
-        self.assertEqual(
-            "Can't assign attribute 'get_gelidum_hot_class_module' on immutable instance",
-            str(context2_get_gelidum_hot_class_module.exception)
+            str(context2_get_gelidum_hot_class_module.exception),
         )
         self.assertEqual(1, frozen_dummy1.attr1, unpickled_frozen_dummy1.attr1)
         self.assertEqual(2, frozen_dummy2.attr2, unpickled_frozen_dummy2.attr2)
 
-        self.assertEqual("gelidum.tests.gelidum_tests.utils.dummy1",
-                         frozen_dummy1.get_gelidum_hot_class_module())
-        self.assertEqual("gelidum.tests.gelidum_tests.utils.dummy2",
-                         frozen_dummy2.get_gelidum_hot_class_module())
+        self.assertEqual("gelidum.tests.gelidum_tests.utils.dummy1", frozen_dummy1.get_gelidum_hot_class_module())
+        self.assertEqual("gelidum.tests.gelidum_tests.utils.dummy2", frozen_dummy2.get_gelidum_hot_class_module())
         self.assertEqual("Dummy", frozen_dummy1.get_gelidum_hot_class_name())
         self.assertEqual("Dummy", frozen_dummy2.get_gelidum_hot_class_name())
 
@@ -1202,7 +1087,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(
             "Invalid value for on_freeze parameter, 'invalid' found, "
             "only 'copy' and 'inplace' are valid options if passed a string",
-            str(context.exception)
+            str(context.exception),
         )
 
     def test_invalid_value_for_on_freeze_parameter(self):
@@ -1212,7 +1097,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(
             "Invalid value for on_freeze parameter, '99' found, "
             "only 'copy', 'inplace' or a callable are valid options",
-            str(context.exception)
+            str(context.exception),
         )
 
     def test_invalid_str_for_on_update_parameter(self):
@@ -1223,7 +1108,7 @@ class TestFreeze(unittest.TestCase):
             "Invalid value for on_update parameter, 'invalid' found, "
             "only 'exception', 'warning', and 'nothing' are valid options "
             "if passed a string",
-            str(context.exception)
+            str(context.exception),
         )
 
     def test_invalid_value_for_on_update_parameter(self):
@@ -1233,7 +1118,7 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(
             "Invalid value for on_update parameter, '1' found, "
             "only 'exception', 'warning', 'nothing' or a function are valid options",
-            str(context.exception)
+            str(context.exception),
         )
 
     def test_structural_sharing_when_freezing_simple_objects(self):
@@ -1262,9 +1147,7 @@ class TestFreeze(unittest.TestCase):
             def __init__(self, dummy_attr: FrozenBase):
                 self.dummy_attr: Union[FrozenBase, DummyAttr] = dummy_attr
 
-        frozen_dummy_attr = freeze(
-            DummyAttr("my_value"), on_update="exception", on_freeze="copy"
-        )
+        frozen_dummy_attr = freeze(DummyAttr("my_value"), on_update="exception", on_freeze="copy")
         dummy = Dummy(dummy_attr=frozen_dummy_attr)
         frozen_dummy1 = freeze(dummy, on_update="exception", on_freeze="copy")
         frozen_dummy2 = freeze(frozen_dummy1, on_update="exception", on_freeze="copy")
@@ -1288,9 +1171,7 @@ class TestFreeze(unittest.TestCase):
         class Dummy(object):
             def __init__(self, value: int, obj_id: Id):
                 self.value = value
-                self.obj_id = freeze(
-                    obj_id, on_update="exception", on_freeze="copy"
-                )
+                self.obj_id = freeze(obj_id, on_update="exception", on_freeze="copy")
 
         dummy = Dummy(value=1, obj_id=Id("unique_id"))
         frozen_dummy = freeze(dummy, on_update="exception", on_freeze="copy")
@@ -1313,9 +1194,7 @@ class TestFreeze(unittest.TestCase):
 
             def __init__(self, *args):
                 if len(args) > 0:
-                    self._items = tuple(
-                        self.__freeze(arg_i) for arg_i in args
-                    )
+                    self._items = tuple(self.__freeze(arg_i) for arg_i in args)
                 else:
                     self._items = tuple()
 
@@ -1327,9 +1206,7 @@ class TestFreeze(unittest.TestCase):
 
             def __add__(self, other) -> "ConsList":
                 frozen_other = freeze(other, on_update="exception", on_freeze="copy")
-                return ConsList(
-                    *(self._items + (frozen_other,))
-                )
+                return ConsList(*(self._items + (frozen_other,)))
 
         immutable_list_size_0 = ConsList()
         immutable_list_size_1 = immutable_list_size_0 + 1
@@ -1370,14 +1247,13 @@ class TestFreeze(unittest.TestCase):
         my_dict = {frozen_dummy1: dummy1, frozen_dummy2: dummy2}
 
         self.assertEqual(2, len(my_dict))
-        self.assertEqual({frozen_dummy1, frozen_dummy2},
-                         set(my_dict.keys()))
+        self.assertEqual({frozen_dummy1, frozen_dummy2}, set(my_dict.keys()))
         self.assertTrue(frozen_dummy1 in my_dict)
         self.assertEqual(dummy1, my_dict[frozen_dummy1])
         self.assertTrue(frozen_dummy2 in my_dict)
         self.assertEqual(dummy2, my_dict[frozen_dummy2])
 
-    @unittest.skipUnless(NUMPY_INSTALLED, 'numpy is not installed, TestFreeze.test_freeze_ndarray test skipped')
+    @unittest.skipUnless(NUMPY_INSTALLED, "numpy is not installed, TestFreeze.test_freeze_ndarray test skipped")
     def test_freeze_ndarray(self):
         import numpy as np
 

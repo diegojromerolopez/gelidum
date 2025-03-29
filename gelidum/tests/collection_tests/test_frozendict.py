@@ -71,10 +71,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
             def __init__(self, value: Any):
                 self.value = value
 
-        frozen_dict = frozendict(
-            {"k0": "v0", "k1": "v1"},
-            one=1, two="2", three=Dummy(3)
-        )
+        frozen_dict = frozendict({"k0": "v0", "k1": "v1"}, one=1, two="2", three=Dummy(3))
 
         self.assertTrue(isinstance(frozen_dict, FrozenBase))
         self.assertEqual(5, len(frozen_dict))
@@ -104,10 +101,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
             def __init__(self, value: Any):
                 self.value = value
 
-        frozen_dict = frozendict(
-            [("k0", "v0"), ("k1", "v1")],
-            one=1, two="2", three=Dummy(3)
-        )
+        frozen_dict = frozendict([("k0", "v0"), ("k1", "v1")], one=1, two="2", three=Dummy(3))
 
         self.assertTrue(isinstance(frozen_dict, FrozenBase))
         self.assertEqual(5, len(frozen_dict))
@@ -123,10 +117,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
             def __init__(self, value: Any):
                 self.value = value
 
-        frozen_dict = frozendict(
-            ["k0", "v0", "k1", "v1"],
-            one=1, two="2", three=Dummy(3)
-        )
+        frozen_dict = frozendict(["k0", "v0", "k1", "v1"], one=1, two="2", three=Dummy(3))
 
         self.assertTrue(isinstance(frozen_dict, FrozenBase))
         self.assertEqual(5, len(frozen_dict))
@@ -204,9 +195,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
             def __init__(self, value: Any):
                 self.value = value
 
-        frozen_dict = frozendict(
-            {"one": 1, "two": "2", "three": Dummy(3), "four": {"a": "1"}}
-        )
+        frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3), "four": {"a": "1"}})
 
         self.assertTrue(isinstance(hash(frozen_dict), int))
 
@@ -220,10 +209,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
         with self.assertRaises(FrozenException) as context_setitem:
             frozen_dict["four"] = 4
 
-        self.assertEqual(
-            "'frozendict' object is immutable",
-            str(context_setitem.exception)
-        )
+        self.assertEqual("'frozendict' object is immutable", str(context_setitem.exception))
 
     def test_del(self):
         class Dummy:
@@ -233,10 +219,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
         frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
         with self.assertRaises(FrozenException) as context_del:
             del frozen_dict["one"]
-        self.assertEqual(
-            "'frozendict' object is immutable",
-            str(context_del.exception)
-        )
+        self.assertEqual("'frozendict' object is immutable", str(context_del.exception))
 
     def test_keys(self):
         class Dummy:
