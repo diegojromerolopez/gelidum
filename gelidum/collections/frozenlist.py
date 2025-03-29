@@ -4,26 +4,26 @@ from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 from gelidum.typing import FrozenType, FrozenList
 
-__all__ = [
-    "frozenlist"
-]
+__all__ = ["frozenlist"]
 
 
 _FrozenListParameterType = Optional[Union[Sequence, Generator]]
 
 
-class frozenlist(tuple, FrozenBase): # noqa
+class frozenlist(tuple, FrozenBase):  # noqa
     def __raise_immutable_exception(self, *args, **kwargs):
         raise FrozenException("'frozenlist' object is immutable")
 
     def __new__(
-            cls, seq: Optional[_FrozenListParameterType] = None,
-            freeze_func: Optional[Callable[[Any], FrozenBase]] = None
+        cls, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None
     ) -> "frozenlist":
         if freeze_func is None:
+
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
+
                 return freeze(item, on_update="exception", on_freeze="copy")
+
         if seq:
             self = tuple.__new__(cls, (freeze_func(arg) for arg in seq))
         else:
@@ -31,8 +31,7 @@ class frozenlist(tuple, FrozenBase): # noqa
         return self
 
     def __init__(
-            self,  seq: Optional[_FrozenListParameterType] = None,
-            freeze_func: Optional[Callable[[Any], FrozenBase]] = None
+        self, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None
     ):
         pass
 
@@ -50,9 +49,7 @@ class frozenlist(tuple, FrozenBase): # noqa
 
     def __getitem__(self, key) -> Any:
         if type(key) is slice:
-            return frozenlist(
-                super().__getitem__(key)
-            )
+            return frozenlist(super().__getitem__(key))
         try:
             return super().__getitem__(key)
         except IndexError:
@@ -112,4 +109,3 @@ class frozenlist(tuple, FrozenBase): # noqa
         frozendlist objects are only shallow-copied.
         """
         return self
-

@@ -19,6 +19,7 @@ class OnFreezeOriginalObjTracker(OnFreezeCopier):
     A callable class that stores the first object that was
     frozen. Useful for keeping track of original "hot" objects.
     """
+
     def __init__(self):
         self.__original_obj: Optional[Any] = None
 

@@ -13,8 +13,7 @@ class TestDecorator(unittest.TestCase):
         with self.assertRaises(FrozenException) as context:
             append_to_list([], 3)
 
-        self.assertEqual("'frozenlist' object is immutable",
-                         str(context.exception))
+        self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
     def test_decorator_with_dict_input_param(self):
         @freeze_params()
@@ -24,8 +23,7 @@ class TestDecorator(unittest.TestCase):
         with self.assertRaises(TypeError) as context:
             add_to_dict({}, ("key", "value"))
 
-        self.assertEqual("'frozendict' object is immutable",
-                         str(context.exception))
+        self.assertEqual("'frozendict' object is immutable", str(context.exception))
 
     def test_decorator_with_object_input_param_object_frozen(self):
         class Dummy(object):
@@ -42,8 +40,7 @@ class TestDecorator(unittest.TestCase):
 
         dummy.attr = 100
 
-        self.assertEqual("Can't assign attribute 'attr' on immutable instance",
-                         str(context.exception))
+        self.assertEqual("Can't assign attribute 'attr' on immutable instance", str(context.exception))
         self.assertEqual(100, dummy.attr)
 
     def test_decorator_only_some_params(self):
@@ -59,8 +56,7 @@ class TestDecorator(unittest.TestCase):
         dummy1 = Dummy(1)
         dummy2 = Dummy(2)
         dummy_const = Dummy(99)
-        assign_to_dummies(a_dummy=dummy1, other_dummy=dummy2,
-                          the_dummy_const=dummy_const)
+        assign_to_dummies(a_dummy=dummy1, other_dummy=dummy2, the_dummy_const=dummy_const)
 
         self.assertEqual(99, dummy1.attr)
         self.assertEqual(99, dummy2.attr)
@@ -84,8 +80,7 @@ class TestDecorator(unittest.TestCase):
         for future_i in futures:
             with self.assertRaises(FrozenException) as context:
                 future_i.result()
-            self.assertEqual("Can't assign attribute 'attr' on immutable instance",
-                             str(context.exception))
+            self.assertEqual("Can't assign attribute 'attr' on immutable instance", str(context.exception))
             future_count += 1
         self.assertEqual(2, future_count)
 
@@ -101,10 +96,8 @@ class TestDecorator(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_named_arguments:
             join_lists_bad_implementation(one=[], two=[])
 
-        self.assertEqual("'frozenlist' object is immutable",
-                         str(context_unnamed_arguments.exception))
-        self.assertEqual("'frozenlist' object is immutable",
-                         str(context_named_arguments.exception))
+        self.assertEqual("'frozenlist' object is immutable", str(context_unnamed_arguments.exception))
+        self.assertEqual("'frozenlist' object is immutable", str(context_named_arguments.exception))
 
     def test_freeze_final_object_params(self):
         class Number(object):
@@ -127,9 +120,10 @@ class TestDecorator(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_named_arguments:
             product_bad_implementation(one=Number(1), two=Number(2), three=Number(3))
 
-        self.assertEqual("Can't assign attribute 'value' on immutable instance",
-                         str(context_unnamed_arguments.exception))
-        self.assertEqual("Can't assign attribute 'value' on immutable instance",
-                         str(context_some_named_arguments.exception))
-        self.assertEqual("Can't assign attribute 'value' on immutable instance",
-                         str(context_named_arguments.exception))
+        self.assertEqual(
+            "Can't assign attribute 'value' on immutable instance", str(context_unnamed_arguments.exception)
+        )
+        self.assertEqual(
+            "Can't assign attribute 'value' on immutable instance", str(context_some_named_arguments.exception)
+        )
+        self.assertEqual("Can't assign attribute 'value' on immutable instance", str(context_named_arguments.exception))

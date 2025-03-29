@@ -1,11 +1,11 @@
-name: Test Workflow
+name: Check Format Workflow
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', 'pypy-3.7', 'pypy-3.8', 'pypy-3.9', 'pypy-3.10']
+        python-version: ['3.13']
 
     steps:
       - uses: actions/checkout@v2
@@ -16,13 +16,12 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install black flake8 coverage
           pip install -r requirements.txt
-      - name: Test with unittest
+      - name: flake8
         run: |
-          python -m unittest discover -s ./gelidum/tests
-      - name: Install optional dependency (numpy)
+          pip install -e .
+          flake8 gelidum
+      - name: black
         run: |
-          pip install numpy
-      - name: Test optional dependency (numpy) with unittest
-        run: |
-          python -m unittest discover -s ./gelidum/tests
+          black --check gelidum

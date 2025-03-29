@@ -10,25 +10,26 @@ from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 from gelidum.typing import FrozenType, FrozenDict
 
-__all__ = [
-    "frozendict"
-]
+__all__ = ["frozendict"]
 
 
-class frozendict(dict, FrozenBase): # noqa
+class frozendict(dict, FrozenBase):  # noqa
     def __raise_immutable_exception(self, *args, **kwargs):
         raise FrozenException("'frozendict' object is immutable")
 
     def __init__(
-            self,
-            seq: Optional[Union[Mapping, Sequence, Tuple[Hashable, Any]]] = None,
-            freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
-            **kwargs
+        self,
+        seq: Optional[Union[Mapping, Sequence, Tuple[Hashable, Any]]] = None,
+        freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
+        **kwargs,
     ):
         if freeze_func is None:
+
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
+
                 return freeze(item, on_update="exception", on_freeze="copy")
+
         if seq is not None:
             items = None
             if isinstance(seq, Mapping):
@@ -39,16 +40,12 @@ class frozendict(dict, FrozenBase): # noqa
             if items is not None:
                 super().__init__(
                     {key: freeze_func(value) for key, value in items},
-                    **{key: freeze_func(value) for key, value in kwargs.items()}
+                    **{key: freeze_func(value) for key, value in kwargs.items()},
                 )
             else:
-                super().__init__(
-                    {key: freeze_func(value) for key, value in seq}
-                )
+                super().__init__({key: freeze_func(value) for key, value in seq})
         elif kwargs:
-            super().__init__(
-                {key: freeze_func(value) for key, value in kwargs.items()}
-            )
+            super().__init__({key: freeze_func(value) for key, value in kwargs.items()})
         else:
             super().__init__()
 
@@ -69,9 +66,7 @@ class frozendict(dict, FrozenBase): # noqa
 
     def __getitem__(self, key) -> Any:
         if type(key) is slice:
-            return frozendict(
-                super().__getitem__(key)
-            )
+            return frozendict(super().__getitem__(key))
         try:
             return super().__getitem__(key)
         except IndexError:
@@ -91,9 +86,7 @@ class frozendict(dict, FrozenBase): # noqa
         return frozendict(result_dict)
 
     def __sub__(self, other: FrozenDict) -> FrozenDict:
-        return frozendict({k: v
-                           for k, v in self.items()
-                           if k not in other})
+        return frozendict({k: v for k, v in self.items() if k not in other})
 
     def remove(self, x):
         self.__raise_immutable_exception()
@@ -106,7 +99,7 @@ class frozendict(dict, FrozenBase): # noqa
 
     def __setitem__(self, key, val, *args, **kwargs):
         self.__raise_immutable_exception()
-    
+
     def __delitem__(self, key, *args, **kwargs):
         self.__raise_immutable_exception()
 
@@ -121,4 +114,3 @@ class frozendict(dict, FrozenBase): # noqa
         frozendict objects are only shallow-copied.
         """
         return self
-
