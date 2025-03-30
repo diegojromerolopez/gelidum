@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Improve type hinting support. 
 - Check project style with flake8 and black.
 - Remove requirements.txt file (this project has no dependencies).
+- Deprecation schedule of Python versions:
+  - 3.7
+  - 3.8
+  - 3.9
 
 ## 0.7.1 (2024-10-25)
 ### Fixes

@@ -403,6 +403,16 @@ See some examples in [on_freeze.py](/gelidum/on_freeze.py) file.
 ## Dependencies
 This package has no dependencies.
 
+## Python version support
+Minimum version support is 3.9.
+
+The following versions are deprecated and will be removed in the following dates:
+
+| Python version | Support removal date |
+|:--------------:|:--------------------:|
+|      3.7       |      2025-06-01      |
+|      3.8       |      2026-01-01      |
+|      3.9       |      2026-06-01      |
 
 ## Roadmap
 - [x] Freeze only when attributes are modified? 
