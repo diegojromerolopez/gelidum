@@ -315,6 +315,9 @@ and some appreciated feedback of the users of that great community.
 
 ## Limitations
 - dict, list, tuple and set objects cannot be modified inplace although the flag inplace is set.
+- functions:
+  - Their attributes will be frozen, nothing related to the actual implementation of the function is modified (i.e. no relation between freezing a function and making it a *pure* function).
+  - Cannot be frozen in-place.
 - file handler attributes are not supported. An exception is raised when trying to freeze
   an object with them.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).

@@ -170,7 +170,103 @@ class TestFreeze(unittest.TestCase):
         self.assertEqual(id(dummy_database), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy_database), id(frozen_dummy_on_freeze_copy))
 
-    def test_freeze_objects_by_copying_and_access_original_object(self):
+    def test_freeze_function_and_reading_attributes(self):
+        def times(x: int) -> int:
+            return x * times.factor
+
+        times.factor = 3
+
+        frozen_times = freeze(times)
+
+        self.assertEqual(3, frozen_times.factor)
+        self.assertNotEqual(id(times), id(frozen_times))
+
+    def test_freeze_function_inplace_is_ignored(self):
+        def times(x: int) -> int:
+            return x * times.factor
+
+        times.factor = 3
+
+        frozen_times = freeze(times, on_freeze="inplace")
+
+        self.assertEqual(3, frozen_times.factor)
+        self.assertNotEqual(id(times), id(frozen_times))
+
+    def test_freeze_function_and_writing_attributes_with_exception(self):
+        def times(x: int) -> int:
+            return x * times.factor
+
+        times.factor = 3
+
+        frozen_times = freeze(times)
+
+        with self.assertRaises(FrozenException) as context:
+            frozen_times.factor = 10
+
+        self.assertEqual("Can't assign attribute 'factor' on immutable instance", str(context.exception))
+
+    def test_freeze_function_and_writing_frozen_attributes_with_exception(self):
+        def times(x: int) -> int:
+            if x not in times.cache:
+                times.cache[x] = "some kind of slow and costly process"
+            return times.cache[x]
+
+        times.cache = {}
+
+        frozen_times = freeze(times)
+
+        with self.assertRaises(FrozenException) as context:
+            frozen_times.cache[10] = 789
+
+        self.assertEqual("'frozendict' object is immutable", str(context.exception))
+
+    def test_freeze_function_and_writing_attributes_with_function(self):
+        def times(x: int) -> int:
+            return x * times.factor
+
+        times.factor = 3
+
+        frozen_times = freeze(times, on_update="warning")
+
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            frozen_times.factor = 10
+
+        self.assertListEqual(
+            [
+                "Can't assign attribute 'factor' on immutable instance"
+            ],
+            [str(warn.message) for warn in caught_warnings],
+        )
+
+
+    def test_freeze_objects_with_class_constants(self):
+        class Dummy(object):
+            CONSTANT1 = 1
+            CONSTANT2 = 2
+
+            def __init__(self, value: int):
+                self.attr = value
+
+        dummy = Dummy(1)
+        frozen_dummy = freeze(dummy, on_freeze="copy", save_original_on_copy=False)
+
+        self.assertEqual(1, frozen_dummy.CONSTANT1)
+        self.assertEqual(2, frozen_dummy.CONSTANT2)
+
+    def test_freeze_objects_with__call__method(self):
+        class Dummy(object):
+            def __init__(self, value: int):
+                self.attr = value
+
+            def __call__(self, x: int, y: int):
+                return self.attr + x * y
+
+        dummy = Dummy(1)
+        frozen_dummy = freeze(dummy, on_freeze="copy", save_original_on_copy=False)
+
+        self.assertEqual(7, frozen_dummy(2, 3))
+
+    def test_freeze_objects_by_copying_and_accessing_the_original_object(self):
         class DummyChild(object):
             def __init__(self, value: int):
                 self.attr = value
