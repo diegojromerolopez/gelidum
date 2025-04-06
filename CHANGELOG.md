@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 0.8.0 (2025-04-05)
 ### Features
 - Freezing of functions (i.e. freezing of function attributes).
+### Fixes
+- Split test files.
 
 ## 0.7.2 (2025-03-30)
 ### Fixes
