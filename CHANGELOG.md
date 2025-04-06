@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.8.1 (2025-04-06)
+### Fixes
+- Dummy version upgrade. It was forgotten. 
+
 ## 0.8.0 (2025-04-05)
 ### Features
 - Freezing of functions (i.e. freezing of function attributes).
