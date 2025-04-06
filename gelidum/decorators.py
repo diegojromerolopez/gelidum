@@ -3,7 +3,7 @@ from __future__ import annotations
 import functools
 from typing import Any, Iterable, Optional, Set
 
-from gelidum import freeze
+from gelidum.freeze import freeze
 
 
 def freeze_params(params: Optional[Iterable[str]] = None):
