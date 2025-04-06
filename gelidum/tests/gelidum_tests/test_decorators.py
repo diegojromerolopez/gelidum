@@ -1,7 +1,8 @@
 import concurrent.futures
 import unittest
-from typing import Dict, List, Tuple, Any
-from gelidum import freeze_params, freeze_final, FrozenException, Final
+from typing import Any, Dict, List, Tuple
+
+from gelidum import Final, FrozenException, freeze_final, freeze_params
 
 
 class TestDecorator(unittest.TestCase):

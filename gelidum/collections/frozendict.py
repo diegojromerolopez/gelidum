@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Union, Tuple, Hashable, Sequence
+from typing import Any, Callable, Hashable, Optional, Sequence, Tuple, Union
 
 try:
     from collections import Mapping
@@ -8,7 +8,7 @@ except ImportError:
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
-from gelidum.typing import FrozenType, FrozenDict
+from gelidum.typing import FrozenDict, FrozenType
 
 __all__ = ["frozendict"]
 

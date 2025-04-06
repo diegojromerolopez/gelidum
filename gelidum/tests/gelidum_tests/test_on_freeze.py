@@ -1,11 +1,15 @@
 import logging
 import unittest
+from typing import Any, List
 from unittest import mock
-from typing import List, Any
 from unittest.mock import call
 
-from gelidum import OnFreezeCopier, OnFreezeOriginalObjTracker, OnFreezeIdentityFunc
-from gelidum import freeze
+from gelidum import (
+    OnFreezeCopier,
+    OnFreezeIdentityFunc,
+    OnFreezeOriginalObjTracker,
+    freeze,
+)
 from gelidum.frozen import FrozenBase, clear_frozen_classes
 
 

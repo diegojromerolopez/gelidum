@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import functools
-from typing import Optional, Iterable, Set, Any
+from typing import Any, Iterable, Optional, Set
+
 from gelidum import freeze
 
 

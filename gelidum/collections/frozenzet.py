@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional, Union, Sequence, Generator, Iterable
+from typing import Any, Callable, Generator, Iterable, Optional, Sequence, Union
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase

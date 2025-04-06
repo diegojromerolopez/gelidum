@@ -9,12 +9,11 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Dict, List, Union, Any
+from typing import Any, Dict, List, Union
 from unittest.mock import patch
 
-from gelidum import FrozenException
-from gelidum import freeze
-from gelidum.frozen import FrozenBase, get_frozen_classes, clear_frozen_classes
+from gelidum import FrozenException, freeze
+from gelidum.frozen import FrozenBase, clear_frozen_classes, get_frozen_classes
 
 
 class TestFreezeObjects(unittest.TestCase):

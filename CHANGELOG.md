@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Freezing of functions (i.e. freezing of function attributes).
 ### Fixes
 - Split test files.
+- Add isort.
 
 ## 0.7.2 (2025-03-30)
 ### Fixes

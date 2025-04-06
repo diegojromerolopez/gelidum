@@ -1,8 +1,7 @@
 import unittest
 import warnings
 
-from gelidum import FrozenException
-from gelidum import freeze
+from gelidum import FrozenException, freeze
 from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.frozen import clear_frozen_classes
 
