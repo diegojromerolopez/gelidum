@@ -1,12 +1,27 @@
 import typing
 from platform import python_implementation, python_version_tuple
-from typing import Any, Callable, TYPE_CHECKING, Generic
-from typing import Optional, Sized, Union, Iterable, Reversible, Mapping
-from typing import TypeVar
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Generic,
+    Iterable,
+    Mapping,
+    Optional,
+    Reversible,
+    Sized,
+    TypeVar,
+    Union,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
+    from gelidum.collections import (  # noqa
+        frozendict,
+        frozenlist,
+        frozenndarray,
+        frozenzet,
+    )
     from gelidum.frozen import FrozenBase  # noqa
-    from gelidum.collections import frozendict, frozenlist, frozenzet, frozenndarray  # noqa
 
 
 python_interpreter = python_implementation()

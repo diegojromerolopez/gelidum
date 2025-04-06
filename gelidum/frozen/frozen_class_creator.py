@@ -1,9 +1,10 @@
 import sys
 import threading
 import uuid
-from typing import cast, Type, Dict, Optional, Set, Iterable, Any
-from gelidum.typing import OnUpdateFuncType
+from typing import Any, Dict, Iterable, Optional, Set, Type, cast
+
 from gelidum.frozen.frozen_base import FrozenBase
+from gelidum.typing import OnUpdateFuncType
 
 
 def __create_frozen_class(

@@ -1,5 +1,6 @@
 import time
 import unittest
+
 from gelidum import freeze
 from gelidum.frozen import clear_frozen_classes
 
@@ -8,21 +9,21 @@ class TestTimePerformance(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    def test_freeze_inplace_or_not(self):
+    def test_freeze_inplace_or_not(self) -> None:
         class DummyAttrLevel3(object):
-            def __init__(self, attr: str):
+            def __init__(self, attr: str) -> None:
                 self.attr = attr
 
         class DummyAttrLevel2(object):
-            def __init__(self, attr: str):
+            def __init__(self, attr: str) -> None:
                 self.attr = DummyAttrLevel3(attr)
 
         class DummyAttrLevel1(object):
-            def __init__(self, attr: str):
+            def __init__(self, attr: str) -> None:
                 self.attr = DummyAttrLevel2(attr)
 
         class Dummy(object):
-            def __init__(self):
+            def __init__(self) -> None:
                 for attr_index in range(0, 100_000):
                     setattr(self, f"attr{attr_index+1}", DummyAttrLevel1(str(attr_index) * 1_000))
 
@@ -37,9 +38,9 @@ class TestTimePerformance(unittest.TestCase):
 
         self.assertLessEqual(spent_time_inplace, spent_time_not_inplace)
 
-    def test_many_attr_class_freeze(self):
+    def test_many_attr_class_freeze(self) -> None:
         class BigDummy(object):
-            def __init__(self, attr: str):
+            def __init__(self, attr: str) -> None:
                 for attr_index in range(0, 10000):
                     setattr(self, f"attr{attr_index+1}", attr)
 

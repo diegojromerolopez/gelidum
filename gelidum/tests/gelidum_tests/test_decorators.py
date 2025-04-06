@@ -1,11 +1,12 @@
 import concurrent.futures
 import unittest
-from typing import Dict, List, Tuple, Any
-from gelidum import freeze_params, freeze_final, FrozenException, Final
+from typing import Any, Dict, List, Tuple
+
+from gelidum import Final, FrozenException, freeze_final, freeze_params
 
 
 class TestDecorator(unittest.TestCase):
-    def test_decorator_with_list_input_param(self):
+    def test_decorator_with_list_input_param(self) -> None:
         @freeze_params()
         def append_to_list(a_list: List, new_item: int):
             a_list.append(new_item)
@@ -15,7 +16,7 @@ class TestDecorator(unittest.TestCase):
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_decorator_with_dict_input_param(self):
+    def test_decorator_with_dict_input_param(self) -> None:
         @freeze_params()
         def add_to_dict(a_dict: Dict, new_item: Tuple[str, Any]):
             a_dict[new_item[0]] = new_item[1]
@@ -25,7 +26,7 @@ class TestDecorator(unittest.TestCase):
 
         self.assertEqual("'frozendict' object is immutable", str(context.exception))
 
-    def test_decorator_with_object_input_param_object_frozen(self):
+    def test_decorator_with_object_input_param_object_frozen(self) -> None:
         class Dummy(object):
             def __init__(self, attr: int):
                 self.attr = attr
@@ -43,9 +44,9 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual("Can't assign attribute 'attr' on immutable instance", str(context.exception))
         self.assertEqual(100, dummy.attr)
 
-    def test_decorator_only_some_params(self):
+    def test_decorator_only_some_params(self) -> None:
         class Dummy(object):
-            def __init__(self, attr: int):
+            def __init__(self, attr: int) -> None:
                 self.attr = attr
 
         @freeze_params(params={"dummy_const"})
@@ -62,9 +63,9 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual(99, dummy2.attr)
         self.assertEqual(99, dummy_const.attr)
 
-    def test_concurrent_futures(self):
+    def test_concurrent_futures(self) -> None:
         class Dummy(object):
-            def __init__(self, attr: int):
+            def __init__(self, attr: int) -> None:
                 self.attr = attr
 
         @freeze_params()
@@ -84,9 +85,9 @@ class TestDecorator(unittest.TestCase):
             future_count += 1
         self.assertEqual(2, future_count)
 
-    def test_freeze_final_list_params(self):
+    def test_freeze_final_list_params(self) -> None:
         @freeze_final
-        def join_lists_bad_implementation(one: Final[List], two: Final[List]):
+        def join_lists_bad_implementation(one: Final[List], two: Final[List]) -> Final[List]:
             one.extend(two)
             return one  # pragma: no cover
 
@@ -99,9 +100,9 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual("'frozenlist' object is immutable", str(context_unnamed_arguments.exception))
         self.assertEqual("'frozenlist' object is immutable", str(context_named_arguments.exception))
 
-    def test_freeze_final_object_params(self):
+    def test_freeze_final_object_params(self) -> None:
         class Number(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.value = value
                 self.value_str = str(value)
 

@@ -5,6 +5,7 @@
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/diegojromerolopez/gelidum/graphs/commit-activity)
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/gelidum.svg)](https://pypi.python.org/pypi/gelidum/)
 [![PyPI version gelidum](https://badge.fury.io/py/gelidum.svg)](https://pypi.python.org/pypi/gelidum/)
 [![PyPI status](https://img.shields.io/pypi/status/gelidum.svg)](https://pypi.python.org/pypi/gelidum/)
@@ -315,6 +316,9 @@ and some appreciated feedback of the users of that great community.
 
 ## Limitations
 - dict, list, tuple and set objects cannot be modified inplace although the flag inplace is set.
+- functions:
+  - Their attributes will be frozen, nothing related to the actual implementation of the function is modified (i.e. no relation between freezing a function and making it a *pure* function).
+  - Cannot be frozen in-place.
 - file handler attributes are not supported. An exception is raised when trying to freeze
   an object with them.
 - frozen objects cannot be serialized with [marshal](https://docs.python.org/3/library/marshal.html).

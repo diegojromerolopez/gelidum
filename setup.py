@@ -7,7 +7,7 @@ long_description = open(os.path.join(root_dir_path, "README.md")).read()
 
 setup(
     name="gelidum",
-    version="0.7.2",
+    version="0.8.0",
     author="Diego J. Romero López",
     author_email="diegojromerolopez@gmail.com",
     description="Freeze your python objects",

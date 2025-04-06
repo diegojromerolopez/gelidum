@@ -1,16 +1,16 @@
 import io
 import sys
 import warnings
-from typing import List, Set, Dict, Any, Optional, Union, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
-from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.collections import frozendict, frozenlist, frozenzet
+from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.exceptions import FrozenException
-from gelidum.frozen import make_frozen_class, FrozenBase
+from gelidum.frozen import FrozenBase, make_frozen_class
 from gelidum.frozen.frozen_class_creator import make_unique_class
-from gelidum.typing import OnFreezeFuncType, OnUpdateFuncType, T, FrozenType, FrozenList
+from gelidum.on_freeze import OnFreezeCopier, on_freeze_func_creator
+from gelidum.typing import FrozenList, FrozenType, OnFreezeFuncType, OnUpdateFuncType, T
 from gelidum.utils import isbuiltin
-from gelidum.on_freeze import on_freeze_func_creator, OnFreezeCopier
 
 if NUMPY_INSTALLED:
     from gelidum.collections import frozenndarray
@@ -116,6 +116,22 @@ def __freeze_set(obj: Set, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncT
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozenzet(obj, freeze_func=freeze_func)
+
+
+def __freeze_function(obj: Callable, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> FrozenBase:  # noqa
+    class FunctionWrapper(object):
+        def __init__(self):
+            pass
+
+        def __call__(self, *args, **kwargs):
+            return obj(*args, **kwargs)
+
+    for attr, value in obj.__dict__.items():
+        setattr(FunctionWrapper, attr, freeze(value, on_update=on_update, on_freeze=on_freeze))
+
+    frozen_class = make_frozen_class(klass=FunctionWrapper, attrs=tuple(), on_update=on_update)
+
+    return frozen_class()
 
 
 def __freeze_TextIOWrapper(*args, **kwargs) -> None:  # noqa

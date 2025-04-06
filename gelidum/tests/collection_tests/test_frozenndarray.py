@@ -6,7 +6,7 @@ from gelidum.frozen import FrozenBase
 
 @unittest.skipUnless(NUMPY_INSTALLED, "numpy is not installed, TestFrozenndarray tests skipped")
 class TestFrozenndarray(unittest.TestCase):  # noqa
-    def test_freeze_int64_ndarray(self):
+    def test_freeze_int64_ndarray(self) -> None:
         import numpy as np
 
         array = np.array([1, 2, 3], dtype=np.int64).reshape((1, 3))
@@ -22,7 +22,7 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_array_copy, FrozenBase))
         self.assertTrue(isinstance(frozen_array_copy, np.ndarray))
 
-    def test_freeze_int64_custom_shape_ndarray(self):
+    def test_freeze_int64_custom_shape_ndarray(self) -> None:
         import numpy as np
 
         array = np.array([1, 2, 3, 4], dtype=np.int64).reshape((2, 2))
@@ -38,7 +38,7 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_array_copy, FrozenBase))
         self.assertTrue(isinstance(frozen_array_copy, np.ndarray))
 
-    def test_assignment_single_value(self):
+    def test_assignment_single_value(self) -> None:
         import numpy as np
 
         array = np.array([1, 2, 3, 4], dtype=np.int64).reshape((2, 2))
@@ -53,7 +53,7 @@ class TestFrozenndarray(unittest.TestCase):  # noqa
         self.assertEqual(2, frozen_array[0, 1])
         self.assertEqual(99, array[0, 1])
 
-    def test_assignment_multiple_values(self):
+    def test_assignment_multiple_values(self) -> None:
         import numpy as np
 
         array = np.array([1, 2, 3, 4], dtype=int).reshape((2, 2))

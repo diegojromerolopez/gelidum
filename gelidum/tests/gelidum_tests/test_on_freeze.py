@@ -1,11 +1,15 @@
 import logging
 import unittest
+from typing import Any, List
 from unittest import mock
-from typing import List, Any
 from unittest.mock import call
 
-from gelidum import OnFreezeCopier, OnFreezeOriginalObjTracker, OnFreezeIdentityFunc
-from gelidum import freeze
+from gelidum import (
+    OnFreezeCopier,
+    OnFreezeIdentityFunc,
+    OnFreezeOriginalObjTracker,
+    freeze,
+)
 from gelidum.frozen import FrozenBase, clear_frozen_classes
 
 
@@ -13,17 +17,17 @@ class TestOnFreeze(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    def test_on_freeze_original_obj_tracking(self):
+    def test_on_freeze_original_obj_tracking(self) -> None:
         class DummyAttr1(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.attr = value
 
         class DummyAttr2(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.attr = value
 
         class Dummy(object):
-            def __init__(self, value1: int, value2: int):
+            def __init__(self, value1: int, value2: int) -> None:
                 self.attr1 = DummyAttr1(value1)
                 self.attr2 = DummyAttr2(value2)
 
@@ -56,24 +60,24 @@ class TestOnFreeze(unittest.TestCase):
         self.assertEqual(1, frozen_dummy1.attr1.attr)
         self.assertEqual(2, frozen_dummy1.attr2.attr)
 
-    def test_on_freeze_logging(self):
+    def test_on_freeze_logging(self) -> None:
         class DummyAttr1(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.attr = value
 
         class DummyAttr2(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.attr = value
 
         class Dummy(object):
-            def __init__(self, value1: int, value2: int):
+            def __init__(self, value1: int, value2: int) -> None:
                 self.attr1 = DummyAttr1(value1)
                 self.attr2 = DummyAttr2(value2)
 
         dummy1 = Dummy(value1=1, value2=2)
 
         class OnFreezeLogger(OnFreezeCopier):
-            def __init__(self, log: logging.Logger):
+            def __init__(self, log: logging.Logger) -> None:
                 self.__log = log
 
             def __call__(self, obj: Any) -> Any:
@@ -101,24 +105,24 @@ class TestOnFreeze(unittest.TestCase):
         self.assertEqual(1, frozen_dummy1.attr1.attr)
         self.assertEqual(2, frozen_dummy1.attr2.attr)
 
-    def test_on_freeze_custom_freezer_in_place(self):
+    def test_on_freeze_custom_freezer_in_place(self) -> None:
         class DummyAttr1(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.attr = value
 
         class DummyAttr2(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.attr = value
 
         class Dummy(object):
-            def __init__(self, value1: int, value2: int):
+            def __init__(self, value1: int, value2: int) -> None:
                 self.attr1 = DummyAttr1(value1)
                 self.attr2 = DummyAttr2(value2)
 
         dummy1 = Dummy(value1=1, value2=2)
 
         class OnFreezeFullTrackingInPlace(OnFreezeIdentityFunc):
-            def __init__(self):
+            def __init__(self) -> None:
                 self.__objs: List[Any] = []
 
             def __call__(self, obj: Any) -> Any:

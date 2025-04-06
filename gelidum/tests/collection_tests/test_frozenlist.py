@@ -7,14 +7,14 @@ from gelidum.frozen import FrozenBase
 
 
 class TestFrozenlist(unittest.TestCase):  # noqa
-    def test_empty_construction(self):
+    def test_empty_construction(self) -> None:
         frozen_list = frozenlist()
 
         self.assertEqual(0, len(frozen_list))
 
-    def test_construction(self):
+    def test_construction(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_list = frozenlist([1, "2", Dummy(3)])
@@ -26,9 +26,9 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_list[2], FrozenBase))
         self.assertEqual(3, frozen_list[2].value)
 
-    def test_construction_from_tuple(self):
+    def test_construction_from_tuple(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_list = frozenlist((1, "2", Dummy(3)))
@@ -40,9 +40,9 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_list[2], FrozenBase))
         self.assertEqual(3, frozen_list[2].value)
 
-    def test_construction_from_generator(self):
+    def test_construction_from_generator(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         def generator():
@@ -59,7 +59,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_list[2], FrozenBase))
         self.assertEqual(3, frozen_list[2].value)
 
-    def test_setattr_exception(self):
+    def test_setattr_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -67,7 +67,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_count(self):
+    def test_count(self) -> None:
         frozen_list = frozenlist([1, 2, 3, 2, 3, 8, 3])
 
         self.assertEqual(1, frozen_list.count(1))
@@ -97,7 +97,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(3, frozen_list2[2])
         self.assertEqual(2, frozen_list2[3])
 
-    def test_hash(self):
+    def test_hash(self) -> None:
         class Dummy:
             def __init__(self, value: Any):
                 self.value = value
@@ -106,7 +106,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertTrue(isinstance(hash(frozen_list), int))
 
-    def test_mul(self):
+    def test_mul(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
         frozen_list2 = frozen_list * 2
 
@@ -125,7 +125,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(2, frozen_list2[4])
         self.assertEqual(3, frozen_list2[5])
 
-    def test_slice(self):
+    def test_slice(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
         frozen_list_slice_2_items = frozen_list[0:2]
         frozen_list_slice_all_items = frozen_list[0:6]
@@ -142,25 +142,25 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(2, frozen_list_slice_all_items[1])
         self.assertEqual(3, frozen_list_slice_all_items[2])
 
-    def test_contains(self):
+    def test_contains(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         self.assertTrue(1 in frozen_list)
         self.assertFalse(9 in frozen_list)
 
-    def test_min(self):
+    def test_min(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         self.assertEqual(1, min(frozen_list))
 
-    def test_max(self):
+    def test_max(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         self.assertEqual(3, max(frozen_list))
 
-    def test_iter(self):
+    def test_iter(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: int) -> None:
                 self.value = value
 
         frozen_dummy = freeze(Dummy(9))
@@ -171,9 +171,9 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertListEqual([1, 2, 3, frozen_dummy], items)
 
-    def test_next(self):
+    def test_next(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: int) -> None:
                 self.value = value
 
         frozen_dummy = freeze(Dummy(9))
@@ -185,9 +185,9 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(3, next(frozen_list_iter))
         self.assertEqual(frozen_dummy, next(frozen_list_iter))
 
-    def test_reversed(self):
+    def test_reversed(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: int) -> None:
                 self.value = value
 
         frozen_list = frozenlist([1, 2, 3, Dummy(9)])
@@ -207,14 +207,14 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(2, next(reversed_frozen_list))
         self.assertEqual(1, next(reversed_frozen_list))
 
-    def test_copy(self):
+    def test_copy(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         frozen_list_copy = frozen_list.copy()
 
         self.assertEqual(id(frozen_list_copy), id(frozen_list))
 
-    def test_getitem(self):
+    def test_getitem(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(IndexError) as context:
@@ -225,7 +225,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual(3, frozen_list[2])
         self.assertEqual("frozenlist index out of range", str(context.exception))
 
-    def test_setitem_exception(self):
+    def test_setitem_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -233,7 +233,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_append_exception(self):
+    def test_append_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -241,7 +241,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_extend_exception(self):
+    def test_extend_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -249,7 +249,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_insert_exception(self):
+    def test_insert_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -257,7 +257,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_remove_exception(self):
+    def test_remove_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -265,7 +265,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_pop_exception(self):
+    def test_pop_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -273,7 +273,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_clear_exception(self):
+    def test_clear_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -281,7 +281,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_index_ok(self):
+    def test_index_ok(self) -> None:
         frozen_list = frozenlist([1, 2, 3, 4, 5, 6, 7])
 
         index_for_2 = frozen_list.index(2)
@@ -298,7 +298,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
         self.assertEqual("12 is not in frozenlist", str(context_12.exception))
         self.assertEqual("2 is not in frozenlist", str(context_2_from_5_to_10.exception))
 
-    def test_sort_exception(self):
+    def test_sort_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
@@ -306,7 +306,7 @@ class TestFrozenlist(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozenlist' object is immutable", str(context.exception))
 
-    def test_reverse_exception(self):
+    def test_reverse_exception(self) -> None:
         frozen_list = frozenlist([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:

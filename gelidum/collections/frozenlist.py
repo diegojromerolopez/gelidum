@@ -1,8 +1,8 @@
-from typing import Any, Callable, Optional, Sequence, Generator, Union
+from typing import Any, Callable, Generator, Optional, Sequence, Union
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
-from gelidum.typing import FrozenType, FrozenList
+from gelidum.typing import FrozenList, FrozenType
 
 __all__ = ["frozenlist"]
 

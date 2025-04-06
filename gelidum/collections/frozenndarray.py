@@ -5,7 +5,6 @@ import numpy as np
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 
-
 __all__ = ["frozenndarray"]
 
 
