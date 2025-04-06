@@ -9,7 +9,7 @@ class TestFreezeDataclasses(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    def test_freeze_simple_dataclass(self):
+    def test_freeze_simple_dataclass(self) -> None:
         from dataclasses import dataclass
 
         @dataclass
@@ -33,7 +33,7 @@ class TestFreezeDataclasses(unittest.TestCase):
         self.assertEqual(id(dummy), id(frozen_dummy_inplace))
         self.assertNotEqual(id(dummy), id(frozen_dummy_on_freeze_copy))
 
-    def test_freeze_nested_dataclass(self):
+    def test_freeze_nested_dataclass(self) -> None:
         from dataclasses import dataclass
 
         @dataclass

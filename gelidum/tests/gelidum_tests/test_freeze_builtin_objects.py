@@ -10,7 +10,7 @@ class TestFreezeBuiltinObjects(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    def test_freeze_immutable_builtin_objects(self):
+    def test_freeze_immutable_builtin_objects(self) -> None:
         self.assertEqual(3, freeze(3))
         self.assertEqual(3.9, freeze(3.9))
         self.assertEqual(True, freeze(True))
@@ -20,10 +20,10 @@ class TestFreezeBuiltinObjects(unittest.TestCase):
         self.assertEqual(b"Bytes", freeze(b"Bytes"))
         self.assertEqual("String", freeze("String"))
 
-    def test_freeze_bytearray(self):
+    def test_freeze_bytearray(self) -> None:
         self.assertEqual(b"Byte array", freeze(bytearray(b"Byte array")))
 
-    def test_freeze_dict(self):
+    def test_freeze_dict(self) -> None:
         frozen_obj: frozendict = freeze({"one": 1, "two": 2})
 
         with self.assertRaises(FrozenException) as context_assignment:
@@ -48,7 +48,7 @@ class TestFreezeBuiltinObjects(unittest.TestCase):
         self.assertEqual("'frozendict' object is immutable", str(context_update.exception))
         self.assertEqual("'frozendict' object is immutable", str(context_deletion.exception))
 
-    def test_freeze_list(self):
+    def test_freeze_list(self) -> None:
         frozen_list = freeze(["one", 2, "three", ["a", "b", "c", 4, 5]])
         self.assertTrue(isinstance(frozen_list, frozenlist))
         self.assertEqual(4, len(frozen_list))
@@ -63,7 +63,7 @@ class TestFreezeBuiltinObjects(unittest.TestCase):
         self.assertEqual(4, frozen_list[3][3])
         self.assertEqual(5, frozen_list[3][4])
 
-    def test_freeze_list_inplace_true_deprecated_parameter(self):
+    def test_freeze_list_inplace_true_deprecated_parameter(self) -> None:
         with warnings.catch_warnings(record=True) as caught_warnings:
             frozen_list = freeze(["one", 2, "three"], inplace=True)
 
@@ -78,8 +78,8 @@ class TestFreezeBuiltinObjects(unittest.TestCase):
             str(caught_warnings[0].message),
         )
 
-    def test_freeze_tuple(self):
+    def test_freeze_tuple(self) -> None:
         self.assertEqual(("one", 2, "three"), freeze(("one", 2, "three")))
 
-    def test_freeze_set(self):
+    def test_freeze_set(self) -> None:
         self.assertEqual(frozenzet(["one", 2, "three"]), freeze({"one", 2, "three"}))

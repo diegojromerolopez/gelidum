@@ -10,7 +10,7 @@ class TestFreezeNumpyObjects(unittest.TestCase):
         clear_frozen_classes()
 
     @unittest.skipUnless(NUMPY_INSTALLED, "numpy is not installed, TestFreeze.test_freeze_ndarray test skipped")
-    def test_freeze_ndarray(self):
+    def test_freeze_ndarray(self) -> None:
         import numpy as np
 
         array = np.array([1, 2, 3])

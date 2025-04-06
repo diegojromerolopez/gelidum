@@ -9,7 +9,7 @@ class TestFreezeFunctions(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    def test_freeze_function_and_reading_attributes(self):
+    def test_freeze_function_and_reading_attributes(self) -> None:
         def times() -> None:
             pass  # pragma: no cover
 
@@ -20,7 +20,7 @@ class TestFreezeFunctions(unittest.TestCase):
         self.assertEqual(3, frozen_times.factor)
         self.assertNotEqual(id(times), id(frozen_times))
 
-    def test_freeze_function_inplace_is_ignored(self):
+    def test_freeze_function_inplace_is_ignored(self) -> None:
         def times() -> None:
             pass  # pragma: no cover
 
@@ -44,7 +44,7 @@ class TestFreezeFunctions(unittest.TestCase):
 
         self.assertEqual("Can't assign attribute 'factor' on immutable instance", str(context.exception))
 
-    def test_freeze_function_and_writing_frozen_attributes_with_exception(self):
+    def test_freeze_function_and_writing_frozen_attributes_with_exception(self) -> None:
         def times() -> None:
             pass  # pragma: no cover
 
@@ -57,7 +57,7 @@ class TestFreezeFunctions(unittest.TestCase):
 
         self.assertEqual("'frozendict' object is immutable", str(context.exception))
 
-    def test_freeze_function_and_writing_attributes_with_function(self):
+    def test_freeze_function_and_writing_attributes_with_function(self) -> None:
         def times() -> None:
             pass  # pragma: no cover
 

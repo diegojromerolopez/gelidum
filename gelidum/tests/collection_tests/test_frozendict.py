@@ -8,14 +8,14 @@ from gelidum.frozen import FrozenBase
 
 
 class TestFrozendict(unittest.TestCase):  # noqa
-    def test_empty_construction(self):
+    def test_empty_construction(self) -> None:
         frozen_list = frozendict()
 
         self.assertEqual(0, len(frozen_list))
 
-    def test_construction_from_dict(self):
+    def test_construction_from_dict(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
@@ -27,15 +27,15 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_construction_from_empty_dict(self):
+    def test_construction_from_empty_dict(self) -> None:
         frozen_dict = frozendict({})
 
         self.assertTrue(isinstance(frozen_dict, FrozenBase))
         self.assertEqual(0, len(frozen_dict))
 
-    def test_construction_from_generator(self):
+    def test_construction_from_generator(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         def test_generator() -> Tuple[str, int]:
@@ -52,9 +52,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_construction_from_kwargs(self):
+    def test_construction_from_kwargs(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict(one=1, two="2", three=Dummy(3))
@@ -66,9 +66,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_construction_from_dict_and_kwargs(self):
+    def test_construction_from_dict_and_kwargs(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict({"k0": "v0", "k1": "v1"}, one=1, two="2", three=Dummy(3))
@@ -82,9 +82,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_construction_empty_dict_and_kwargs(self):
+    def test_construction_empty_dict_and_kwargs(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict({}, one=1, two="2", three=Dummy(3))
@@ -96,9 +96,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_construction_from_list_of_pairs_and_kwargs(self):
+    def test_construction_from_list_of_pairs_and_kwargs(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict([("k0", "v0"), ("k1", "v1")], one=1, two="2", three=Dummy(3))
@@ -112,9 +112,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_construction_list_of_strings_and_kwargs(self):
+    def test_construction_list_of_strings_and_kwargs(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict(["k0", "v0", "k1", "v1"], one=1, two="2", three=Dummy(3))
@@ -128,9 +128,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_construction_empty_list_and_kwargs(self):
+    def test_construction_empty_list_and_kwargs(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict([], one=1, two="2", three=Dummy(3))
@@ -142,9 +142,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue(isinstance(frozen_dict["three"], FrozenBase))
         self.assertEqual(3, frozen_dict["three"].value)
 
-    def test_add(self):
+    def test_add(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dummy = freeze(Dummy(3))
@@ -154,9 +154,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
 
         self.assertDictEqual(joined_frozen_dict, frozen_dict1 + frozen_dict2)
 
-    def test_or(self):
+    def test_or(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dummy = freeze(Dummy(3))
@@ -166,9 +166,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
 
         self.assertDictEqual(joined_frozen_dict, frozen_dict1 | frozen_dict2)
 
-    def test_sub(self):
+    def test_sub(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dummy = freeze(Dummy(3))
@@ -178,9 +178,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
 
         self.assertDictEqual(joined_frozen_dict, frozen_dict1 - frozen_dict2)
 
-    def test_getitem(self):
+    def test_getitem(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
@@ -190,18 +190,18 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertEqual(None, frozen_dict.get("four"))
         self.assertEqual(4, frozen_dict.get("four", 4))
 
-    def test_hash(self):
+    def test_hash(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3), "four": {"a": "1"}})
 
         self.assertTrue(isinstance(hash(frozen_dict), int))
 
-    def test_setitem(self):
+    def test_setitem(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
@@ -211,9 +211,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
 
         self.assertEqual("'frozendict' object is immutable", str(context_setitem.exception))
 
-    def test_del(self):
+    def test_del(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         frozen_dict = frozendict({"one": 1, "two": "2", "three": Dummy(3)})
@@ -221,9 +221,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
             del frozen_dict["one"]
         self.assertEqual("'frozendict' object is immutable", str(context_del.exception))
 
-    def test_keys(self):
+    def test_keys(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         dummy = Dummy(3)
@@ -241,9 +241,9 @@ class TestFrozendict(unittest.TestCase):  # noqa
         self.assertTrue("two" in frozen_dict_keys_list)
         self.assertTrue("three" in frozen_dict_keys_list)
 
-    def test_values(self):
+    def test_values(self) -> None:
         class Dummy:
-            def __init__(self, value: Any):
+            def __init__(self, value: Any) -> None:
                 self.value = value
 
         dummy = Dummy(3)

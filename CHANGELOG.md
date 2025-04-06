@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Split test files.
 - Add isort.
 - datetime.datetime.utcnow is deprecated in Python 3.13.
+- mypy fixes.
 
 ## 0.7.2 (2025-03-30)
 ### Fixes

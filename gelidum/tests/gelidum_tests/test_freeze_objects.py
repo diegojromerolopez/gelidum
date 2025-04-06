@@ -410,13 +410,13 @@ class TestFreezeObjects(unittest.TestCase):
     @patch("logging.Logger")
     def test_freeze_simple_object_on_update_func_store_update_tries(self, mock_logger):
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self.attr2 = attr2
                 self.attr3 = attr3
 
         class FrozenDummyUpdateTryRecorder(object):
-            def __init__(self, log: logging.Logger):
+            def __init__(self, log: logging.Logger) -> None:
                 self.log = log
                 self.lock = threading.Lock()
                 self.writing_tries: List[Dict] = []
@@ -427,7 +427,7 @@ class TestFreezeObjects(unittest.TestCase):
                 self.original_obj = obj
                 return frozen_object
 
-            def on_update(self, frozen_obj: "FrozenBase", message: str, *args, **kwargs):
+            def on_update(self, frozen_obj: "FrozenBase", message: str, *args, **kwargs) -> None:
                 self.log.warning(message)
                 with self.lock:
                     self.writing_tries.append(
@@ -466,9 +466,9 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(id(dummy), id(update_try_recorder.original_obj))
         self.assertEqual(expected_writing_tries, update_try_recorder.writing_tries)
 
-    def test_freeze_simple_object_on_freeze_inplace(self):
+    def test_freeze_simple_object_on_freeze_inplace(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
@@ -520,7 +520,7 @@ class TestFreezeObjects(unittest.TestCase):
             "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_dec_attr3.exception)
         )
 
-    def test_freeze_simple_object_on_freeze_copy(self):
+    def test_freeze_simple_object_on_freeze_copy(self) -> None:
         class Dummy(object):
             def __init__(self, attr1: int, attr2: int, attr3: int):
                 self.attr1 = attr1
@@ -574,15 +574,15 @@ class TestFreezeObjects(unittest.TestCase):
             "Can't assign attribute '_Dummy__attr3' on immutable instance", str(context_exc_dec_attr3.exception)
         )
 
-    def test_freeze_deep_object_on_freeze_inplace(self):
+    def test_freeze_deep_object_on_freeze_inplace(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
 
         class DeepDummy(object):
-            def __init__(self, dummy1: Dummy, dummy2: Dummy, dummy3: Dummy):
+            def __init__(self, dummy1: Dummy, dummy2: Dummy, dummy3: Dummy) -> None:
                 self.dummy1 = dummy1
                 self._dummy2 = dummy2
                 self.__dummy3 = dummy3
@@ -640,15 +640,15 @@ class TestFreezeObjects(unittest.TestCase):
             str(context_exc_setattr_dummy1_attr3.exception),
         )
 
-    def test_freeze_deep_object_on_freeze_copy(self):
+    def test_freeze_deep_object_on_freeze_copy(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
 
         class DeepDummy(object):
-            def __init__(self, dummy1: Dummy, dummy2: Dummy, dummy3: Dummy):
+            def __init__(self, dummy1: Dummy, dummy2: Dummy, dummy3: Dummy) -> None:
                 self.dummy1 = dummy1
                 self._dummy2 = dummy2
                 self.__dummy3 = dummy3
@@ -706,7 +706,7 @@ class TestFreezeObjects(unittest.TestCase):
             str(context_exc_setattr_dummy1_attr3.exception),
         )
 
-    def test_freeze_object_with_file_handler_attribute(self):
+    def test_freeze_object_with_file_handler_attribute(self) -> None:
         with tempfile.TemporaryFile("w") as temp_text_file:
             with tempfile.TemporaryFile("wb") as temp_bin_file:
 
@@ -730,9 +730,9 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual("Text file handlers can't be frozen", str(text_write_context.exception))
         self.assertEqual("Binary file handlers can't be frozen", str(binary_write_context.exception))
 
-    def test_hash_on_freeze_inplace(self):
+    def test_hash_on_freeze_inplace(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
@@ -741,9 +741,9 @@ class TestFreezeObjects(unittest.TestCase):
         frozen_dummy = freeze(dummy, on_freeze="inplace")
         self.assertEqual(hash(dummy), hash(frozen_dummy))
 
-    def test_hash_on_freeze_copy(self):
+    def test_hash_on_freeze_copy(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
@@ -752,9 +752,9 @@ class TestFreezeObjects(unittest.TestCase):
         frozen_dummy = freeze(dummy, on_freeze="copy")
         self.assertNotEqual(hash(dummy), hash(frozen_dummy))
 
-    def test_hash_frozen_object_as_key_in_dict(self):
+    def test_hash_frozen_object_as_key_in_dict(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
@@ -769,7 +769,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(hash(dummy), hash(frozen_dummy_inplace))
         self.assertEqual("this is a dummy object", my_dict.get(frozen_dummy_inplace))
 
-    def test_modifying_class_attribute_on_frozen_objects(self):
+    def test_modifying_class_attribute_on_frozen_objects(self) -> None:
         class Dummy(object):
             COUNTER = 1
 
@@ -782,9 +782,9 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(2, frozen_dummy.COUNTER)
         self.assertEqual(2, frozen_dummy_inplace.COUNTER)
 
-    def test_cannot_add_attribute_to_frozen_object(self):
+    def test_cannot_add_attribute_to_frozen_object(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
@@ -795,9 +795,9 @@ class TestFreezeObjects(unittest.TestCase):
             frozen_dummy.new_attribute = 99
         self.assertEqual("Can't assign attribute 'new_attribute' on immutable instance", str(context.exception))
 
-    def test_cannot_use_modifying_attribute_method_in_frozen_object(self):
+    def test_cannot_use_modifying_attribute_method_in_frozen_object(self) -> None:
         class Dummy(object):
-            def __init__(self, attr1: int, attr2: int, attr3: int):
+            def __init__(self, attr1: int, attr2: int, attr3: int) -> None:
                 self.attr1 = attr1
                 self._attr2 = attr2
                 self.__attr3 = attr3
@@ -824,14 +824,14 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual("Can't assign attribute '_attr2' on immutable instance", str(context2.exception))
         self.assertEqual("Can't assign attribute '_Dummy__attr3' on immutable instance", str(context3.exception))
 
-    def test_json(self):
+    def test_json(self) -> None:
         data_list = [{"a": 1, "b": 2}, {"a": 11, "b": 22}]
         data_dict = {"first": [{"a": 1}, {"a": 1}]}
 
         self.assertEqual('[{"a": 1, "b": 2}, {"a": 11, "b": 22}]', json.dumps(freeze(data_list)))
         self.assertEqual('{"first": [{"a": 1}, {"a": 1}]}', json.dumps(freeze(data_dict)))
 
-    def test_pickle(self):
+    def test_pickle(self) -> None:
         class DummyForPickle(object):
             def __init__(self, attr: int):
                 self.attr = attr
@@ -849,7 +849,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual("Can't assign attribute 'attr' on immutable instance", str(context.exception))
         self.assertEqual(1, frozen_dummy.attr, unpickled_frozen_dummy.attr)
 
-    def test_pickle_object_of_same_name_classes(self):
+    def test_pickle_object_of_same_name_classes(self) -> None:
         import gelidum.tests.gelidum_tests.utils.dummy1
         import gelidum.tests.gelidum_tests.utils.dummy2
 
@@ -893,7 +893,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual("Dummy", frozen_dummy1.get_gelidum_hot_class_name())
         self.assertEqual("Dummy", frozen_dummy2.get_gelidum_hot_class_name())
 
-    def test_hot_class_module_class(self):
+    def test_hot_class_module_class(self) -> None:
         from gelidum.tests.gelidum_tests.utils.dummy1 import Dummy
 
         dummy1 = Dummy(1)
@@ -910,7 +910,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())
         self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())
 
-    def test_hot_class_module_internal_class(self):
+    def test_hot_class_module_internal_class(self) -> None:
         class Dummy(object):
             pass
 
@@ -928,9 +928,9 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())
         self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())
 
-    def test_count_frozen_classes(self):
+    def test_count_frozen_classes(self) -> None:
         class Dummy(object):
-            def __init__(self, attr: int):
+            def __init__(self, attr: int) -> None:
                 self.attr = attr
 
         dummy1 = Dummy(1)
@@ -944,7 +944,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertSetEqual({frozen_dummy1.__class__}, frozen_classes)
         self.assertEqual(frozen_dummy1.__class__, frozen_dummy2.__class__, frozen_dummy3.__class__)
 
-    def test_invalid_str_for_on_freeze_parameter(self):
+    def test_invalid_str_for_on_freeze_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
             freeze(("one", 2, "three"), on_freeze="invalid")
 
@@ -954,7 +954,7 @@ class TestFreezeObjects(unittest.TestCase):
             str(context.exception),
         )
 
-    def test_invalid_value_for_on_freeze_parameter(self):
+    def test_invalid_value_for_on_freeze_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
             freeze(("one", 2, "three"), on_freeze=99)  # noqa
 
@@ -964,7 +964,7 @@ class TestFreezeObjects(unittest.TestCase):
             str(context.exception),
         )
 
-    def test_invalid_str_for_on_update_parameter(self):
+    def test_invalid_str_for_on_update_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
             freeze(("one", 2, "three"), on_update="invalid")
 
@@ -975,7 +975,7 @@ class TestFreezeObjects(unittest.TestCase):
             str(context.exception),
         )
 
-    def test_invalid_value_for_on_update_parameter(self):
+    def test_invalid_value_for_on_update_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
             freeze(("one", 2, "three"), on_update=1)  # noqa
 
@@ -985,9 +985,9 @@ class TestFreezeObjects(unittest.TestCase):
             str(context.exception),
         )
 
-    def test_structural_sharing_when_freezing_simple_objects(self):
+    def test_structural_sharing_when_freezing_simple_objects(self) -> None:
         class Dummy(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.value = value
 
         dummy = Dummy(value=1)
@@ -1002,13 +1002,13 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(1, frozen_dummy2.value)
         self.assertEqual(1, frozen_dummy3.value)
 
-    def test_structural_sharing_when_freezing_same_objects_multiple_times(self):
+    def test_structural_sharing_when_freezing_same_objects_multiple_times(self) -> None:
         class DummyAttr(object):
-            def __init__(self, value: str):
+            def __init__(self, value: str) -> None:
                 self.value = value
 
         class Dummy(object):
-            def __init__(self, dummy_attr: FrozenBase):
+            def __init__(self, dummy_attr: FrozenBase) -> None:
                 self.dummy_attr: Union[FrozenBase, DummyAttr] = dummy_attr
 
         frozen_dummy_attr = freeze(DummyAttr("my_value"), on_update="exception", on_freeze="copy")
@@ -1027,13 +1027,13 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(id(frozen_dummy1.dummy_attr), id(frozen_dummy2.dummy_attr))
         self.assertEqual(id(frozen_dummy2.dummy_attr), id(frozen_dummy3.dummy_attr))
 
-    def test_structural_sharing_when_freezing_nested_objects(self):
+    def test_structural_sharing_when_freezing_nested_objects(self) -> None:
         class Id(object):
-            def __init__(self, value: str):
+            def __init__(self, value: str) -> None:
                 self.value = value
 
         class Dummy(object):
-            def __init__(self, value: int, obj_id: Id):
+            def __init__(self, value: int, obj_id: Id) -> None:
                 self.value = value
                 self.obj_id = freeze(obj_id, on_update="exception", on_freeze="copy")
 
@@ -1046,7 +1046,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual("unique_id", dummy.obj_id.value)
         self.assertEqual("unique_id", frozen_dummy.obj_id.value)
 
-    def test_structural_sharing_immutable_list(self):
+    def test_structural_sharing_immutable_list(self) -> None:
         class Dummy(object):
             def __init__(self, value: int):
                 self.value = value
@@ -1099,9 +1099,9 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(id(immutable_list_size_3[2]), id(immutable_list_size_6[2]))
         self.assertEqual(id(immutable_list_size_4[3]), id(immutable_list_size_6[3]))
 
-    def test_use_frozen_object_as_dict_key(self):
+    def test_use_frozen_object_as_dict_key(self) -> None:
         class Dummy(object):
-            def __init__(self, value: int):
+            def __init__(self, value: int) -> None:
                 self.attr = value
 
         dummy1 = Dummy(value=1)
