@@ -14,6 +14,7 @@ from unittest.mock import patch
 
 from gelidum import FrozenException, freeze
 from gelidum.frozen import FrozenBase, clear_frozen_classes, get_frozen_classes
+from gelidum.tests.gelidum_tests.utils.datetime import utcnow
 
 
 class TestFreezeObjects(unittest.TestCase):
@@ -434,7 +435,7 @@ class TestFreezeObjects(unittest.TestCase):
                             "frozen_obj": frozen_obj,
                             "args": args,
                             "kwargs": kwargs,
-                            "datetime": datetime.datetime.utcnow(),
+                            "datetime": utcnow(),
                         }
                     )
 
