@@ -40,12 +40,16 @@ class frozenlist(tuple, FrozenBase):  # noqa
         raise FrozenException("'frozenlist' object is immutable")
 
     @classmethod
+    def get_hot_class(cls) -> object:
+        return list
+
+    @classmethod
     def get_gelidum_hot_class_name(cls) -> str:
-        return "tuple"
+        return "list"
 
     @classmethod
     def get_gelidum_hot_class_module(cls) -> str:
-        return "builtins.tuple"
+        return "builtins.list"
 
     def __getitem__(self, key) -> Any:
         if type(key) is slice:

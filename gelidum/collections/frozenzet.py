@@ -39,12 +39,16 @@ class frozenzet(frozenset, FrozenBase):  # noqa
         raise FrozenException("'frozenzet' object is immutable")
 
     @classmethod
+    def get_hot_class(cls) -> object:
+        return set
+
+    @classmethod
     def get_gelidum_hot_class_name(cls) -> str:
-        return "frozenset"
+        return "set"
 
     @classmethod
     def get_gelidum_hot_class_module(cls) -> str:
-        return "builtins.frozenset"
+        return "builtins.set"
 
     def __hash__(self) -> int:
         return hash(tuple(v for v in self))
