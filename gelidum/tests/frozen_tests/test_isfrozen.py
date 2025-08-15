@@ -1,7 +1,8 @@
 import unittest
 
 from gelidum import (
-    freeze, isfrozen,
+    freeze,
+    isfrozen,
 )
 from gelidum.frozen import clear_frozen_classes
 
@@ -48,16 +49,12 @@ class TestIsFrozen(unittest.TestCase):
         self.assertTrue(isfrozen(frozen_set))
 
     def test_set(self) -> None:
-        my_set = {
-            "a", "b", "c"
-        }
+        my_set = {"a", "b", "c"}
 
         self.assertFalse(isfrozen(my_set))
 
     def test_frozenset(self) -> None:
-        my_set = {
-            "a", "b", "c"
-        }
+        my_set = {"a", "b", "c"}
         frozen_set = freeze(my_set)
 
         self.assertTrue(isfrozen(frozen_set))

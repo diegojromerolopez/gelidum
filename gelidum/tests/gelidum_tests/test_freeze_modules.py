@@ -16,7 +16,6 @@ class TestFreezeModules(unittest.TestCase):
 
         self.assertEqual('Modules cannot be frozen', str(context.exception))
 
-
     def test_freeze_modules_copy(self):
         import sys
 
