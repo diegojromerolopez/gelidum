@@ -4,3 +4,4 @@ from gelidum.frozen.frozen_class_creator import (  # noqa
     get_frozen_classes,
     make_frozen_class,
 )
+from gelidum.frozen.isfrozen import isfrozen  # noqa

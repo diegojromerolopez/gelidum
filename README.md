@@ -197,6 +197,36 @@ frozen_shared_state.count = 4  # Calls on_update function and logs in the warnin
                                # "Can't assign 'count' on immutable instance" 
 ```
 
+### Checking that an object is frozen
+Just use the isfrozen function.
+
+```python
+from gelidum import isfrozen, freeze
+
+
+class Dummy(object):
+  def __init__(self, value1: int, value2: int):
+    self.attr1 = value1
+    self.attr2 = value2
+
+
+dummy = Dummy(value1=1, value2=2)
+frozen_dummy = freeze(dummy)
+
+assert isfrozen(frozen_dummy)
+```
+
+Notice that all the builtins are considered frozen by default,
+i.e. objects of the following classes are always considered frozen:
+
+- int
+- float
+- bool
+- tuple
+- None.__class__
+- complex
+- bytes
+- str
 
 ### Freeze input params
 Use the decorator freeze_params to freeze the input parameters

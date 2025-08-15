@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## 0.9.0 (2025-08-15)
 ### Features
 - Remove setup.py and use pyproject.toml to build the project.
+- Add isfrozen function to package.
 
 ### Fixes
 - Improve CI/CD
