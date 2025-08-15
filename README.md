@@ -228,6 +228,17 @@ i.e. objects of the following classes are always considered frozen:
 - bytes
 - str
 
+### Python modules cannot be frozen
+
+```python
+import sys
+
+from gelidum import freeze
+
+# This raises the FrozenException
+freeze(sys) 
+```
+
 ### Freeze input params
 Use the decorator freeze_params to freeze the input parameters
 and avoid non-intended modifications:

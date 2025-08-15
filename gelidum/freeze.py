@@ -1,6 +1,7 @@
 import io
 import sys
 import warnings
+from types import ModuleType
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from gelidum.collections import frozendict, frozenlist, frozenzet
@@ -59,6 +60,9 @@ def __freeze(
 
     if isinstance(obj, FrozenBase):
         return obj
+
+    if isinstance(obj, ModuleType):
+        raise FrozenException("Modules cannot be frozen")
 
     class_name = type(obj).__name__
     freeze_func_name = f"__freeze_{class_name}"
