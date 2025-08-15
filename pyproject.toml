@@ -1,10 +1,52 @@
+[project]
+name = "gelidum"
+version = "0.9.0"
+description = "Freeze your objects in python"
+readme = "README.md"
+keywords = [ "freeze", "python", "object" ]
+requires-python = ">=3.7"
+authors = [
+    { name = "Diego J. Romero López", email = "diegojromerolopez@gmail.com" },
+]
+classifiers=[
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries",
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License"
+]
+
+dependencies = []
+
+[project.urls]
+repository = "https://github.com/diegojromerolopez/gelidum"
+documentation = "https://github.com/diegojromerolopez/gelidum/blob/main/README.md"
+"Bug Tracker" = "https://github.com/diegojromerolopez/gelidum/issues"
+
+dev = [
+    "black>=25.1.0",
+    "coverage>=7.9.2",
+    "flake8>=7.3.0",
+    "flake8-quotes>=3.4.0",
+    "isort>=6.0.1",
+]
+
 [tool.black]
 line-length = 120
 target-version = ['py39']
+skip_string_normalization = true
+
+[tool.flake8]
+inline-quotes = "'"
+multiline-quotes = "'''"
+docstring-quotes = '"""'
 
 [tool.isort]
 profile = "black"
-
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"

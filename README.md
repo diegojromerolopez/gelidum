@@ -10,8 +10,6 @@
 [![PyPI version gelidum](https://badge.fury.io/py/gelidum.svg)](https://pypi.python.org/pypi/gelidum/)
 [![PyPI status](https://img.shields.io/pypi/status/gelidum.svg)](https://pypi.python.org/pypi/gelidum/)
 [![PyPI download month](https://img.shields.io/pypi/dm/gelidum.svg)](https://pypi.python.org/pypi/gelidum/)
-[![Maintainability](https://api.codeclimate.com/v1/badges/331d7d462e578ce5733e/maintainability)](https://codeclimate.com/github/diegojromerolopez/gelidum/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/331d7d462e578ce5733e/test_coverage)](https://codeclimate.com/github/diegojromerolopez/gelidum/test_coverage)
 
 Freeze your objects in python.
 

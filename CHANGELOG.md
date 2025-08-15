@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.9.0 (2025-08-15)
+### Features
+- Remove setup.py and use pyproject.toml to build the project.
+
+### Fixes
+- Improve CI/CD
+
 ## 0.8.2 (2025-04-06)
 ### Fixes
 - Dummy version upgrade. It was forgotten.
