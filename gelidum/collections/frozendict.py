@@ -1,4 +1,4 @@
-from typing import Any, Callable, Hashable, Optional, Sequence, Tuple, Union
+from typing import Generic, Callable, Optional, Sequence, Tuple, Union, TypeVar
 
 try:
     from collections import Mapping
@@ -7,25 +7,27 @@ except ImportError:
     from collections.abc import Mapping
 
 from gelidum.exceptions import FrozenException
-from gelidum.frozen import FrozenBase
-from gelidum.typing import FrozenDict, FrozenType
+from gelidum.frozen import FrozenBase, Frozen
 
 __all__ = ['frozendict']
 
 
-class frozendict(dict, FrozenBase):  # noqa
+K = TypeVar('K')
+V = TypeVar('V')
+
+class frozendict(dict, FrozenBase, Generic[K, V]):  # noqa
     def __raise_immutable_exception(self, *args, **kwargs):
         raise FrozenException("'frozendict' object is immutable")
 
     def __init__(
         self,
-        seq: Optional[Union[Mapping, Sequence, Tuple[Hashable, Any]]] = None,
-        freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
+        seq: Optional[Union[Mapping[K, V], Sequence[Tuple[K, V]]]] = None,
+        freeze_func: Optional[Callable[[V], Frozen[V]]] = None,
         **kwargs,
     ):
         if freeze_func is None:
 
-            def freeze_func(item: Any) -> FrozenType:
+            def freeze_func(item: V) -> Frozen[V]:
                 from gelidum.freeze import freeze
 
                 return freeze(item, on_update='exception', on_freeze='copy')
@@ -50,7 +52,7 @@ class frozendict(dict, FrozenBase):  # noqa
             super().__init__()
 
     @classmethod
-    def _gelidum_on_update(cls, *args, **kwargs):
+    def _gelidum_on_update(cls, *args, **kwargs) -> None:
         raise FrozenException("'frozendict' object is immutable")
 
     @classmethod
@@ -64,7 +66,7 @@ class frozendict(dict, FrozenBase):  # noqa
     def __hash__(self) -> int:
         return hash(tuple((k, v) for k, v in self.items()))
 
-    def __getitem__(self, key) -> Any:
+    def __getitem__(self, key: K) -> 'frozendict[K, V]':
         if type(key) is slice:
             return frozendict(super().__getitem__(key))
         try:
@@ -72,11 +74,11 @@ class frozendict(dict, FrozenBase):  # noqa
         except IndexError:
             raise IndexError('frozendict index out of range')
 
-    def __add__(self, other: FrozenDict) -> FrozenDict:
+    def __add__(self, other: 'frozendict[K, V]') -> 'frozendict[K, V]':
         joined_dict = self | other
         return frozendict(joined_dict)
 
-    def __or__(self, other: FrozenDict) -> FrozenDict:
+    def __or__(self, other: 'frozendict[K, V]') -> 'frozendict[K, V]':
         if hasattr(super, '__or__'):
             return super().__or__(other)
         # Python version < 3.9
@@ -85,31 +87,31 @@ class frozendict(dict, FrozenBase):  # noqa
         result_dict.update(other)
         return frozendict(result_dict)
 
-    def __sub__(self, other: FrozenDict) -> FrozenDict:
+    def __sub__(self, other: 'frozendict[K, V]') -> 'frozendict[K, V]':
         return frozendict({k: v for k, v in self.items() if k not in other})
 
-    def remove(self, x):
+    def remove(self, x) -> None:
         self.__raise_immutable_exception()
 
-    def pop(self, items):
+    def pop(self, items) -> None:
         self.__raise_immutable_exception()
 
-    def popitem(self, *args, **kwarg):
+    def popitem(self, *args, **kwarg) -> None:
         self.__raise_immutable_exception()
 
-    def __setitem__(self, key, val, *args, **kwargs):
+    def __setitem__(self, key, val, *args, **kwargs) -> None:
         self.__raise_immutable_exception()
 
-    def __delitem__(self, key, *args, **kwargs):
+    def __delitem__(self, key, *args, **kwargs) -> None:
         self.__raise_immutable_exception()
 
-    def clear(self):
+    def clear(self) -> None:
         self.__raise_immutable_exception()
 
-    def update(self, *args, **kwarg):
+    def update(self, *args, **kwarg) -> None:
         self.__raise_immutable_exception()
 
-    def copy(self) -> 'frozendict':
+    def copy(self) -> 'frozendict[K, V]':
         """
         frozendict objects are only shallow-copied.
         """

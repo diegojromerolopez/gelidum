@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, TypeVar
 
 import numpy as np
 
@@ -8,7 +8,9 @@ from gelidum.frozen import FrozenBase
 __all__ = ['frozenndarray']
 
 
-class frozenndarray(np.ndarray, FrozenBase):  # noqa
+T = TypeVar('T')
+
+class frozenndarray(np.ndarray[T], FrozenBase):  # noqa
     """
     Read https://numpy.org/devdocs/user/basics.subclassing.html for more
     information about numpy.ndarray subclassing.
@@ -20,7 +22,7 @@ class frozenndarray(np.ndarray, FrozenBase):  # noqa
         return obj
 
     @classmethod
-    def _gelidum_on_update(cls, *args, **kwargs):
+    def _gelidum_on_update(cls, *args, **kwargs) -> None:
         raise FrozenException("'ndarray' object is immutable")
 
     @classmethod
