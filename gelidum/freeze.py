@@ -7,7 +7,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.exceptions import FrozenException
-from gelidum.frozen import FrozenBase, make_frozen_class
+from gelidum.frozen import FrozenBase, isfrozen, make_frozen_class
 from gelidum.frozen.frozen_class_creator import make_unique_class
 from gelidum.on_freeze import OnFreezeCopier, on_freeze_func_creator
 from gelidum.typing import FrozenList, FrozenType, OnFreezeFuncType, OnUpdateFuncType, T
@@ -58,7 +58,7 @@ def __freeze(
     if isbuiltin(obj):
         return obj
 
-    if isinstance(obj, FrozenBase):
+    if isfrozen(obj):
         return obj
 
     if isinstance(obj, ModuleType):
@@ -169,6 +169,9 @@ def __freeze_object(
 
         frozen_obj = on_freeze(obj)
         for attr in attrs:
+            # Avoid self-reference loops
+            if getattr(obj, attr) is obj:
+                continue
             attr_value = getattr(frozen_obj, attr)
             setattr(
                 frozen_obj,

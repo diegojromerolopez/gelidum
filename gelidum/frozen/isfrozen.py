@@ -1,6 +1,6 @@
 from typing import Any
 
-from gelidum.frozen import FrozenBase
+from gelidum.frozen.frozen_base import FrozenBase
 
 FROZEN_CLASSES = (FrozenBase, int, float, bool, tuple, None.__class__, complex, bytes, str)
 

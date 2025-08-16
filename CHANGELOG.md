@@ -15,6 +15,7 @@ So Final will not be used by this package in any form, Freezable will be used in
 - Remove setup.py and use pyproject.toml to build the project.
 - Add isfrozen function to package.
 - Modules cannot be frozen.
+- Allow freezing object with references to self.
 
 ### Fixes
 - Improve CI/CD
