@@ -22,7 +22,7 @@ class TestDecorator(unittest.TestCase):
             a_dict[new_item[0]] = new_item[1]
 
         with self.assertRaises(TypeError) as context:
-            add_to_dict({}, ("key", "value"))
+            add_to_dict({}, ('key', 'value'))
 
         self.assertEqual("'frozendict' object is immutable", str(context.exception))
 
@@ -49,7 +49,7 @@ class TestDecorator(unittest.TestCase):
             def __init__(self, attr: int) -> None:
                 self.attr = attr
 
-        @freeze_params(params={"dummy_const"})
+        @freeze_params(params={'dummy_const'})
         def assign_to_dummies(a_dummy: Dummy, other_dummy: Dummy, the_dummy_const: Dummy):
             a_dummy.attr = the_dummy_const.attr
             other_dummy.attr = the_dummy_const.attr

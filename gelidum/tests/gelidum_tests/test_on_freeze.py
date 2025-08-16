@@ -81,7 +81,7 @@ class TestOnFreeze(unittest.TestCase):
                 self.__log = log
 
             def __call__(self, obj: Any) -> Any:
-                self.__log.debug(f"{obj.__class__.__name__} object frozen")
+                self.__log.debug(f'{obj.__class__.__name__} object frozen')
                 return super().__call__(obj=obj)
 
         mock_log = mock.Mock()
@@ -90,7 +90,7 @@ class TestOnFreeze(unittest.TestCase):
         frozen_dummy1 = freeze(dummy1, on_freeze=freezer)
 
         self.assertEqual(
-            [call("Dummy object frozen"), call("DummyAttr1 object frozen"), call("DummyAttr2 object frozen")],
+            [call('Dummy object frozen'), call('DummyAttr1 object frozen'), call('DummyAttr2 object frozen')],
             mock_log.debug.call_args_list,
         )
         self.assertTrue(isinstance(frozen_dummy1, Dummy))

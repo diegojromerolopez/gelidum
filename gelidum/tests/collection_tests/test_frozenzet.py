@@ -36,12 +36,12 @@ class TestFrozenzet(unittest.TestCase):  # noqa
 
         dummy = Dummy(3)
         frozen_dummy = freeze(dummy)
-        frozen_zet = frozenzet((1, "2", frozen_dummy))
+        frozen_zet = frozenzet((1, '2', frozen_dummy))
 
         self.assertTrue(isinstance(frozen_zet, FrozenBase))
         self.assertEqual(3, len(frozen_zet))
         self.assertTrue(1 in frozen_zet)
-        self.assertTrue("2" in frozen_zet)
+        self.assertTrue('2' in frozen_zet)
         self.assertFalse(dummy in frozen_zet)
         self.assertTrue(frozen_dummy in frozen_zet)
 
@@ -74,19 +74,19 @@ class TestFrozenzet(unittest.TestCase):  # noqa
                 self.value = value
 
             def __str__(self) -> str:
-                return f"{self.value}"
+                return f'{self.value}'
 
         dummy = Dummy(3)
         frozen_dummy = freeze(dummy)
 
-        self.assertEqual({1, "2", frozen_dummy}, set(frozenzet((1, "2", frozen_dummy))))
-        self.assertEqual([1, "2", frozen_dummy], sorted(list(frozenzet((1, "2", frozen_dummy))), key=lambda e: str(e)))
+        self.assertEqual({1, '2', frozen_dummy}, set(frozenzet((1, '2', frozen_dummy))))
+        self.assertEqual([1, '2', frozen_dummy], sorted(list(frozenzet((1, '2', frozen_dummy))), key=lambda e: str(e)))
 
     def test_setattr_exception(self) -> None:
         frozen_zet = frozenzet([1, 2, 3])
 
         with self.assertRaises(FrozenException) as context:
-            setattr(frozen_zet, "my_attr", "value")
+            setattr(frozen_zet, 'my_attr', 'value')
 
         self.assertEqual("'frozenzet' object is immutable", str(context.exception))
 

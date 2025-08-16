@@ -21,8 +21,8 @@ NpArrayType = Any
 
 def freeze(
     obj: T,
-    on_update: Union[str, OnUpdateFuncType] = "exception",
-    on_freeze: Union[str, OnFreezeFuncType] = "copy",
+    on_update: Union[str, OnUpdateFuncType] = 'exception',
+    on_freeze: Union[str, OnFreezeFuncType] = 'copy',
     save_original_on_copy: bool = False,
     inplace: Optional[bool] = None,
 ) -> FrozenType:
@@ -30,17 +30,17 @@ def freeze(
     # inplace argument will be removed from freeze in the next major version (0.6.0)
     if isinstance(inplace, bool):
         warnings.warn(
-            DeprecationWarning("Use of inplace is deprecated and will be removed in next major version (0.6.0)")
+            DeprecationWarning('Use of inplace is deprecated and will be removed in next major version (0.6.0)')
         )
 
-        if hasattr(obj.__class__, "__slots__") and inplace:
-            raise FrozenException("Objects of classes with __slots__ cannot be frozen inplace")
+        if hasattr(obj.__class__, '__slots__') and inplace:
+            raise FrozenException('Objects of classes with __slots__ cannot be frozen inplace')
 
-        on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze="inplace" if inplace else "copy")
+        on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze='inplace' if inplace else 'copy')
 
     else:
-        if hasattr(obj.__class__, "__slots__") and on_freeze == "inplace":
-            raise FrozenException("Objects of classes with __slots__ cannot be frozen inplace")
+        if hasattr(obj.__class__, '__slots__') and on_freeze == 'inplace':
+            raise FrozenException('Objects of classes with __slots__ cannot be frozen inplace')
 
         on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze=on_freeze)
 
@@ -62,10 +62,10 @@ def __freeze(
         return obj
 
     if isinstance(obj, ModuleType):
-        raise FrozenException("Modules cannot be frozen")
+        raise FrozenException('Modules cannot be frozen')
 
     class_name = type(obj).__name__
-    freeze_func_name = f"__freeze_{class_name}"
+    freeze_func_name = f'__freeze_{class_name}'
     this_module = sys.modules[__name__]
     if hasattr(this_module, freeze_func_name):
         freeze_func = getattr(this_module, freeze_func_name)
@@ -83,7 +83,7 @@ def __freeze(
         )
 
     # Actually, this code is unreachable
-    raise ValueError(f"object of type {obj.__class__} not frozen")  # pragma: no cover
+    raise ValueError(f'object of type {obj.__class__} not frozen')  # pragma: no cover
 
 
 def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
@@ -152,9 +152,9 @@ def __freeze_object(
 
     # If the object has a class with __slots__ a unique class is created whose class attributes
     # are the object attributes that we want to freeze
-    if hasattr(obj.__class__, "__slots__"):
+    if hasattr(obj.__class__, '__slots__'):
         attrs = tuple(obj.__class__.__slots__)
-        on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze="copy")
+        on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze='copy')
         frozen_class = make_unique_class(
             klass=obj.__class__,
             attrs={
@@ -181,7 +181,7 @@ def __freeze_object(
         # save_original_on_copy is set to True). Descendant attributes are not saved in other original_obj attributes,
         # i.e. there is no copy of hierarchy, only the first-level object is saved.
         if save_original_on_copy and on_freeze.__class__ == OnFreezeCopier:
-            setattr(frozen_obj, "original_obj", obj)
+            setattr(frozen_obj, 'original_obj', obj)
 
         frozen_class = make_frozen_class(klass=obj.__class__, attrs=attrs, on_update=on_update)
         frozen_obj.__class__ = frozen_class
@@ -198,17 +198,17 @@ def __on_update_warning(frozen_obj: FrozenBase, message: str, *args, **kwargs) -
 
 def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
     if isinstance(on_update, str):
-        if on_update == "exception":
+        if on_update == 'exception':
             return __on_update_exception
-        elif on_update == "warning":
+        elif on_update == 'warning':
             return __on_update_warning
-        elif on_update == "nothing":
+        elif on_update == 'nothing':
             return lambda message, *args, **kwargs: None
         else:
             raise AttributeError(
                 f"Invalid value for on_update parameter, '{on_update}' found, "
                 f"only 'exception', 'warning', and 'nothing' are valid options "
-                f"if passed a string"
+                f'if passed a string'
             )
 
     elif callable(on_update):
@@ -218,5 +218,5 @@ def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
         raise AttributeError(
             f"Invalid value for on_update parameter, '{on_update}' found, "
             f"only 'exception', 'warning', 'nothing' or a function are "
-            f"valid options"
+            f'valid options'
         )

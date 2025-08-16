@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixes
 - Improve CI/CD
+- Use single quotes preferably in the source code.
 
 ## 0.8.2 (2025-04-06)
 ### Fixes
@@ -62,7 +63,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
   dummy_child = DummyChild(value=1)
   dummy = Dummy(child=dummy_child)
-  frozen_dummy = freeze(dummy, on_freeze="copy")
+  frozen_dummy = freeze(dummy, on_freeze='copy')
 
   assert(frozen_dummy.original_obj.__class__ == dummy.__class__)
   assert(id(frozen_dummy.original_obj) == id(dummy))

@@ -69,7 +69,7 @@ class Dummy(object):
     self.attr2 = attr2
 
 dummy = Dummy(1, [2, 3, 4])
-frozen_dummy = freeze(dummy, on_freeze="inplace")
+frozen_dummy = freeze(dummy, on_freeze='inplace')
 assert(id(dummy) == id(frozen_dummy))
 
 # Both raise exception
@@ -96,12 +96,12 @@ class Dummy(object):
     self.attr2 = attr2
 
 dummy = Dummy(1, [2, 3, 4])
-# on_freeze="copy" by default
+# on_freeze='copy' by default
 frozen_dummy = freeze(dummy)
 assert(id(dummy) != id(frozen_dummy))
 
-# on_freeze="copy" by default
-frozen_object_dummy2 = freeze(dummy, on_freeze="copy")
+# on_freeze='copy' by default
+frozen_object_dummy2 = freeze(dummy, on_freeze='copy')
 
 # It doesn't raise an exception,
 # dummy keeps being a mutable object
@@ -175,16 +175,16 @@ class SharedState(object):
 
 shared_state = SharedState(1)
       
-# on_update="exception": raises an exception when an update is tried
-frozen_shared_state = freeze(shared_state, on_update="exception")
+# on_update='exception': raises an exception when an update is tried
+frozen_shared_state = freeze(shared_state, on_update='exception')
 frozen_shared_state.count = 4  # Raises exception
 
-# on_update="warning": shows a warning in console exception when an update is tried
-frozen_shared_state = freeze(shared_state, on_update="warning")
+# on_update='warning': shows a warning in console exception when an update is tried
+frozen_shared_state = freeze(shared_state, on_update='warning')
 frozen_shared_state.count = 4  # Shows a warning in console
 
-# on_update="nothing": does nothing when an update is tried
-frozen_shared_state = freeze(shared_state, on_update="nothing")
+# on_update='nothing': does nothing when an update is tried
+frozen_shared_state = freeze(shared_state, on_update='nothing')
 frozen_shared_state.count = 4  # Does nothing, as this update did not exist
 
 # on_update=<lambda message, *args, **kwargs>: calls the function
@@ -258,7 +258,7 @@ parameters must be frozen.
 from typing import List
 from gelidum import freeze_params
 
-@freeze_params(params={"list1", "list2"})
+@freeze_params(params={'list1', 'list2'})
 def concat_lists(dest: List, list1: List, list2: List) -> List:
     dest = list1 + list2
     return dest
@@ -277,7 +277,7 @@ function have keyword-only arguments:
 from typing import List
 from gelidum import freeze_params
 
-@freeze_params(params={"list1", "list2"})
+@freeze_params(params={'list1', 'list2'})
 def concat_lists_in(*, dest: List, list1: List, list2: List):
     dest = list1 + list2
     return dest
@@ -294,11 +294,11 @@ def concatenate_lists(list1: Final[List], list2: Final[List]):
     return list1 + list2
 ```
 
-Finally, take in account that all freezing is done in a new object (i.e. freeze with on_freeze="copy").
+Finally, take in account that all freezing is done in a new object (i.e. freeze with on_freeze='copy').
 It makes no sense to freeze a parameter of a function that could be used later, *outside*
 said function.
 
-### Check original (i.e. "hot") class
+### Check original (i.e. 'hot') class
 - **get_gelidum_hot_class_name**: returns the name of hot class.
 - **get_gelidum_hot_class_module** returns the module reference where the hot class was.
 
@@ -324,7 +324,7 @@ from typing import Any
 
 def my_freeze_func(item: Any) -> FrozenType:
   logging.debug(f"Freezing item {item}")
-  return freeze(item, on_update="exception", on_freeze="copy")
+  return freeze(item, on_update='exception', on_freeze='copy')
 
 frozen_zet = frozenzet([1, 2, 3], freeze_func=my_freeze_func)
 ```
@@ -390,10 +390,10 @@ class FrozenDummyUpdateTryRecorder:
     logging.warning(message)
     with cls.LOCK:
       cls.written_tries.append({
-        "message": message,
-        "args": args,
-        "kwargs": kwargs,
-        "datetime": datetime.datetime.utcnow()
+        'message': message,
+        'args': args,
+        'kwargs': kwargs,
+        'datetime': datetime.datetime.utcnow()
       })
 
 
@@ -412,9 +412,9 @@ The parameter on_freeze of the function freeze must be a string or a callable.
 This parameter informs of what to do with the object that will be frozen.
 Should it be the same input object frozen or a copy of it?
 
-If it has a string as parameter, values "inplace" and "copy" are allowed.
-A value of "inplace" will make the freeze method to try to freeze the object
-as-is, while a value of "copy" will make a copy of the original object and then,
+If it has a string as parameter, values 'inplace' and 'copy' are allowed.
+A value of 'inplace' will make the freeze method to try to freeze the object
+as-is, while a value of 'copy' will make a copy of the original object and then,
 freeze that copy. **These are the recommended parameters**.
 
 On the other hand, the interesting part is to define a custom on_freeze method.

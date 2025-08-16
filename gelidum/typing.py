@@ -28,9 +28,9 @@ python_interpreter = python_implementation()
 python_interpreter_version = tuple(int(number) for number in python_version_tuple()[:2])
 
 
-if python_interpreter == "PyPy" or (python_interpreter_version[0] == 3 and python_interpreter_version[1] < 9):
+if python_interpreter == 'PyPy' or (python_interpreter_version[0] == 3 and python_interpreter_version[1] < 9):
     try:
-        T = typing.TypeVar("T")
+        T = typing.TypeVar('T')
 
         class Final(Generic[T]):  # noqa
             pass
@@ -40,7 +40,7 @@ if python_interpreter == "PyPy" or (python_interpreter_version[0] == 3 and pytho
 
 else:
     try:
-        _SpecialForm = getattr(typing, "_SpecialForm")
+        _SpecialForm = getattr(typing, '_SpecialForm')
 
         @_SpecialForm
         def Final(self, parameters):  # noqa
@@ -49,12 +49,12 @@ else:
     except AttributeError:  # pragma: no cover
         Final = typing.Final
 
-FrozenList = Union["FrozenBase", Sized, Iterable, Reversible, "frozenlist"]
-FrozenDict = Union["FrozenBase", Mapping, "frozendict"]
-FrozenZet = Union["FrozenBase", Sized, Iterable, "frozenzet"]
-FrozenNdArray = Union["FrozenBase", Sized, Iterable, "frozenndarray"]
+FrozenList = Union['FrozenBase', Sized, Iterable, Reversible, 'frozenlist']
+FrozenDict = Union['FrozenBase', Mapping, 'frozendict']
+FrozenZet = Union['FrozenBase', Sized, Iterable, 'frozenzet']
+FrozenNdArray = Union['FrozenBase', Sized, Iterable, 'frozenndarray']
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 FrozenType = Optional[
     Union[
@@ -71,13 +71,13 @@ FrozenType = Optional[
         FrozenNdArray,
         tuple,
         frozenset,
-        "FrozenBase",
+        'FrozenBase',
         T,
     ]
 ]
 
 try:
-    OnUpdateFuncType = Callable[["FrozenBase", str, ...], None]
+    OnUpdateFuncType = Callable[['FrozenBase', str, ...], None]
 except TypeError:
     OnUpdateFuncType = Callable
 

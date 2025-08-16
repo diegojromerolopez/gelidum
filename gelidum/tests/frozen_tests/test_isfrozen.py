@@ -18,19 +18,19 @@ class TestIsFrozen(unittest.TestCase):
         self.assertTrue(isfrozen(False))
         self.assertTrue(isfrozen(None))
         self.assertTrue(isfrozen(complex(1, 2)))
-        self.assertTrue(isfrozen(b"Bytes"))
-        self.assertTrue(isfrozen("String"))
+        self.assertTrue(isfrozen(b'Bytes'))
+        self.assertTrue(isfrozen('String'))
 
     def test_dict(self) -> None:
         my_dict = {
-            "a": 1,
+            'a': 1,
         }
 
         self.assertFalse(isfrozen(my_dict))
 
     def test_frozendict(self) -> None:
         my_dict = {
-            "a": 1,
+            'a': 1,
         }
         frozen_dict = freeze(my_dict)
 
@@ -49,12 +49,12 @@ class TestIsFrozen(unittest.TestCase):
         self.assertTrue(isfrozen(frozen_set))
 
     def test_set(self) -> None:
-        my_set = {"a", "b", "c"}
+        my_set = {'a', 'b', 'c'}
 
         self.assertFalse(isfrozen(my_set))
 
     def test_frozenset(self) -> None:
-        my_set = {"a", "b", "c"}
+        my_set = {'a', 'b', 'c'}
         frozen_set = freeze(my_set)
 
         self.assertTrue(isfrozen(frozen_set))
@@ -70,6 +70,6 @@ class TestIsFrozen(unittest.TestCase):
                 self.attr = value
 
         dummy1 = Dummy(value=1)
-        frozen_dummy1 = freeze(dummy1, on_freeze="copy")
+        frozen_dummy1 = freeze(dummy1, on_freeze='copy')
 
         self.assertTrue(isfrozen(frozen_dummy1))
