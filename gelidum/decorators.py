@@ -24,18 +24,20 @@ def freeze_params(params: Optional[Iterable[str]] = None):
     return inner_freeze_params
 
 
-def freeze_final(func):
-    """Freeze all final params of a method"""
+def freeze_freezable(func):
+    """Freeze all freezable params of a method"""
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
         unnamed_params_to_freeze: Set[int] = {
             i
             for i, (param_name, param_typing) in enumerate(func.__annotations__.items())
-            if __param_is_final(param_typing)
+            if __param_is_freezable(param_typing)
         }
         named_params_to_freeze: Set[str] = {
-            param_name for param_name, param_typing in func.__annotations__.items() if __param_is_final(param_typing)
+            param_name
+            for param_name, param_typing in func.__annotations__.items()
+            if __param_is_freezable(param_typing)
         }
         func_args = tuple(
             [
@@ -52,6 +54,6 @@ def freeze_final(func):
     return wrapper
 
 
-def __param_is_final(param_typing: Any) -> bool:
+def __param_is_freezable(param_typing: Any) -> bool:
     param_typing_str = str(param_typing)
-    return param_typing_str.startswith('typing.Final') or param_typing_str.startswith('gelidum.typing.Final')
+    return param_typing_str.startswith('gelidum.typing.Freezable')

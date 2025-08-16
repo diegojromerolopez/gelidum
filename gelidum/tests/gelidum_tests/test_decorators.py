@@ -2,10 +2,10 @@ import concurrent.futures
 import unittest
 from typing import Any, Dict, List, Tuple
 
-from gelidum import Final, FrozenException, freeze_final, freeze_params
+from gelidum import Freezable, FrozenException, freeze_freezable, freeze_params
 
 
-class TestDecorator(unittest.TestCase):
+class TestDecorators(unittest.TestCase):
     def test_decorator_with_list_input_param(self) -> None:
         @freeze_params()
         def append_to_list(a_list: List, new_item: int):
@@ -85,9 +85,9 @@ class TestDecorator(unittest.TestCase):
             future_count += 1
         self.assertEqual(2, future_count)
 
-    def test_freeze_final_list_params(self) -> None:
-        @freeze_final
-        def join_lists_bad_implementation(one: Final[List], two: Final[List]) -> Final[List]:
+    def test_freeze_freezable_list_params(self) -> None:
+        @freeze_freezable
+        def join_lists_bad_implementation(one: Freezable[List], two: Freezable[List]) -> Freezable[List]:
             one.extend(two)
             return one  # pragma: no cover
 
@@ -100,14 +100,14 @@ class TestDecorator(unittest.TestCase):
         self.assertEqual("'frozenlist' object is immutable", str(context_unnamed_arguments.exception))
         self.assertEqual("'frozenlist' object is immutable", str(context_named_arguments.exception))
 
-    def test_freeze_final_object_params(self) -> None:
+    def test_freeze_freezable_object_params(self) -> None:
         class Number(object):
             def __init__(self, value: int) -> None:
                 self.value = value
                 self.value_str = str(value)
 
-        @freeze_final
-        def product_bad_implementation(one: Final[Number], two: Final[Number], three: Number):
+        @freeze_freezable
+        def product_bad_implementation(one: Freezable[Number], two: Freezable[Number], three: Number):
             three.value *= 99
             one.value *= two.value * three.value
             return one.value  # pragma: no cover

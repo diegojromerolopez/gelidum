@@ -283,15 +283,16 @@ def concat_lists_in(*, dest: List, list1: List, list2: List):
     return dest
 ```
 
-You can use the **Final typehint from gelidum** to signal that an argument is immutable:
+You can use the **Freezable type hint from gelidum** to signal that an argument is immutable:
 
 ```python
 from typing import List
-from gelidum import freeze_final, Final
+from gelidum import freeze_freezable, Freezable
 
-@freeze_final
-def concatenate_lists(list1: Final[List], list2: Final[List]):
-    return list1 + list2
+
+@freeze_freezable
+def concatenate_lists(list1: Freezable[List], list2: Freezable[List]):
+  return list1 + list2
 ```
 
 Finally, take in account that all freezing is done in a new object (i.e. freeze with on_freeze='copy').

@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 0.9.0 (2025-08-15)
+### Breaking changes
+- It does not make sense using Final as a type hint for frozen objects, it should be Freezable.
+  - `Final` is a type hint meaning the variable is a constant, it will not reference any other value.
+  - `Freezable` means that the parameter of the function will be frozen before passing it to the function. 
+So Final will not be used by this package in any form, Freezable will be used instead.
+
 ### Features
 - Remove setup.py and use pyproject.toml to build the project.
 - Add isfrozen function to package.
