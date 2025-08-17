@@ -4,7 +4,7 @@ from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 from gelidum.typing import FrozenType, FrozenZet
 
-__all__ = ["frozenzet"]
+__all__ = ['frozenzet']
 
 _FrozenZetParameterType = Optional[Union[Sequence, Generator, Iterable]]
 
@@ -15,13 +15,13 @@ class frozenzet(frozenset, FrozenBase):  # noqa
 
     def __new__(
         cls, seq: Optional[_FrozenZetParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None
-    ) -> "frozenzet":
+    ) -> 'frozenzet':
         if freeze_func is None:
 
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
 
-                return freeze(item, on_update="exception", on_freeze="copy")
+                return freeze(item, on_update='exception', on_freeze='copy')
 
         if seq:
             self = frozenset.__new__(cls, (freeze_func(arg) for arg in seq))
@@ -40,11 +40,11 @@ class frozenzet(frozenset, FrozenBase):  # noqa
 
     @classmethod
     def get_gelidum_hot_class_name(cls) -> str:
-        return "frozenset"
+        return 'frozenset'
 
     @classmethod
     def get_gelidum_hot_class_module(cls) -> str:
-        return "builtins.frozenset"
+        return 'builtins.frozenset'
 
     def __hash__(self) -> int:
         return hash(tuple(v for v in self))
@@ -96,7 +96,7 @@ class frozenzet(frozenset, FrozenBase):  # noqa
     def __ixor__(self, *others) -> None:
         self.__raise_immutable_exception()
 
-    def copy(self) -> "frozenzet":
+    def copy(self) -> 'frozenzet':
         """
         frozenzet objects are only shallow-copied.
         """

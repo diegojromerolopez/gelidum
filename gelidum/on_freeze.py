@@ -17,7 +17,7 @@ class OnFreezeIdentityFunc:
 class OnFreezeOriginalObjTracker(OnFreezeCopier):
     """
     A callable class that stores the first object that was
-    frozen. Useful for keeping track of original "hot" objects.
+    frozen. Useful for keeping track of original 'hot' objects.
     """
 
     def __init__(self):
@@ -39,9 +39,9 @@ _ON_FREEZE_IDENTITY_FUNC = OnFreezeIdentityFunc()
 
 def on_freeze_func_creator(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncType:
     if isinstance(on_freeze, str):
-        if on_freeze == "copy":
+        if on_freeze == 'copy':
             return _ON_FREEZE_COPIER
-        elif on_freeze == "inplace":
+        elif on_freeze == 'inplace':
             return _ON_FREEZE_IDENTITY_FUNC
         else:
             raise AttributeError(

@@ -5,7 +5,7 @@ import numpy as np
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 
-__all__ = ["frozenndarray"]
+__all__ = ['frozenndarray']
 
 
 class frozenndarray(np.ndarray, FrozenBase):  # noqa
@@ -25,8 +25,8 @@ class frozenndarray(np.ndarray, FrozenBase):  # noqa
 
     @classmethod
     def get_gelidum_hot_class_name(cls) -> str:
-        return "ndarray"
+        return 'ndarray'
 
     @classmethod
     def get_gelidum_hot_class_module(cls) -> str:
-        return "numpy.ndarray"
+        return 'numpy.ndarray'

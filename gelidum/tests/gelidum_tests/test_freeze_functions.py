@@ -26,7 +26,7 @@ class TestFreezeFunctions(unittest.TestCase):
 
         times.factor = 3
 
-        frozen_times = freeze(times, on_freeze="inplace")
+        frozen_times = freeze(times, on_freeze='inplace')
 
         self.assertEqual(3, frozen_times.factor)
         self.assertNotEqual(id(times), id(frozen_times))
@@ -42,7 +42,7 @@ class TestFreezeFunctions(unittest.TestCase):
         with self.assertRaises(FrozenException) as context:
             frozen_times.factor = 10
 
-        self.assertEqual("Can't assign attribute 'factor' on immutable instance", str(context.exception))
+        self.assertEqual('Can\'t assign attribute \'factor\' on immutable instance', str(context.exception))
 
     def test_freeze_function_and_writing_frozen_attributes_with_exception(self) -> None:
         def times() -> None:
@@ -63,7 +63,7 @@ class TestFreezeFunctions(unittest.TestCase):
 
         times.factor = 3
 
-        frozen_times = freeze(times, on_update="warning")
+        frozen_times = freeze(times, on_update='warning')
 
         with warnings.catch_warnings(record=True) as caught_warnings:
             frozen_times.factor = 10

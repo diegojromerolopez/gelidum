@@ -1,15 +1,15 @@
 class FrozenBase(object):
     @classmethod
     def _gelidum_on_update(cls, *args, **kwargs):  # pragma: no cover
-        raise NotImplementedError("Implement in derived class")
+        raise NotImplementedError('Implement in derived class')
 
     @classmethod
     def get_gelidum_hot_class_name(cls) -> str:  # pragma: no cover
-        raise NotImplementedError("Implement in derived class")
+        raise NotImplementedError('Implement in derived class')
 
     @classmethod
     def get_gelidum_hot_class_module(cls) -> str:  # pragma: no cover
-        raise NotImplementedError("Implement in derived class")
+        raise NotImplementedError('Implement in derived class')
 
     def __setattr__(self, key, value):
         self._gelidum_on_update(
@@ -34,7 +34,7 @@ class FrozenBase(object):
     def __delitem__(self, key):
         self._gelidum_on_update(frozen_obj=self, message=f"Can't delete key '{key}' on immutable instance", key=key)
 
-    def __deepcopy__(self, *args, **kwargs) -> "FrozenBase":
+    def __deepcopy__(self, *args, **kwargs) -> 'FrozenBase':
         """
         No frozen object must need to be (deep) copied.
         Use structural sharing to improve performance when doing

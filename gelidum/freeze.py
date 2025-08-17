@@ -1,12 +1,13 @@
 import io
 import sys
 import warnings
+from types import ModuleType
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
 from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.exceptions import FrozenException
-from gelidum.frozen import FrozenBase, make_frozen_class
+from gelidum.frozen import FrozenBase, isfrozen, make_frozen_class
 from gelidum.frozen.frozen_class_creator import make_unique_class
 from gelidum.on_freeze import OnFreezeCopier, on_freeze_func_creator
 from gelidum.typing import FrozenList, FrozenType, OnFreezeFuncType, OnUpdateFuncType, T
@@ -20,8 +21,8 @@ NpArrayType = Any
 
 def freeze(
     obj: T,
-    on_update: Union[str, OnUpdateFuncType] = "exception",
-    on_freeze: Union[str, OnFreezeFuncType] = "copy",
+    on_update: Union[str, OnUpdateFuncType] = 'exception',
+    on_freeze: Union[str, OnFreezeFuncType] = 'copy',
     save_original_on_copy: bool = False,
     inplace: Optional[bool] = None,
 ) -> FrozenType:
@@ -29,17 +30,17 @@ def freeze(
     # inplace argument will be removed from freeze in the next major version (0.6.0)
     if isinstance(inplace, bool):
         warnings.warn(
-            DeprecationWarning("Use of inplace is deprecated and will be removed in next major version (0.6.0)")
+            DeprecationWarning('Use of inplace is deprecated and will be removed in next major version (0.6.0)')
         )
 
-        if hasattr(obj.__class__, "__slots__") and inplace:
-            raise FrozenException("Objects of classes with __slots__ cannot be frozen inplace")
+        if hasattr(obj.__class__, '__slots__') and inplace:
+            raise FrozenException('Objects of classes with __slots__ cannot be frozen inplace')
 
-        on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze="inplace" if inplace else "copy")
+        on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze='inplace' if inplace else 'copy')
 
     else:
-        if hasattr(obj.__class__, "__slots__") and on_freeze == "inplace":
-            raise FrozenException("Objects of classes with __slots__ cannot be frozen inplace")
+        if hasattr(obj.__class__, '__slots__') and on_freeze == 'inplace':
+            raise FrozenException('Objects of classes with __slots__ cannot be frozen inplace')
 
         on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze=on_freeze)
 
@@ -57,11 +58,14 @@ def __freeze(
     if isbuiltin(obj):
         return obj
 
-    if isinstance(obj, FrozenBase):
+    if isfrozen(obj):
         return obj
 
+    if isinstance(obj, ModuleType):
+        raise FrozenException('Modules cannot be frozen')
+
     class_name = type(obj).__name__
-    freeze_func_name = f"__freeze_{class_name}"
+    freeze_func_name = f'__freeze_{class_name}'
     this_module = sys.modules[__name__]
     if hasattr(this_module, freeze_func_name):
         freeze_func = getattr(this_module, freeze_func_name)
@@ -79,7 +83,7 @@ def __freeze(
         )
 
     # Actually, this code is unreachable
-    raise ValueError(f"object of type {obj.__class__} not frozen")  # pragma: no cover
+    raise ValueError(f'object of type {obj.__class__} not frozen')  # pragma: no cover
 
 
 def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
@@ -148,9 +152,9 @@ def __freeze_object(
 
     # If the object has a class with __slots__ a unique class is created whose class attributes
     # are the object attributes that we want to freeze
-    if hasattr(obj.__class__, "__slots__"):
+    if hasattr(obj.__class__, '__slots__'):
         attrs = tuple(obj.__class__.__slots__)
-        on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze="copy")
+        on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze='copy')
         frozen_class = make_unique_class(
             klass=obj.__class__,
             attrs={
@@ -165,6 +169,9 @@ def __freeze_object(
 
         frozen_obj = on_freeze(obj)
         for attr in attrs:
+            # Avoid self-reference loops
+            if getattr(obj, attr) is obj:
+                continue
             attr_value = getattr(frozen_obj, attr)
             setattr(
                 frozen_obj,
@@ -177,7 +184,7 @@ def __freeze_object(
         # save_original_on_copy is set to True). Descendant attributes are not saved in other original_obj attributes,
         # i.e. there is no copy of hierarchy, only the first-level object is saved.
         if save_original_on_copy and on_freeze.__class__ == OnFreezeCopier:
-            setattr(frozen_obj, "original_obj", obj)
+            setattr(frozen_obj, 'original_obj', obj)
 
         frozen_class = make_frozen_class(klass=obj.__class__, attrs=attrs, on_update=on_update)
         frozen_obj.__class__ = frozen_class
@@ -194,17 +201,17 @@ def __on_update_warning(frozen_obj: FrozenBase, message: str, *args, **kwargs) -
 
 def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
     if isinstance(on_update, str):
-        if on_update == "exception":
+        if on_update == 'exception':
             return __on_update_exception
-        elif on_update == "warning":
+        elif on_update == 'warning':
             return __on_update_warning
-        elif on_update == "nothing":
+        elif on_update == 'nothing':
             return lambda message, *args, **kwargs: None
         else:
             raise AttributeError(
                 f"Invalid value for on_update parameter, '{on_update}' found, "
                 f"only 'exception', 'warning', and 'nothing' are valid options "
-                f"if passed a string"
+                f'if passed a string'
             )
 
     elif callable(on_update):
@@ -214,5 +221,5 @@ def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
         raise AttributeError(
             f"Invalid value for on_update parameter, '{on_update}' found, "
             f"only 'exception', 'warning', 'nothing' or a function are "
-            f"valid options"
+            f'valid options'
         )

@@ -10,8 +10,8 @@ from gelidum.typing import OnUpdateFuncType
 def __create_frozen_class(
     klass: Type[object], attrs: Iterable[str], on_update_func: OnUpdateFuncType
 ) -> Type[FrozenBase]:
-    camel_case_module = klass.__module__.title().replace(".", "").replace("_", "")
-    frozen_class_name = f"Frozen{klass.__name__}From{camel_case_module}"
+    camel_case_module = klass.__module__.title().replace('.', '').replace('_', "")
+    frozen_class_name = f'Frozen{klass.__name__}From{camel_case_module}'
     frozen_class: Type[FrozenBase] = cast(
         Type[FrozenBase],
         type(
@@ -19,10 +19,10 @@ def __create_frozen_class(
             (FrozenBase, klass),
             {
                 **{
-                    "get_gelidum_hot_class_name": lambda _: klass.__name__,
-                    "get_gelidum_hot_class_module": lambda _: klass.__module__,
-                    "_gelidum_on_update": lambda _self, *args, **kwargs: on_update_func(*args, **kwargs),
-                    "original_obj": None,
+                    'get_gelidum_hot_class_name': lambda _: klass.__name__,
+                    'get_gelidum_hot_class_module': lambda _: klass.__module__,
+                    '_gelidum_on_update': lambda _self, *args, **kwargs: on_update_func(*args, **kwargs),
+                    'original_obj': None,
                     **{attr: None for attr in attrs},
                 }
             },
@@ -33,7 +33,7 @@ def __create_frozen_class(
 
 
 def make_frozen_class(klass: Type[object], attrs: Iterable[str], on_update: OnUpdateFuncType) -> Type[FrozenBase]:
-    frozen_class = get_frozen_class(klass_key=f"{klass.__module__}.{klass.__qualname__}")
+    frozen_class = get_frozen_class(klass_key=f'{klass.__module__}.{klass.__qualname__}')
 
     if not frozen_class:
         frozen_class = __create_frozen_class(klass=klass, attrs=attrs, on_update_func=on_update)
@@ -43,9 +43,9 @@ def make_frozen_class(klass: Type[object], attrs: Iterable[str], on_update: OnUp
 
 def make_unique_class(klass: Type[object], attrs: Dict[str, Any], on_update: OnUpdateFuncType) -> Type[FrozenBase]:
 
-    camel_case_module = klass.__module__.title().replace(".", "").replace("_", "")
-    unique_suffix = str(uuid.uuid4()).replace("-", "")
-    frozen_class_name = f"Frozen{klass.__name__}From{camel_case_module}{unique_suffix}"
+    camel_case_module = klass.__module__.title().replace('.', '').replace('_', "")
+    unique_suffix = str(uuid.uuid4()).replace('-', '')
+    frozen_class_name = f'Frozen{klass.__name__}From{camel_case_module}{unique_suffix}'
     frozen_class: Type[FrozenBase] = cast(
         Type[FrozenBase],
         type(
@@ -53,11 +53,11 @@ def make_unique_class(klass: Type[object], attrs: Dict[str, Any], on_update: OnU
             (FrozenBase, klass),
             {
                 **{
-                    "get_gelidum_hot_class_name": lambda _: klass.__name__,
-                    "get_gelidum_hot_class_module": lambda _: klass.__module__,
-                    "_gelidum_on_update": lambda _self, *args, **kwargs: on_update(*args, **kwargs),
+                    'get_gelidum_hot_class_name': lambda _: klass.__name__,
+                    'get_gelidum_hot_class_module': lambda _: klass.__module__,
+                    '_gelidum_on_update': lambda _self, *args, **kwargs: on_update(*args, **kwargs),
                     **attrs,
-                    "__init__": lambda _: None,
+                    '__init__': lambda _: None,
                 }
             },
         ),
@@ -91,7 +91,7 @@ def __store_frozen_class(klass: Type[object], frozen_class: Type[FrozenBase]) ->
     :param frozen_class: a class that inherits from FrozenBase.
     """
     with __FROZEN_CLASSES_LOCK:
-        klass_key = f"{klass.__module__}.{klass.__qualname__}"
+        klass_key = f'{klass.__module__}.{klass.__qualname__}'
         __FROZEN_CLASSES[klass_key] = frozen_class
         # Required for pickling frozen objects (only classes defined in actual
         # modules can have their objects pickled)

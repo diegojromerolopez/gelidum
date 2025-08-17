@@ -23,9 +23,3 @@ jobs:
           coverage run --source=gelidum/tests -m unittest
           coverage report --fail-under=100
           coverage xml -o coverage.xml
-      - name: Publish code coverage to code climate
-        uses: paambaati/codeclimate-action@v2.7.5
-        env:
-          CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
-        with:
-          coverageCommand: coverage report

@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.9.0 (2025-08-15)
+### Breaking changes
+- It does not make sense using Final as a type hint for frozen objects, it should be Freezable.
+  - `Final` is a type hint meaning the variable is a constant, it will not reference any other value.
+  - `Freezable` means that the parameter of the function will be frozen before passing it to the function. 
+So Final will not be used by this package in any form, Freezable will be used instead.
+
+### Features
+- Remove setup.py and use pyproject.toml to build the project.
+- Add isfrozen function to package.
+- Modules cannot be frozen.
+- Allow freezing object with references to self.
+
+### Fixes
+- Improve CI/CD
+- Use single quotes preferably in the source code.
+
 ## 0.8.2 (2025-04-06)
 ### Fixes
 - Dummy version upgrade. It was forgotten.
@@ -53,7 +70,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
   dummy_child = DummyChild(value=1)
   dummy = Dummy(child=dummy_child)
-  frozen_dummy = freeze(dummy, on_freeze="copy")
+  frozen_dummy = freeze(dummy, on_freeze='copy')
 
   assert(frozen_dummy.original_obj.__class__ == dummy.__class__)
   assert(id(frozen_dummy.original_obj) == id(dummy))

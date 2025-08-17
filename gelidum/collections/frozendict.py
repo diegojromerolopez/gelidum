@@ -10,7 +10,7 @@ from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 from gelidum.typing import FrozenDict, FrozenType
 
-__all__ = ["frozendict"]
+__all__ = ['frozendict']
 
 
 class frozendict(dict, FrozenBase):  # noqa
@@ -28,7 +28,7 @@ class frozendict(dict, FrozenBase):  # noqa
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
 
-                return freeze(item, on_update="exception", on_freeze="copy")
+                return freeze(item, on_update='exception', on_freeze='copy')
 
         if seq is not None:
             items = None
@@ -55,11 +55,11 @@ class frozendict(dict, FrozenBase):  # noqa
 
     @classmethod
     def get_gelidum_hot_class_name(cls) -> str:
-        return "dict"
+        return 'dict'
 
     @classmethod
     def get_gelidum_hot_class_module(cls) -> str:
-        return "builtins.dict"
+        return 'builtins.dict'
 
     def __hash__(self) -> int:
         return hash(tuple((k, v) for k, v in self.items()))
@@ -70,14 +70,14 @@ class frozendict(dict, FrozenBase):  # noqa
         try:
             return super().__getitem__(key)
         except IndexError:
-            raise IndexError("frozendict index out of range")
+            raise IndexError('frozendict index out of range')
 
     def __add__(self, other: FrozenDict) -> FrozenDict:
         joined_dict = self | other
         return frozendict(joined_dict)
 
     def __or__(self, other: FrozenDict) -> FrozenDict:
-        if hasattr(super, "__or__"):
+        if hasattr(super, '__or__'):
             return super().__or__(other)
         # Python version < 3.9
         result_dict = dict()
@@ -109,7 +109,7 @@ class frozendict(dict, FrozenBase):  # noqa
     def update(self, *args, **kwarg):
         self.__raise_immutable_exception()
 
-    def copy(self) -> "frozendict":
+    def copy(self) -> 'frozendict':
         """
         frozendict objects are only shallow-copied.
         """

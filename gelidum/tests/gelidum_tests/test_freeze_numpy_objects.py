@@ -9,12 +9,12 @@ class TestFreezeNumpyObjects(unittest.TestCase):
     def setUp(self) -> None:
         clear_frozen_classes()
 
-    @unittest.skipUnless(NUMPY_INSTALLED, "numpy is not installed, TestFreeze.test_freeze_ndarray test skipped")
+    @unittest.skipUnless(NUMPY_INSTALLED, 'numpy is not installed, TestFreeze.test_freeze_ndarray test skipped')
     def test_freeze_ndarray(self) -> None:
         import numpy as np
 
         array = np.array([1, 2, 3])
-        frozen_array = freeze(array, on_freeze="copy")
+        frozen_array = freeze(array, on_freeze='copy')
         frozen_array_copy = frozen_array.copy()
 
         self.assertEqual(array.shape, frozen_array.shape)

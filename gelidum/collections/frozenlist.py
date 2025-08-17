@@ -4,7 +4,7 @@ from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
 from gelidum.typing import FrozenList, FrozenType
 
-__all__ = ["frozenlist"]
+__all__ = ['frozenlist']
 
 
 _FrozenListParameterType = Optional[Union[Sequence, Generator]]
@@ -16,13 +16,13 @@ class frozenlist(tuple, FrozenBase):  # noqa
 
     def __new__(
         cls, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None
-    ) -> "frozenlist":
+    ) -> 'frozenlist':
         if freeze_func is None:
 
             def freeze_func(item: Any) -> FrozenType:
                 from gelidum.freeze import freeze
 
-                return freeze(item, on_update="exception", on_freeze="copy")
+                return freeze(item, on_update='exception', on_freeze='copy')
 
         if seq:
             self = tuple.__new__(cls, (freeze_func(arg) for arg in seq))
@@ -41,11 +41,11 @@ class frozenlist(tuple, FrozenBase):  # noqa
 
     @classmethod
     def get_gelidum_hot_class_name(cls) -> str:
-        return "tuple"
+        return 'tuple'
 
     @classmethod
     def get_gelidum_hot_class_module(cls) -> str:
-        return "builtins.tuple"
+        return 'builtins.tuple'
 
     def __getitem__(self, key) -> Any:
         if type(key) is slice:
@@ -53,7 +53,7 @@ class frozenlist(tuple, FrozenBase):  # noqa
         try:
             return super().__getitem__(key)
         except IndexError:
-            raise IndexError("frozenlist index out of range")
+            raise IndexError('frozenlist index out of range')
 
     def __add__(self, other: FrozenList) -> FrozenList:
         joined_list = []
@@ -96,7 +96,7 @@ class frozenlist(tuple, FrozenBase):  # noqa
         try:
             return super().index(*args)
         except ValueError:
-            raise ValueError(f"{x} is not in frozenlist")
+            raise ValueError(f'{x} is not in frozenlist')
 
     def sort(self, *, key=None, reverse=False):
         self.__raise_immutable_exception()
@@ -104,7 +104,7 @@ class frozenlist(tuple, FrozenBase):  # noqa
     def reverse(self):
         self.__raise_immutable_exception()
 
-    def copy(self) -> "frozenlist":
+    def copy(self) -> 'frozenlist':
         """
         frozendlist objects are only shallow-copied.
         """
