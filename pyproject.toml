@@ -39,6 +39,10 @@ dev = [
     "isort>=6.0.1",
 ]
 
+[tool.setuptools.packages.find]
+include = ["gelidum*"]
+exclude = ["resources*"]
+
 [tool.black]
 line-length = 120
 target-version = ['py39']
