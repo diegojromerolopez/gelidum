@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.9.1 (2025-08-17)
+### Fixes
+- Fix pyproject.toml file.
+
 ## 0.9.0 (2025-08-15)
 ### Breaking changes
 - It does not make sense using Final as a type hint for frozen objects, it should be Freezable.

@@ -1,6 +1,6 @@
 [project]
 name = "gelidum"
-version = "0.9.0"
+version = "0.9.1"
 description = "Freeze your objects in python"
 readme = "README.md"
 keywords = [ "freeze", "python", "object" ]
@@ -30,6 +30,7 @@ repository = "https://github.com/diegojromerolopez/gelidum"
 documentation = "https://github.com/diegojromerolopez/gelidum/blob/main/README.md"
 "Bug Tracker" = "https://github.com/diegojromerolopez/gelidum/issues"
 
+[dependency-groups]
 dev = [
     "black>=25.1.0",
     "coverage>=7.9.2",
