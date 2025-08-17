@@ -2,19 +2,27 @@ import io
 import sys
 import warnings
 from types import ModuleType
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union, TypeVar
 
-from gelidum.collections import frozendict, frozenlist, frozenzet
+from gelidum.collections.frozendict import frozendict
+from gelidum.collections.frozenlist import frozenlist
+from gelidum.collections.frozenndarray import frozenndarray
+from gelidum.collections.frozenzet import frozenzet
 from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase, isfrozen, make_frozen_class
+from gelidum.frozen import FrozenBase, make_frozen_class, Frozen
 from gelidum.frozen.frozen_class_creator import make_unique_class
 from gelidum.on_freeze import OnFreezeCopier, on_freeze_func_creator
-from gelidum.typing import FrozenList, FrozenType, OnFreezeFuncType, OnUpdateFuncType, T
+from gelidum.typing import FrozenType, OnFreezeFuncType, OnUpdateFuncType
 from gelidum.utils import isbuiltin
 
 if NUMPY_INSTALLED:
     from gelidum.collections import frozenndarray
+
+K = TypeVar('K')
+V = TypeVar('V')
+T = TypeVar('T')
 
 NpArrayType = Any
 
@@ -25,7 +33,7 @@ def freeze(
     on_freeze: Union[str, OnFreezeFuncType] = 'copy',
     save_original_on_copy: bool = False,
     inplace: Optional[bool] = None,
-) -> FrozenType:
+) -> Frozen[T]:
 
     # inplace argument will be removed from freeze in the next major version (0.6.0)
     if isinstance(inplace, bool):
@@ -90,28 +98,28 @@ def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
     return bytes(obj)
 
 
-def __freeze_ndarray(obj: NpArrayType, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> FrozenList:
+def __freeze_ndarray(obj: NpArrayType, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> frozenndarray:
     def freeze_func(item: Any) -> FrozenType:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozenndarray(obj, freeze_func=freeze_func)
 
 
-def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> frozendict:
+def __freeze_dict(obj: Dict[K ,V], on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> frozendict[K, V]:
     def freeze_func(item: Any) -> FrozenType:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozendict(obj, freeze_func=freeze_func)
 
 
-def __freeze_list(obj: List, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> FrozenList:
+def __freeze_list(obj: List[T], on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> frozenlist[T]:
     def freeze_func(item: Any) -> FrozenType:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozenlist(obj, freeze_func=freeze_func)
 
 
-def __freeze_tuple(obj: Tuple, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> Tuple:
+def __freeze_tuple(obj: Tuple[T], on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> Tuple[Frozen[T]]:
     return tuple(freeze(item, on_update=on_update, on_freeze=on_freeze) for item in obj)
 
 
@@ -154,7 +162,7 @@ def __freeze_object(
     # are the object attributes that we want to freeze
     if hasattr(obj.__class__, '__slots__'):
         attrs = tuple(obj.__class__.__slots__)
-        on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze='copy')
+        on_freeze = on_freeze_func_creator(on_freeze='copy')
         frozen_class = make_unique_class(
             klass=obj.__class__,
             attrs={

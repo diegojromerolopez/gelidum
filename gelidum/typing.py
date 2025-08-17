@@ -1,38 +1,26 @@
 from typing import (
-    TYPE_CHECKING,
     Any,
     Callable,
     Generic,
-    Iterable,
-    Mapping,
     Optional,
-    Reversible,
-    Sized,
     TypeVar,
     Union,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from gelidum.collections import (  # noqa
-        frozendict,
-        frozenlist,
-        frozenndarray,
-        frozenzet,
-    )
-    from gelidum.frozen import FrozenBase  # noqa
+from gelidum.collections.frozendict import frozendict
+from gelidum.collections.frozenlist import frozenlist
+from gelidum.collections.frozenndarray import frozenndarray
+from gelidum.collections.frozenzet import frozenzet
+from gelidum.frozen import FrozenBase, Frozen  # noqa
 
 
+K = TypeVar('K')
+V = TypeVar('V')
 T = TypeVar('T')
 
 
 class Freezable(Generic[T]):  # noqa
     pass
-
-
-FrozenList = Union['FrozenBase', Sized, Iterable, Reversible, 'frozenlist']
-FrozenDict = Union['FrozenBase', Mapping, 'frozendict']
-FrozenZet = Union['FrozenBase', Sized, Iterable, 'frozenzet']
-FrozenNdArray = Union['FrozenBase', Sized, Iterable, 'frozenndarray']
 
 
 FrozenType = Optional[
@@ -44,19 +32,19 @@ FrozenType = Optional[
         complex,
         str,
         bytes,
-        FrozenDict,
-        FrozenList,
-        FrozenZet,
-        FrozenNdArray,
+        frozendict,
+        frozenlist,
+        frozenzet,
+        frozenndarray,
         tuple,
         frozenset,
-        'FrozenBase',
-        T,
+        FrozenBase,
+        Frozen[T],
     ]
 ]
 
 try:
-    OnUpdateFuncType = Callable[['FrozenBase', str, ...], None]
+    OnUpdateFuncType = Callable[[Frozen[T], str], None]
 except TypeError:
     OnUpdateFuncType = Callable
 
