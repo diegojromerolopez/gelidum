@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.10.0 (2025-11-23)
+### Features
+- Remove support from Python 3.7.
+- Remove support from Python 3.8.
+### Fixes
+- Fixes type hints.
+
 ## 0.9.1 (2025-08-17)
 ### Fixes
 - Fix pyproject.toml file.

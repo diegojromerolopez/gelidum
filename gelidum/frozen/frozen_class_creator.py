@@ -10,7 +10,7 @@ from gelidum.typing import OnUpdateFuncType
 def __create_frozen_class(
     klass: Type[object], attrs: Iterable[str], on_update_func: OnUpdateFuncType
 ) -> Type[FrozenBase]:
-    camel_case_module = klass.__module__.title().replace('.', '').replace('_', "")
+    camel_case_module = klass.__module__.title().replace('.', '').replace('_', '')
     frozen_class_name = f'Frozen{klass.__name__}From{camel_case_module}'
     frozen_class: Type[FrozenBase] = cast(
         Type[FrozenBase],
@@ -43,7 +43,7 @@ def make_frozen_class(klass: Type[object], attrs: Iterable[str], on_update: OnUp
 
 def make_unique_class(klass: Type[object], attrs: Dict[str, Any], on_update: OnUpdateFuncType) -> Type[FrozenBase]:
 
-    camel_case_module = klass.__module__.title().replace('.', '').replace('_', "")
+    camel_case_module = klass.__module__.title().replace('.', '').replace('_', '')
     unique_suffix = str(uuid.uuid4()).replace('-', '')
     frozen_class_name = f'Frozen{klass.__name__}From{camel_case_module}{unique_suffix}'
     frozen_class: Type[FrozenBase] = cast(

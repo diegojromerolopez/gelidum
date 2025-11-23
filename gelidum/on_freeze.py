@@ -20,7 +20,7 @@ class OnFreezeOriginalObjTracker(OnFreezeCopier):
     frozen. Useful for keeping track of original 'hot' objects.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.__original_obj: Optional[Any] = None
 
     def __call__(self, obj: Any) -> Any:

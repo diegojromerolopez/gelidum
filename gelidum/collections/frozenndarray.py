@@ -1,6 +1,6 @@
 from typing import Any, Callable, Optional
 
-import numpy as np
+import numpy as np  # type: ignore[import-not-found]
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
@@ -14,7 +14,7 @@ class frozenndarray(np.ndarray, FrozenBase):  # noqa
     information about numpy.ndarray subclassing.
     """
 
-    def __new__(cls, ndarray: np.ndarray, freeze_func: Optional[Callable[[Any], FrozenBase]] = None, *args, **kwargs):
+    def __new__(cls, ndarray: np.ndarray, freeze_func: Optional[Callable[[Any], Any]] = None, *args, **kwargs):
         obj = ndarray.copy().view(cls)
         obj.flags.writeable = False
         return obj

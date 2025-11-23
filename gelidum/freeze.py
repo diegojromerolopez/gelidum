@@ -1,20 +1,23 @@
+from __future__ import annotations
+
 import io
 import sys
 import warnings
 from types import ModuleType
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Union
 
-from gelidum.collections import frozendict, frozenlist, frozenzet
 from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase, isfrozen, make_frozen_class
 from gelidum.frozen.frozen_class_creator import make_unique_class
 from gelidum.on_freeze import OnFreezeCopier, on_freeze_func_creator
-from gelidum.typing import FrozenList, FrozenType, OnFreezeFuncType, OnUpdateFuncType, T
+from gelidum.typing import Frozen, OnFreezeFuncType, OnUpdateFuncType, T
 from gelidum.utils import isbuiltin
 
-if NUMPY_INSTALLED:
-    from gelidum.collections import frozenndarray
+if TYPE_CHECKING:
+    from gelidum.collections.frozendict import frozendict
+    from gelidum.collections.frozenlist import frozenlist
+    from gelidum.collections.frozenzet import frozenzet
 
 NpArrayType = Any
 
@@ -25,7 +28,7 @@ def freeze(
     on_freeze: Union[str, OnFreezeFuncType] = 'copy',
     save_original_on_copy: bool = False,
     inplace: Optional[bool] = None,
-) -> FrozenType:
+) -> Frozen[T]:
 
     # inplace argument will be removed from freeze in the next major version (0.6.0)
     if isinstance(inplace, bool):
@@ -42,9 +45,9 @@ def freeze(
         if hasattr(obj.__class__, '__slots__') and on_freeze == 'inplace':
             raise FrozenException('Objects of classes with __slots__ cannot be frozen inplace')
 
-        on_freeze_func: OnFreezeFuncType = on_freeze_func_creator(on_freeze=on_freeze)
+        on_freeze_func = on_freeze_func_creator(on_freeze=on_freeze)
 
-    on_update_func: OnUpdateFuncType = __on_update_func(on_update=on_update)
+    on_update_func = __on_update_func(on_update=on_update)  # type: ignore[arg-type]
 
     return __freeze(
         obj=obj, on_update=on_update_func, on_freeze=on_freeze_func, save_original_on_copy=save_original_on_copy
@@ -72,7 +75,7 @@ def __freeze(
         return freeze_func(obj, on_update=on_update, on_freeze=on_freeze)
 
     if NUMPY_INSTALLED:
-        import numpy as np
+        import numpy as np  # type: ignore[import-not-found]
 
         if isinstance(obj, np.ndarray):
             return __freeze_ndarray(obj, on_update=on_update, on_freeze=on_freeze)
@@ -90,22 +93,28 @@ def __freeze_bytearray(obj: bytearray, *args, **kwargs) -> bytes:  # noqa
     return bytes(obj)
 
 
-def __freeze_ndarray(obj: NpArrayType, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> FrozenList:
-    def freeze_func(item: Any) -> FrozenType:
+def __freeze_ndarray(obj: NpArrayType, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> Any:
+    from gelidum.collections.frozenndarray import frozenndarray
+
+    def freeze_func(item: Any) -> Any:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozenndarray(obj, freeze_func=freeze_func)
 
 
-def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> frozendict:
-    def freeze_func(item: Any) -> FrozenType:
+def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozendict':
+    from gelidum.collections.frozendict import frozendict
+
+    def freeze_func(item: Any) -> Any:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozendict(obj, freeze_func=freeze_func)
 
 
-def __freeze_list(obj: List, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> FrozenList:
-    def freeze_func(item: Any) -> FrozenType:
+def __freeze_list(obj: List, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozenlist':
+    from gelidum.collections.frozenlist import frozenlist
+
+    def freeze_func(item: Any) -> Any:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozenlist(obj, freeze_func=freeze_func)
@@ -115,8 +124,10 @@ def __freeze_tuple(obj: Tuple, on_update: OnUpdateFuncType, on_freeze: OnFreezeF
     return tuple(freeze(item, on_update=on_update, on_freeze=on_freeze) for item in obj)
 
 
-def __freeze_set(obj: Set, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> frozenzet:
-    def freeze_func(item: Any) -> FrozenType:
+def __freeze_set(obj: Set, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozenzet':
+    from gelidum.collections.frozenzet import frozenzet
+
+    def freeze_func(item: Any) -> Any:
         return freeze(item, on_update=on_update, on_freeze=on_freeze)
 
     return frozenzet(obj, freeze_func=freeze_func)
@@ -154,11 +165,13 @@ def __freeze_object(
     # are the object attributes that we want to freeze
     if hasattr(obj.__class__, '__slots__'):
         attrs = tuple(obj.__class__.__slots__)
-        on_freeze: OnFreezeFuncType = on_freeze_func_creator(on_freeze='copy')
+        on_freeze_func_copy = on_freeze_func_creator(on_freeze='copy')
         frozen_class = make_unique_class(
             klass=obj.__class__,
             attrs={
-                attr: freeze(getattr(obj, attr), on_update=on_update, on_freeze=on_freeze, save_original_on_copy=False)
+                attr: freeze(
+                    getattr(obj, attr), on_update=on_update, on_freeze=on_freeze_func_copy, save_original_on_copy=False
+                )
                 for attr in attrs
             },
             on_update=on_update,
@@ -206,7 +219,7 @@ def __on_update_func(on_update: OnUpdateFuncType) -> OnUpdateFuncType:
         elif on_update == 'warning':
             return __on_update_warning
         elif on_update == 'nothing':
-            return lambda message, *args, **kwargs: None
+            return lambda message, *args, **kwargs: None  # type: ignore[return-value]
         else:
             raise AttributeError(
                 f"Invalid value for on_update parameter, '{on_update}' found, "
