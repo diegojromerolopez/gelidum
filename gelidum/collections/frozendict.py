@@ -1,14 +1,9 @@
-from typing import Any, Callable, Hashable, Optional, Sequence, Tuple, Union
-
-try:
-    from collections import Mapping
-except ImportError:
-    # For python > 3.10
-    from collections.abc import Mapping
+from collections.abc import Mapping
+from typing import Any, Callable, Dict, Hashable, Optional, Sequence, Tuple, Union
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
-from gelidum.typing import FrozenDict, FrozenType
+from gelidum.typing import FrozenDict
 
 __all__ = ['frozendict']
 
@@ -20,30 +15,34 @@ class frozendict(dict, FrozenBase):  # noqa
     def __init__(
         self,
         seq: Optional[Union[Mapping, Sequence, Tuple[Hashable, Any]]] = None,
-        freeze_func: Optional[Callable[[Any], FrozenBase]] = None,
+        freeze_func: Optional[Callable[[Any], Any]] = None,
         **kwargs,
     ):
         if freeze_func is None:
+            from gelidum.freeze import freeze
 
-            def freeze_func(item: Any) -> FrozenType:
-                from gelidum.freeze import freeze
-
+            def _freeze_func(item: Any) -> Any:
                 return freeze(item, on_update='exception', on_freeze='copy')
 
-        if seq is not None:
-            items = None
-            if isinstance(seq, Mapping):
-                items = seq.items()
-            elif isinstance(seq, Sequence):
-                items = seq
+            freeze_func = _freeze_func
 
-            if items is not None:
+        if seq is not None:
+            if isinstance(seq, Mapping):
                 super().__init__(
-                    {key: freeze_func(value) for key, value in items},
+                    {key: freeze_func(value) for key, value in seq.items()},
+                    **{key: freeze_func(value) for key, value in kwargs.items()},
+                )
+            elif isinstance(seq, Sequence):
+                super().__init__(
+                    {key: freeze_func(value) for key, value in seq},  # type: ignore[misc]
                     **{key: freeze_func(value) for key, value in kwargs.items()},
                 )
             else:
-                super().__init__({key: freeze_func(value) for key, value in seq})
+                # Assume it's an iterable of key-value pairs
+                super().__init__(
+                    {key: freeze_func(value) for key, value in seq},  # type: ignore[misc]
+                    **{key: freeze_func(value) for key, value in kwargs.items()},
+                )
         elif kwargs:
             super().__init__({key: freeze_func(value) for key, value in kwargs.items()})
         else:
@@ -61,7 +60,7 @@ class frozendict(dict, FrozenBase):  # noqa
     def get_gelidum_hot_class_module(cls) -> str:
         return 'builtins.dict'
 
-    def __hash__(self) -> int:
+    def __hash__(self) -> int:  # type: ignore[override]
         return hash(tuple((k, v) for k, v in self.items()))
 
     def __getitem__(self, key) -> Any:
@@ -72,21 +71,23 @@ class frozendict(dict, FrozenBase):  # noqa
         except IndexError:
             raise IndexError('frozendict index out of range')
 
-    def __add__(self, other: FrozenDict) -> FrozenDict:
+    def __add__(self, other: 'FrozenDict') -> 'frozendict':  # type: ignore[valid-type]
         joined_dict = self | other
         return frozendict(joined_dict)
 
-    def __or__(self, other: FrozenDict) -> FrozenDict:
-        if hasattr(super, '__or__'):
-            return super().__or__(other)
+    def __or__(self, other: FrozenDict) -> 'frozendict':  # type: ignore[override,valid-type]
+        if hasattr(dict, '__or__'):
+            joined: Dict[Any, Any] = dict.__or__(self, other)  # type: ignore[arg-type,operator]
+            return frozendict(joined)
         # Python version < 3.9
-        result_dict = dict()
+        result_dict: Dict[Any, Any] = dict()
         result_dict.update(self)
-        result_dict.update(other)
+        result_dict.update(other)  # type: ignore[arg-type]
         return frozendict(result_dict)
 
-    def __sub__(self, other: FrozenDict) -> FrozenDict:
-        return frozendict({k: v for k, v in self.items() if k not in other})
+    def __sub__(self, other: FrozenDict) -> 'frozendict':  # type: ignore[valid-type]
+        result = {k: v for k, v in self.items() if k not in other}  # type: ignore[attr-defined]
+        return frozendict(result)  # type: ignore[arg-type,operator]
 
     def remove(self, x):
         self.__raise_immutable_exception()

@@ -1,20 +1,20 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Iterable, Optional, Set
+from typing import Any, Callable, Iterable, Optional, Set
 
 from gelidum.freeze import freeze
 
 
-def freeze_params(params: Optional[Iterable[str]] = None):
-    def inner_freeze_params(func):
+def freeze_params(params: Optional[Iterable[str]] = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+    def inner_freeze_params(func: Callable[..., Any]) -> Callable[..., Any]:
         """Freeze all input params of a method"""
 
         @functools.wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             func_args = tuple([freeze(arg, on_freeze='copy') for arg in args])
             func_kwargs = {
-                kwarg_name: freeze(kwarg, on_freeze='copy') if kwarg_name in params else kwarg
+                kwarg_name: freeze(kwarg, on_freeze='copy') if params and kwarg_name in params else kwarg
                 for kwarg_name, kwarg in kwargs.items()
             }
             return func(*func_args, **func_kwargs)
@@ -24,11 +24,11 @@ def freeze_params(params: Optional[Iterable[str]] = None):
     return inner_freeze_params
 
 
-def freeze_freezable(func):
+def freeze_freezable(func: Callable[..., Any]) -> Callable[..., Any]:
     """Freeze all freezable params of a method"""
 
     @functools.wraps(func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         unnamed_params_to_freeze: Set[int] = {
             i
             for i, (param_name, param_typing) in enumerate(func.__annotations__.items())

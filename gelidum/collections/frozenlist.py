@@ -2,7 +2,7 @@ from typing import Any, Callable, Generator, Optional, Sequence, Union
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
-from gelidum.typing import FrozenList, FrozenType
+from gelidum.typing import FrozenList
 
 __all__ = ['frozenlist']
 
@@ -15,14 +15,15 @@ class frozenlist(tuple, FrozenBase):  # noqa
         raise FrozenException("'frozenlist' object is immutable")
 
     def __new__(
-        cls, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None
+        cls, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], Any]] = None
     ) -> 'frozenlist':
         if freeze_func is None:
+            from gelidum.freeze import freeze
 
-            def freeze_func(item: Any) -> FrozenType:
-                from gelidum.freeze import freeze
-
+            def _freeze_func(item: Any) -> Any:
                 return freeze(item, on_update='exception', on_freeze='copy')
+
+            freeze_func = _freeze_func
 
         if seq:
             self = tuple.__new__(cls, (freeze_func(arg) for arg in seq))
@@ -31,7 +32,7 @@ class frozenlist(tuple, FrozenBase):  # noqa
         return self
 
     def __init__(
-        self, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], FrozenBase]] = None
+        self, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], Any]] = None
     ):
         pass
 
@@ -55,15 +56,15 @@ class frozenlist(tuple, FrozenBase):  # noqa
         except IndexError:
             raise IndexError('frozenlist index out of range')
 
-    def __add__(self, other: FrozenList) -> FrozenList:
+    def __add__(self, other: FrozenList) -> 'frozenlist':  # type: ignore[override,valid-type]
         joined_list = []
         for item in self:
             joined_list.append(item)
-        for item in other:
+        for item in other:  # type: ignore[union-attr,attr-defined]
             joined_list.append(item)
         return frozenlist(joined_list)
 
-    def __mul__(self, times: int) -> FrozenList:
+    def __mul__(self, times: int) -> 'frozenlist':  # type: ignore[override]
         as_list = []
         for item in self:
             as_list.append(item)

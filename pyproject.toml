@@ -1,23 +1,22 @@
 [project]
 name = "gelidum"
-version = "0.9.1"
+version = "0.10.0"
 description = "Freeze your objects in python"
 readme = "README.md"
 keywords = [ "freeze", "python", "object" ]
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 authors = [
     { name = "Diego J. Romero López", email = "diegojromerolopez@gmail.com" },
 ]
 classifiers=[
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Software Development :: Libraries",
     "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License"
@@ -37,6 +36,7 @@ dev = [
     "flake8>=7.3.0",
     "flake8-quotes>=3.4.0",
     "isort>=6.0.1",
+    "mypy>=1.18.2",
 ]
 
 [tool.setuptools.packages.find]
@@ -55,3 +55,13 @@ docstring-quotes = '"""'
 
 [tool.isort]
 profile = "black"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+
+[[tool.mypy.overrides]]
+module = "gelidum.tests.*"
+ignore_errors = true

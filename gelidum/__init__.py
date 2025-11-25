@@ -8,4 +8,4 @@ from gelidum.on_freeze import (  # noqa
     OnFreezeIdentityFunc,
     OnFreezeOriginalObjTracker,
 )
-from gelidum.typing import Freezable  # noqa
+from gelidum.typing import Freezable, Frozen  # noqa
