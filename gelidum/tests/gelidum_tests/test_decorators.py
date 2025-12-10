@@ -1,6 +1,6 @@
 import concurrent.futures
 import unittest
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from gelidum import Freezable, FrozenException, freeze_freezable, freeze_params
 
@@ -8,7 +8,7 @@ from gelidum import Freezable, FrozenException, freeze_freezable, freeze_params
 class TestDecorators(unittest.TestCase):
     def test_decorator_with_list_input_param(self) -> None:
         @freeze_params()
-        def append_to_list(a_list: List, new_item: int):
+        def append_to_list(a_list: list, new_item: int):
             a_list.append(new_item)
 
         with self.assertRaises(FrozenException) as context:
@@ -18,7 +18,7 @@ class TestDecorators(unittest.TestCase):
 
     def test_decorator_with_dict_input_param(self) -> None:
         @freeze_params()
-        def add_to_dict(a_dict: Dict, new_item: Tuple[str, Any]):
+        def add_to_dict(a_dict: dict, new_item: tuple[str, Any]):
             a_dict[new_item[0]] = new_item[1]
 
         with self.assertRaises(TypeError) as context:
@@ -87,7 +87,7 @@ class TestDecorators(unittest.TestCase):
 
     def test_freeze_freezable_list_params(self) -> None:
         @freeze_freezable
-        def join_lists_bad_implementation(one: Freezable[List], two: Freezable[List]) -> Freezable[List]:
+        def join_lists_bad_implementation(one: Freezable[list], two: Freezable[list]) -> Freezable[list]:
             one.extend(two)
             return one  # pragma: no cover
 

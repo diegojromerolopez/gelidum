@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import functools
-from typing import Any, Callable, Iterable, Optional, Set
+from typing import Any, Callable, Iterable
 
 from gelidum.freeze import freeze
 
 
-def freeze_params(params: Optional[Iterable[str]] = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+def freeze_params(params: Iterable[str] | None = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
     def inner_freeze_params(func: Callable[..., Any]) -> Callable[..., Any]:
         """Freeze all input params of a method"""
 
@@ -29,12 +29,12 @@ def freeze_freezable(func: Callable[..., Any]) -> Callable[..., Any]:
 
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        unnamed_params_to_freeze: Set[int] = {
+        unnamed_params_to_freeze: set[int] = {
             i
             for i, (param_name, param_typing) in enumerate(func.__annotations__.items())
             if __param_is_freezable(param_typing)
         }
-        named_params_to_freeze: Set[str] = {
+        named_params_to_freeze: set[str] = {
             param_name
             for param_name, param_typing in func.__annotations__.items()
             if __param_is_freezable(param_typing)

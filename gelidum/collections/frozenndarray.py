@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 import numpy as np  # type: ignore[import-not-found]
 
@@ -14,7 +14,7 @@ class frozenndarray(np.ndarray, FrozenBase):  # noqa
     information about numpy.ndarray subclassing.
     """
 
-    def __new__(cls, ndarray: np.ndarray, freeze_func: Optional[Callable[[Any], Any]] = None, *args, **kwargs):
+    def __new__(cls, ndarray: np.ndarray, freeze_func: Callable[[Any], Any] | None = None, *args, **kwargs):
         obj = ndarray.copy().view(cls)
         obj.flags.writeable = False
         return obj

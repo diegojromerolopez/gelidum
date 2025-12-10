@@ -9,7 +9,7 @@ import tempfile
 import threading
 import unittest
 import warnings
-from typing import Any, Dict, List, Union
+from typing import Any
 from unittest.mock import patch
 
 from gelidum import FrozenException, freeze
@@ -140,13 +140,13 @@ class TestFreezeObjects(unittest.TestCase):
         with warnings.catch_warnings(record=True) as caught_warnings:
             frozen_dummy.attr1 = 99
             frozen_dummy._attr2 = 99
-            frozen_dummy._Dummy__attr3 = 99
+            frozen_dummy._Dummy__attr3 = 99  # type: ignore[attr-defined]
 
         self.assertEqual(id(dummy), id(frozen_dummy))
         self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
-        self.assertEqual(3, frozen_dummy._Dummy__attr3)
+        self.assertEqual(3, frozen_dummy._Dummy__attr3)  # type: ignore[attr-defined]
         self.assertListEqual(
             [
                 "Can't assign attribute 'attr1' on immutable instance",
@@ -285,7 +285,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
-        self.assertEqual(3, frozen_dummy._Dummy__attr3)
+        self.assertEqual(3, frozen_dummy._Dummy__attr3)  # type: ignore[attr-defined]
 
     def test_freeze_simple_object_and_catch_setattr_exception(self):
         class Dummy(object):
@@ -404,7 +404,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
-        self.assertEqual(3, frozen_dummy._Dummy__attr3)
+        self.assertEqual(3, frozen_dummy._Dummy__attr3)  # type: ignore[attr-defined]
         self.assertListEqual(expected_writing_tries, writing_tries)
 
     @patch('logging.Logger')
@@ -419,8 +419,8 @@ class TestFreezeObjects(unittest.TestCase):
             def __init__(self, log: logging.Logger) -> None:
                 self.log = log
                 self.lock = threading.Lock()
-                self.writing_tries: List[Dict] = []
-                self.original_obj = None
+                self.writing_tries: list[dict] = []
+                self.original_obj: object | None = None
 
             def on_freeze(self, obj: object) -> object:
                 frozen_object = copy.deepcopy(obj)
@@ -481,25 +481,25 @@ class TestFreezeObjects(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_exc_assign_attr2:
             frozen_dummy._attr2 = 99
         with self.assertRaises(FrozenException) as context_exc_assign_attr3:
-            frozen_dummy._Dummy__attr3 = 99
+            frozen_dummy._Dummy__attr3 = 99  # type: ignore[attr-defined]
         with self.assertRaises(FrozenException) as context_exc_inc_attr1:
             frozen_dummy.attr1 += 99
         with self.assertRaises(FrozenException) as context_exc_inc_attr2:
             frozen_dummy._attr2 += 99
         with self.assertRaises(FrozenException) as context_exc_inc_attr3:
-            frozen_dummy._Dummy__attr3 += 99
+            frozen_dummy._Dummy__attr3 += 99  # type: ignore[attr-defined]
         with self.assertRaises(FrozenException) as context_exc_dec_attr1:
             frozen_dummy.attr1 -= 99
         with self.assertRaises(FrozenException) as context_exc_dec_attr2:
             frozen_dummy._attr2 -= 99
         with self.assertRaises(FrozenException) as context_exc_dec_attr3:
-            frozen_dummy._Dummy__attr3 -= 99
+            frozen_dummy._Dummy__attr3 -= 99  # type: ignore[attr-defined]
 
         self.assertEqual(id(dummy), id(frozen_dummy))
         self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
-        self.assertEqual(3, frozen_dummy._Dummy__attr3)
+        self.assertEqual(3, frozen_dummy._Dummy__attr3)  # type: ignore[attr-defined]
         self.assertEqual(
             "Can't assign attribute 'attr1' on immutable instance", str(context_exc_assign_attr1.exception)
         )
@@ -535,25 +535,25 @@ class TestFreezeObjects(unittest.TestCase):
         with self.assertRaises(FrozenException) as context_exc_assign_attr2:
             frozen_dummy._attr2 = 99
         with self.assertRaises(FrozenException) as context_exc_assign_attr3:
-            frozen_dummy._Dummy__attr3 = 99
+            frozen_dummy._Dummy__attr3 = 99  # type: ignore[attr-defined]
         with self.assertRaises(FrozenException) as context_exc_inc_attr1:
             frozen_dummy.attr1 += 99
         with self.assertRaises(FrozenException) as context_exc_inc_attr2:
             frozen_dummy._attr2 += 99
         with self.assertRaises(FrozenException) as context_exc_inc_attr3:
-            frozen_dummy._Dummy__attr3 += 99
+            frozen_dummy._Dummy__attr3 += 99  # type: ignore[attr-defined]
         with self.assertRaises(FrozenException) as context_exc_dec_attr1:
             frozen_dummy.attr1 -= 99
         with self.assertRaises(FrozenException) as context_exc_dec_attr2:
             frozen_dummy._attr2 -= 99
         with self.assertRaises(FrozenException) as context_exc_dec_attr3:
-            frozen_dummy._Dummy__attr3 -= 99
+            frozen_dummy._Dummy__attr3 -= 99  # type: ignore[attr-defined]
 
         self.assertNotEqual(id(dummy), id(frozen_dummy))
         self.assertEqual((FrozenBase, Dummy), frozen_dummy.__class__.__bases__)
         self.assertEqual(1, frozen_dummy.attr1)
         self.assertEqual(2, frozen_dummy._attr2)
-        self.assertEqual(3, frozen_dummy._Dummy__attr3)
+        self.assertEqual(3, frozen_dummy._Dummy__attr3)  # type: ignore[attr-defined]
         self.assertEqual(
             "Can't assign attribute 'attr1' on immutable instance", str(context_exc_assign_attr1.exception)
         )
@@ -596,13 +596,13 @@ class TestFreezeObjects(unittest.TestCase):
         frozen_deep_dummy = freeze(deep_dummy, on_freeze='inplace')
 
         with self.assertRaises(FrozenException) as context_exc_dummy1:
-            frozen_deep_dummy.dummy1 = 99
+            frozen_deep_dummy.dummy1 = 99  # type: ignore[assignment]
         with self.assertRaises(FrozenException) as context_exc_dummy1_attr1:
             frozen_deep_dummy.dummy1.attr1 = 99
         with self.assertRaises(FrozenException) as context_exc_dummy1_attr2:
             frozen_deep_dummy.dummy1._attr2 = 99
         with self.assertRaises(FrozenException) as context_exc_dummy1_attr3:
-            frozen_deep_dummy.dummy1._Dummy__attr3 = 99
+            frozen_deep_dummy.dummy1._Dummy__attr3 = 99  # type: ignore[attr-defined]
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1:
             setattr(frozen_deep_dummy, 'dummy1', 99)
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr1:
@@ -615,7 +615,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(id(deep_dummy), id(frozen_deep_dummy))
         self.assertEqual(11, frozen_deep_dummy.dummy1.attr1)
         self.assertEqual(12, frozen_deep_dummy.dummy1._attr2)
-        self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)
+        self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)  # type: ignore[attr-defined]
         self.assertEqual("Can't assign attribute 'dummy1' on immutable instance", str(context_exc_dummy1.exception))
         self.assertEqual(
             "Can't assign attribute 'attr1' on immutable instance", str(context_exc_dummy1_attr1.exception)
@@ -662,13 +662,13 @@ class TestFreezeObjects(unittest.TestCase):
         frozen_deep_dummy = freeze(deep_dummy, on_freeze='copy')
 
         with self.assertRaises(FrozenException) as context_exc_dummy1:
-            frozen_deep_dummy.dummy1 = 99
+            frozen_deep_dummy.dummy1 = 99  # type: ignore[assignment]
         with self.assertRaises(FrozenException) as context_exc_dummy1_attr1:
             frozen_deep_dummy.dummy1.attr1 = 99
         with self.assertRaises(FrozenException) as context_exc_dummy1_attr2:
             frozen_deep_dummy.dummy1._attr2 = 99
         with self.assertRaises(FrozenException) as context_exc_dummy1_attr3:
-            frozen_deep_dummy.dummy1._Dummy__attr3 = 99
+            frozen_deep_dummy.dummy1._Dummy__attr3 = 99  # type: ignore[attr-defined]
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1:
             setattr(frozen_deep_dummy, 'dummy1', 99)
         with self.assertRaises(FrozenException) as context_exc_setattr_dummy1_attr1:
@@ -681,7 +681,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertNotEqual(id(deep_dummy), id(frozen_deep_dummy))
         self.assertEqual(11, frozen_deep_dummy.dummy1.attr1)
         self.assertEqual(12, frozen_deep_dummy.dummy1._attr2)
-        self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)
+        self.assertEqual(13, frozen_deep_dummy.dummy1._Dummy__attr3)  # type: ignore[attr-defined]
         self.assertEqual("Can't assign attribute 'dummy1' on immutable instance", str(context_exc_dummy1.exception))
         self.assertEqual(
             "Can't assign attribute 'attr1' on immutable instance", str(context_exc_dummy1_attr1.exception)
@@ -762,7 +762,7 @@ class TestFreezeObjects(unittest.TestCase):
         dummy = Dummy(attr1=1, attr2=2, attr3=3)
         frozen_dummy = freeze(dummy, on_freeze='copy')
         frozen_dummy_inplace = freeze(dummy, on_freeze='inplace')
-        my_dict: Dict = {dummy: 'this is a dummy object'}
+        my_dict: dict = {dummy: 'this is a dummy object'}
 
         self.assertNotEqual(hash(dummy), hash(frozen_dummy))
         self.assertEqual(None, my_dict.get(frozen_dummy))
@@ -792,7 +792,7 @@ class TestFreezeObjects(unittest.TestCase):
         dummy = Dummy(attr1=1, attr2=2, attr3=3)
         frozen_dummy = freeze(dummy)
         with self.assertRaises(FrozenException) as context:
-            frozen_dummy.new_attribute = 99
+            frozen_dummy.new_attribute = 99  # type: ignore[attr-defined]
         self.assertEqual("Can't assign attribute 'new_attribute' on immutable instance", str(context.exception))
 
     def test_cannot_use_modifying_attribute_method_in_frozen_object(self) -> None:
@@ -888,10 +888,10 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(1, frozen_dummy1.attr1, unpickled_frozen_dummy1.attr1)
         self.assertEqual(2, frozen_dummy2.attr2, unpickled_frozen_dummy2.attr2)
 
-        self.assertEqual('gelidum.tests.gelidum_tests.utils.dummy1', frozen_dummy1.get_gelidum_hot_class_module())
-        self.assertEqual('gelidum.tests.gelidum_tests.utils.dummy2', frozen_dummy2.get_gelidum_hot_class_module())
-        self.assertEqual('Dummy', frozen_dummy1.get_gelidum_hot_class_name())
-        self.assertEqual('Dummy', frozen_dummy2.get_gelidum_hot_class_name())
+        self.assertEqual('gelidum.tests.gelidum_tests.utils.dummy1', frozen_dummy1.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
+        self.assertEqual('gelidum.tests.gelidum_tests.utils.dummy2', frozen_dummy2.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
+        self.assertEqual('Dummy', frozen_dummy1.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
+        self.assertEqual('Dummy', frozen_dummy2.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
 
     def test_hot_class_module_class(self) -> None:
         from gelidum.tests.gelidum_tests.utils.dummy1 import Dummy
@@ -903,12 +903,12 @@ class TestFreezeObjects(unittest.TestCase):
         frozen_dummy2 = freeze(dummy2, on_freeze='copy')
         frozen_dummy3 = freeze(dummy3, on_freeze='copy')
 
-        self.assertEqual(Dummy.__name__, frozen_dummy1.get_gelidum_hot_class_name())
-        self.assertEqual(Dummy.__name__, frozen_dummy2.get_gelidum_hot_class_name())
-        self.assertEqual(Dummy.__name__, frozen_dummy3.get_gelidum_hot_class_name())
-        self.assertEqual(Dummy.__module__, frozen_dummy1.get_gelidum_hot_class_module())
-        self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())
-        self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())
+        self.assertEqual(Dummy.__name__, frozen_dummy1.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__name__, frozen_dummy2.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__name__, frozen_dummy3.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__module__, frozen_dummy1.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
 
     def test_hot_class_module_internal_class(self) -> None:
         class Dummy(object):
@@ -921,12 +921,12 @@ class TestFreezeObjects(unittest.TestCase):
         frozen_dummy2 = freeze(dummy2, on_freeze='copy')
         frozen_dummy3 = freeze(dummy3, on_freeze='copy')
 
-        self.assertEqual(Dummy.__name__, frozen_dummy1.get_gelidum_hot_class_name())
-        self.assertEqual(Dummy.__name__, frozen_dummy2.get_gelidum_hot_class_name())
-        self.assertEqual(Dummy.__name__, frozen_dummy3.get_gelidum_hot_class_name())
-        self.assertEqual(Dummy.__module__, frozen_dummy1.get_gelidum_hot_class_module())
-        self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())
-        self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())
+        self.assertEqual(Dummy.__name__, frozen_dummy1.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__name__, frozen_dummy2.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__name__, frozen_dummy3.get_gelidum_hot_class_name())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__module__, frozen_dummy1.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__module__, frozen_dummy2.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
+        self.assertEqual(Dummy.__module__, frozen_dummy3.get_gelidum_hot_class_module())  # type: ignore[attr-defined]
 
     def test_count_frozen_classes(self) -> None:
         class Dummy(object):
@@ -946,7 +946,7 @@ class TestFreezeObjects(unittest.TestCase):
 
     def test_invalid_str_for_on_freeze_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
-            freeze(('one', 2, 'three'), on_freeze='invalid')
+            freeze(('one', 2, 'three'), on_freeze='invalid')  # type: ignore[arg-type]
 
         self.assertEqual(
             "Invalid value for on_freeze parameter, 'invalid' found, "
@@ -956,7 +956,7 @@ class TestFreezeObjects(unittest.TestCase):
 
     def test_invalid_value_for_on_freeze_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
-            freeze(('one', 2, 'three'), on_freeze=99)  # noqa
+            freeze(('one', 2, 'three'), on_freeze=99)  # type: ignore[arg-type] # noqa
 
         self.assertEqual(
             "Invalid value for on_freeze parameter, '99' found, "
@@ -966,7 +966,7 @@ class TestFreezeObjects(unittest.TestCase):
 
     def test_invalid_str_for_on_update_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
-            freeze(('one', 2, 'three'), on_update='invalid')
+            freeze(('one', 2, 'three'), on_update='invalid')  # type: ignore[arg-type]
 
         self.assertEqual(
             "Invalid value for on_update parameter, 'invalid' found, "
@@ -977,7 +977,7 @@ class TestFreezeObjects(unittest.TestCase):
 
     def test_invalid_value_for_on_update_parameter(self) -> None:
         with self.assertRaises(AttributeError) as context:
-            freeze(('one', 2, 'three'), on_update=1)  # noqa
+            freeze(('one', 2, 'three'), on_update=1)  # type: ignore[arg-type] # noqa
 
         self.assertEqual(
             "Invalid value for on_update parameter, '1' found, "
@@ -998,7 +998,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertNotEqual(id(dummy), id(frozen_dummy1))
         self.assertEqual(id(frozen_dummy1), id(frozen_dummy2))
         self.assertEqual(id(frozen_dummy2), id(frozen_dummy3))
-        self.assertEqual(1, frozen_dummy1.value)
+        self.assertEqual(1, frozen_dummy1.value)  # type: ignore[union-attr]
         self.assertEqual(1, frozen_dummy2.value)
         self.assertEqual(1, frozen_dummy3.value)
 
@@ -1009,10 +1009,13 @@ class TestFreezeObjects(unittest.TestCase):
 
         class Dummy(object):
             def __init__(self, dummy_attr: FrozenBase) -> None:
-                self.dummy_attr: Union[FrozenBase, DummyAttr] = dummy_attr
+                self.dummy_attr: FrozenBase | DummyAttr = dummy_attr
 
         frozen_dummy_attr = freeze(DummyAttr('my_value'), on_update='exception', on_freeze='copy')
-        dummy = Dummy(dummy_attr=frozen_dummy_attr)
+        # cast to FrozenBase to satisfy type hint, though it is technically DummyAttr at runtime (but frozen)
+        # In this specific test setup, Dummy expects FrozenBase, but freeze returns Frozen[DummyAttr] (which is DummyAttr).
+        # We can cast it.
+        dummy = Dummy(dummy_attr=frozen_dummy_attr)  # type: ignore[arg-type]
         frozen_dummy1 = freeze(dummy, on_update='exception', on_freeze='copy')
         frozen_dummy2 = freeze(frozen_dummy1, on_update='exception', on_freeze='copy')
         frozen_dummy3 = freeze(frozen_dummy2, on_update='exception', on_freeze='copy')
@@ -1021,7 +1024,7 @@ class TestFreezeObjects(unittest.TestCase):
         self.assertEqual(id(frozen_dummy1), id(frozen_dummy2))
         self.assertEqual(id(frozen_dummy2), id(frozen_dummy3))
         self.assertEqual(id(dummy.dummy_attr), id(frozen_dummy_attr))
-        self.assertEqual('my_value', dummy.dummy_attr.value)
+        self.assertEqual('my_value', dummy.dummy_attr.value)  # type: ignore[union-attr]
         self.assertEqual('my_value', frozen_dummy_attr.value)
         self.assertEqual(id(frozen_dummy_attr), id(frozen_dummy1.dummy_attr))
         self.assertEqual(id(frozen_dummy1.dummy_attr), id(frozen_dummy2.dummy_attr))

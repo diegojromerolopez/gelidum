@@ -24,25 +24,26 @@ class TestFreezeBuiltinObjects(unittest.TestCase):
         self.assertEqual(b'Byte array', freeze(bytearray(b'Byte array')))
 
     def test_freeze_dict(self) -> None:
-        frozen_obj: frozendict = freeze({'one': 1, 'two': 2})
+        my_dict = {'one': 1, 'two': 2}
+        frozen_dict: frozendict = freeze(my_dict)  # type: ignore[assignment]
 
         with self.assertRaises(FrozenException) as context_assignment:
-            frozen_obj['one'] = 'another value'  # noqa
+            frozen_dict['one'] = 'another value'  # noqa
 
         with self.assertRaises(FrozenException) as context_clear:
-            frozen_obj.clear()  # noqa
+            frozen_dict.clear()  # noqa
 
         with self.assertRaises(FrozenException) as context_update:
-            frozen_obj.update({'three': 3})  # noqa
+            frozen_dict.update({'three': 3})  # noqa
 
         with self.assertRaises(FrozenException) as context_deletion:
-            del frozen_obj['one']  # noqa
+            del frozen_dict['one']  # noqa
 
-        self.assertEqual(2, len(frozen_obj))
-        self.assertTrue('one' in frozen_obj)
-        self.assertTrue('two' in frozen_obj)
-        self.assertEqual(1, frozen_obj['one'])
-        self.assertEqual(2, frozen_obj['two'])
+        self.assertEqual(2, len(frozen_dict))  # type: ignore[arg-type]
+        self.assertTrue('one' in frozen_dict)
+        self.assertTrue('two' in frozen_dict)
+        self.assertEqual(1, frozen_dict['one'])
+        self.assertEqual(2, frozen_dict['two'])
         self.assertEqual("'frozendict' object is immutable", str(context_assignment.exception))
         self.assertEqual("'frozendict' object is immutable", str(context_clear.exception))
         self.assertEqual("'frozendict' object is immutable", str(context_update.exception))
@@ -56,12 +57,12 @@ class TestFreezeBuiltinObjects(unittest.TestCase):
         self.assertEqual(2, frozen_list[1])
         self.assertEqual('three', frozen_list[2])
         self.assertTrue(isinstance(frozen_list[3], frozenlist))
-        self.assertEqual(5, len(frozen_list[3]))
-        self.assertEqual('a', frozen_list[3][0])
-        self.assertEqual('b', frozen_list[3][1])
-        self.assertEqual('c', frozen_list[3][2])
-        self.assertEqual(4, frozen_list[3][3])
-        self.assertEqual(5, frozen_list[3][4])
+        self.assertEqual(5, len(frozen_list[3]))  # type: ignore[arg-type]
+        self.assertEqual('a', frozen_list[3][0])  # type: ignore[index]
+        self.assertEqual('b', frozen_list[3][1])  # type: ignore[index]
+        self.assertEqual('c', frozen_list[3][2])  # type: ignore[index]
+        self.assertEqual(4, frozen_list[3][3])  # type: ignore[index]
+        self.assertEqual(5, frozen_list[3][4])  # type: ignore[index]
 
     def test_freeze_list_inplace_true_deprecated_parameter(self) -> None:
         with warnings.catch_warnings(record=True) as caught_warnings:

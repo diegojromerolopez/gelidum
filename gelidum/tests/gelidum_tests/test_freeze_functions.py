@@ -13,34 +13,34 @@ class TestFreezeFunctions(unittest.TestCase):
         def times() -> None:
             pass  # pragma: no cover
 
-        times.factor = 3
+        times.factor = 3  # type: ignore[attr-defined]
 
         frozen_times = freeze(times)
 
-        self.assertEqual(3, frozen_times.factor)
+        self.assertEqual(3, frozen_times.factor)  # type: ignore[attr-defined]
         self.assertNotEqual(id(times), id(frozen_times))
 
     def test_freeze_function_inplace_is_ignored(self) -> None:
         def times() -> None:
             pass  # pragma: no cover
 
-        times.factor = 3
+        times.factor = 3  # type: ignore[attr-defined]
 
         frozen_times = freeze(times, on_freeze='inplace')
 
-        self.assertEqual(3, frozen_times.factor)
+        self.assertEqual(3, frozen_times.factor)  # type: ignore[attr-defined]
         self.assertNotEqual(id(times), id(frozen_times))
 
     def test_freeze_function_and_writing_attributes_with_exception(self):
         def times() -> None:
             pass  # pragma: no cover
 
-        times.factor = 3
+        times.factor = 3  # type: ignore[attr-defined]
 
         frozen_times = freeze(times)
 
         with self.assertRaises(FrozenException) as context:
-            frozen_times.factor = 10
+            frozen_times.factor = 10  # type: ignore[attr-defined]
 
         self.assertEqual("Can't assign attribute 'factor' on immutable instance", str(context.exception))
 
@@ -48,12 +48,12 @@ class TestFreezeFunctions(unittest.TestCase):
         def times() -> None:
             pass  # pragma: no cover
 
-        times.cache = {}
+        times.cache = {}  # type: ignore[attr-defined]
 
         frozen_times = freeze(times)
 
         with self.assertRaises(FrozenException) as context:
-            frozen_times.cache[10] = 789
+            frozen_times.cache[10] = 789  # type: ignore[attr-defined]
 
         self.assertEqual("'frozendict' object is immutable", str(context.exception))
 
@@ -61,12 +61,12 @@ class TestFreezeFunctions(unittest.TestCase):
         def times() -> None:
             pass  # pragma: no cover
 
-        times.factor = 3
+        times.factor = 3  # type: ignore[attr-defined]
 
         frozen_times = freeze(times, on_update='warning')
 
         with warnings.catch_warnings(record=True) as caught_warnings:
-            frozen_times.factor = 10
+            frozen_times.factor = 10  # type: ignore[attr-defined]
 
         self.assertListEqual(
             ["Can't assign attribute 'factor' on immutable instance"],

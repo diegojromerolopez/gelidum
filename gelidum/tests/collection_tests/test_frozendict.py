@@ -38,7 +38,7 @@ class TestFrozendict(unittest.TestCase):  # noqa
             def __init__(self, value: Any) -> None:
                 self.value = value
 
-        def test_generator() -> Tuple[str, int]:
+        def test_generator() -> Any:
             yield 'one', 1
             yield 'two', '2'
             yield 'three', Dummy(3)

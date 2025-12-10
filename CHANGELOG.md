@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 0.11.0 (2025-11-30)
+### Features
+- Remove support from Python 3.9.
+### Fixes
+- Fixes type hints:
+  - Do not ignore type hints in tests.
+  - Removal of Any type.
+  - Fix Frozen[T] type hint.
+
 ## 0.10.0 (2025-11-23)
 ### Features
 - Remove support from Python 3.7.

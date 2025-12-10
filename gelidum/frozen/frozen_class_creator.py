@@ -1,19 +1,19 @@
 import sys
 import threading
 import uuid
-from typing import Any, Dict, Iterable, Optional, Set, Type, cast
+from typing import Any, Iterable, cast
 
 from gelidum.frozen.frozen_base import FrozenBase
 from gelidum.typing import OnUpdateFuncType
 
 
 def __create_frozen_class(
-    klass: Type[object], attrs: Iterable[str], on_update_func: OnUpdateFuncType
-) -> Type[FrozenBase]:
+    klass: type[object], attrs: Iterable[str], on_update_func: OnUpdateFuncType
+) -> type[FrozenBase]:
     camel_case_module = klass.__module__.title().replace('.', '').replace('_', '')
     frozen_class_name = f'Frozen{klass.__name__}From{camel_case_module}'
-    frozen_class: Type[FrozenBase] = cast(
-        Type[FrozenBase],
+    frozen_class: type[FrozenBase] = cast(
+        type[FrozenBase],
         type(
             frozen_class_name,
             (FrozenBase, klass),
@@ -32,7 +32,7 @@ def __create_frozen_class(
     return frozen_class
 
 
-def make_frozen_class(klass: Type[object], attrs: Iterable[str], on_update: OnUpdateFuncType) -> Type[FrozenBase]:
+def make_frozen_class(klass: type[object], attrs: Iterable[str], on_update: OnUpdateFuncType) -> type[FrozenBase]:
     frozen_class = get_frozen_class(klass_key=f'{klass.__module__}.{klass.__qualname__}')
 
     if not frozen_class:
@@ -41,13 +41,13 @@ def make_frozen_class(klass: Type[object], attrs: Iterable[str], on_update: OnUp
     return frozen_class
 
 
-def make_unique_class(klass: Type[object], attrs: Dict[str, Any], on_update: OnUpdateFuncType) -> Type[FrozenBase]:
+def make_unique_class(klass: type[object], attrs: dict[str, Any], on_update: OnUpdateFuncType) -> type[FrozenBase]:
 
     camel_case_module = klass.__module__.title().replace('.', '').replace('_', '')
     unique_suffix = str(uuid.uuid4()).replace('-', '')
     frozen_class_name = f'Frozen{klass.__name__}From{camel_case_module}{unique_suffix}'
-    frozen_class: Type[FrozenBase] = cast(
-        Type[FrozenBase],
+    frozen_class: type[FrozenBase] = cast(
+        type[FrozenBase],
         type(
             frozen_class_name,
             (FrozenBase, klass),
@@ -66,22 +66,22 @@ def make_unique_class(klass: Type[object], attrs: Dict[str, Any], on_update: OnU
     return frozen_class
 
 
-__FROZEN_CLASSES: Dict[str, Type[FrozenBase]] = dict()
+__FROZEN_CLASSES: dict[str, type[FrozenBase]] = dict()
 __FROZEN_CLASSES_LOCK = threading.Lock()
 
 
-def get_frozen_class(klass_key: str) -> Optional[Type[FrozenBase]]:
+def get_frozen_class(klass_key: str) -> type[FrozenBase] | None:
     with __FROZEN_CLASSES_LOCK:
         frozen_class = __FROZEN_CLASSES.get(klass_key)
     return frozen_class
 
 
-def get_frozen_classes() -> Set[Type[FrozenBase]]:
+def get_frozen_classes() -> set[type[FrozenBase]]:
     with __FROZEN_CLASSES_LOCK:
         return set(__FROZEN_CLASSES.values())
 
 
-def __store_frozen_class(klass: Type[object], frozen_class: Type[FrozenBase]) -> None:
+def __store_frozen_class(klass: type[object], frozen_class: type[FrozenBase]) -> None:
     """
     Add a frozen class to this module.
     Required for pickle serialization as only objects of non-dynamic

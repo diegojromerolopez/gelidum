@@ -246,7 +246,7 @@ class TestFrozenzet(unittest.TestCase):  # noqa
             frozen_zet.update(frozen_zet2)
 
         with self.assertRaises(FrozenException) as context2:
-            frozen_zet |= frozen_zet2
+            frozen_zet |= frozen_zet2  # type: ignore[misc]
 
         self.assertEqual("'frozenzet' object is immutable", str(context1.exception))
         self.assertEqual("'frozenzet' object is immutable", str(context2.exception))
@@ -259,7 +259,7 @@ class TestFrozenzet(unittest.TestCase):  # noqa
             frozen_zet.intersection_update(frozen_zet2)
 
         with self.assertRaises(FrozenException) as context2:
-            frozen_zet &= frozen_zet2
+            frozen_zet &= frozen_zet2  # type: ignore[misc]
 
         self.assertEqual("'frozenzet' object is immutable", str(context1.exception))
         self.assertEqual("'frozenzet' object is immutable", str(context2.exception))
@@ -272,7 +272,7 @@ class TestFrozenzet(unittest.TestCase):  # noqa
             frozen_zet.difference_update(frozen_zet2)
 
         with self.assertRaises(FrozenException) as context2:
-            frozen_zet -= frozen_zet2
+            frozen_zet -= frozen_zet2  # type: ignore[misc]
 
         self.assertEqual("'frozenzet' object is immutable", str(context1.exception))
         self.assertEqual("'frozenzet' object is immutable", str(context2.exception))
@@ -285,7 +285,7 @@ class TestFrozenzet(unittest.TestCase):  # noqa
             frozen_zet.symmetric_difference_update(frozen_zet2)
 
         with self.assertRaises(FrozenException) as context2:
-            frozen_zet ^= frozen_zet2
+            frozen_zet ^= frozen_zet2  # type: ignore[misc]
 
         self.assertEqual("'frozenzet' object is immutable", str(context1.exception))
         self.assertEqual("'frozenzet' object is immutable", str(context2.exception))

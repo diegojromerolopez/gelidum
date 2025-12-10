@@ -1,6 +1,6 @@
 import logging
 import unittest
-from typing import Any, List
+from typing import Any
 from unittest import mock
 from unittest.mock import call
 
@@ -37,11 +37,15 @@ class TestOnFreeze(unittest.TestCase):
 
         frozen_dummy1 = freeze(dummy1, on_freeze=freezer)
         original_obj = freezer.original_obj
+        self.assertIsNotNone(original_obj)
+        assert original_obj # for mypy
 
         self.assertEqual(id(dummy1), id(original_obj))
         self.assertNotEqual(id(dummy1), id(frozen_dummy1))
         self.assertTrue(isinstance(original_obj, Dummy))
+        self.assertTrue(hasattr(original_obj, 'attr1'))
         self.assertTrue(isinstance(original_obj.attr1, DummyAttr1))
+        self.assertTrue(hasattr(original_obj, 'attr2'))
         self.assertTrue(isinstance(original_obj.attr2, DummyAttr2))
         self.assertIs(original_obj.__class__, Dummy)
         self.assertIs(original_obj.attr1.__class__, DummyAttr1)
@@ -123,14 +127,14 @@ class TestOnFreeze(unittest.TestCase):
 
         class OnFreezeFullTrackingInPlace(OnFreezeIdentityFunc):
             def __init__(self) -> None:
-                self.__objs: List[Any] = []
+                self.__objs: list[Any] = []
 
             def __call__(self, obj: Any) -> Any:
                 self.__objs.append(obj)
                 return super().__call__(obj=obj)
 
             @property
-            def original_objs(self) -> List[Any]:
+            def original_objs(self) -> list[Any]:
                 return self.__objs
 
         freezer = OnFreezeFullTrackingInPlace()

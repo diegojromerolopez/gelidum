@@ -1,5 +1,5 @@
 from collections.abc import Mapping
-from typing import Any, Callable, Dict, Hashable, Optional, Sequence, Tuple, Union
+from typing import Any, Callable, Hashable, Sequence
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
@@ -14,8 +14,8 @@ class frozendict(dict, FrozenBase):  # noqa
 
     def __init__(
         self,
-        seq: Optional[Union[Mapping, Sequence, Tuple[Hashable, Any]]] = None,
-        freeze_func: Optional[Callable[[Any], Any]] = None,
+        seq: Mapping | Sequence | tuple[Hashable, Any] | None = None,
+        freeze_func: Callable[[Any], Any] | None = None,
         **kwargs,
     ):
         if freeze_func is None:
@@ -77,10 +77,10 @@ class frozendict(dict, FrozenBase):  # noqa
 
     def __or__(self, other: FrozenDict) -> 'frozendict':  # type: ignore[override,valid-type]
         if hasattr(dict, '__or__'):
-            joined: Dict[Any, Any] = dict.__or__(self, other)  # type: ignore[arg-type,operator]
+            joined: dict[Any, Any] = dict.__or__(self, other)  # type: ignore[arg-type,operator]
             return frozendict(joined)
         # Python version < 3.9
-        result_dict: Dict[Any, Any] = dict()
+        result_dict: dict[Any, Any] = dict()
         result_dict.update(self)
         result_dict.update(other)  # type: ignore[arg-type]
         return frozendict(result_dict)

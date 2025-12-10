@@ -4,7 +4,7 @@ import io
 import sys
 import warnings
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable
 
 from gelidum.dependencies import NUMPY_INSTALLED
 from gelidum.exceptions import FrozenException
@@ -24,10 +24,10 @@ NpArrayType = Any
 
 def freeze(
     obj: T,
-    on_update: Union[str, OnUpdateFuncType] = 'exception',
-    on_freeze: Union[str, OnFreezeFuncType] = 'copy',
+    on_update: str | OnUpdateFuncType = 'exception',
+    on_freeze: str | OnFreezeFuncType = 'copy',
     save_original_on_copy: bool = False,
-    inplace: Optional[bool] = None,
+    inplace: bool | None = None,
 ) -> Frozen[T]:
 
     # inplace argument will be removed from freeze in the next major version (0.6.0)
@@ -102,7 +102,7 @@ def __freeze_ndarray(obj: NpArrayType, on_update: OnUpdateFuncType, on_freeze: O
     return frozenndarray(obj, freeze_func=freeze_func)
 
 
-def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozendict':
+def __freeze_dict(obj: dict, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozendict':
     from gelidum.collections.frozendict import frozendict
 
     def freeze_func(item: Any) -> Any:
@@ -111,7 +111,7 @@ def __freeze_dict(obj: Dict, on_update: OnUpdateFuncType, on_freeze: OnFreezeFun
     return frozendict(obj, freeze_func=freeze_func)
 
 
-def __freeze_list(obj: List, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozenlist':
+def __freeze_list(obj: list, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozenlist':
     from gelidum.collections.frozenlist import frozenlist
 
     def freeze_func(item: Any) -> Any:
@@ -120,11 +120,11 @@ def __freeze_list(obj: List, on_update: OnUpdateFuncType, on_freeze: OnFreezeFun
     return frozenlist(obj, freeze_func=freeze_func)
 
 
-def __freeze_tuple(obj: Tuple, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> Tuple:
+def __freeze_tuple(obj: tuple, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> tuple:
     return tuple(freeze(item, on_update=on_update, on_freeze=on_freeze) for item in obj)
 
 
-def __freeze_set(obj: Set, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozenzet':
+def __freeze_set(obj: set, on_update: OnUpdateFuncType, on_freeze: OnFreezeFuncType) -> 'frozenzet':
     from gelidum.collections.frozenzet import frozenzet
 
     def freeze_func(item: Any) -> Any:

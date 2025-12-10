@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generator, Iterable, Optional, Sequence, Union
+from typing import Any, Callable, Generator, Iterable, Sequence
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
@@ -6,7 +6,7 @@ from gelidum.typing import FrozenZet
 
 __all__ = ['frozenzet']
 
-_FrozenZetParameterType = Optional[Union[Sequence, Generator, Iterable]]
+_FrozenZetParameterType = Sequence | Generator | Iterable | None
 
 
 class frozenzet(frozenset, FrozenBase):  # noqa
@@ -14,7 +14,7 @@ class frozenzet(frozenset, FrozenBase):  # noqa
         raise FrozenException("'frozenzet' object is immutable")
 
     def __new__(
-        cls, seq: Optional[_FrozenZetParameterType] = None, freeze_func: Optional[Callable[[Any], Any]] = None
+        cls, seq: _FrozenZetParameterType = None, freeze_func: Callable[[Any], Any] | None = None
     ) -> 'frozenzet':
         if freeze_func is None:
             from gelidum.freeze import freeze
@@ -31,7 +31,7 @@ class frozenzet(frozenset, FrozenBase):  # noqa
         return self
 
     def __init__(
-        self, seq: Optional[_FrozenZetParameterType] = None, freeze_func: Optional[Callable[[Any], Any]] = None
+        self, seq: _FrozenZetParameterType = None, freeze_func: Callable[[Any], Any] | None = None
     ):
         super().__init__()
 

@@ -1,5 +1,4 @@
 import unittest
-from typing import List
 
 from gelidum import FrozenException, freeze
 from gelidum.frozen import clear_frozen_classes
@@ -50,7 +49,7 @@ class TestFreezeDataclasses(unittest.TestCase):
 
         @dataclass
         class Database:
-            items: List[Item]
+            items: list[Item]
 
         item_type1 = ItemType(1, 'item type 1')
         item_type2 = ItemType(2, 'item type 2')
@@ -72,7 +71,26 @@ class TestFreezeDataclasses(unittest.TestCase):
             frozen_dummy_on_freeze_copy.items[0] = Item(9, 'item 9', 99, item_type1)
 
         with self.assertRaises(FrozenException) as context_inplace:
-            frozen_dummy_inplace.attr2 = '2'
+            # The original test tried to assign to 'attr2' on a Database instance, which doesn't have it.
+            # This line is likely the source of the 'attr-defined' error.
+            # To fix it, we should try to assign to an existing attribute of Database, e.g., 'items'.
+            # However, the original test was asserting the message "Can't assign attribute 'attr2' on immutable instance".
+            # To keep the test's intent of checking attribute assignment on the frozen instance,
+            # and to avoid an actual AttributeError before FrozenException, we can use a dummy attribute
+            # and ignore the type checker, or change the test to a valid attribute.
+            # Given the instruction is to "Fix attr-defined error", and the provided edit snippet
+            # includes `frozen_db.attr2 # type: ignore[attr-defined]`, it suggests keeping `attr2`
+            # but ignoring the type checker.
+            # However, the provided edit was malformed.
+            # Let's assume the intent was to keep the original line that causes the FrozenException,
+            # but to add a type ignore if the linter complains about `attr2` not existing on `Database`.
+            # The original line `frozen_dummy_inplace.attr2 = '2'` would indeed cause an `AttributeError`
+            # if `frozen_dummy_inplace` (a `Database` instance) wasn't frozen.
+            # Since it *is* frozen, it should raise `FrozenException` first.
+            # The `attr-defined` error would come from a static analyzer.
+            # The most faithful fix to the instruction and the provided snippet (despite its malformation)
+            # is to add the type ignore to the line that was likely causing the static analysis error.
+            frozen_dummy_inplace.attr2 = '2'  # type: ignore[attr-defined]
 
         self.assertEqual(
             "Can't assign attribute 'items' on immutable instance",

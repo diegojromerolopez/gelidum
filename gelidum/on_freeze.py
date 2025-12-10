@@ -1,5 +1,5 @@
 import copy
-from typing import Any, Optional, Union
+from typing import Any
 
 from gelidum.typing import OnFreezeFuncType
 
@@ -21,7 +21,7 @@ class OnFreezeOriginalObjTracker(OnFreezeCopier):
     """
 
     def __init__(self) -> None:
-        self.__original_obj: Optional[Any] = None
+        self.__original_obj: Any | None = None
 
     def __call__(self, obj: Any) -> Any:
         if self.__original_obj is None:
@@ -29,7 +29,7 @@ class OnFreezeOriginalObjTracker(OnFreezeCopier):
         return super().__call__(obj=obj)
 
     @property
-    def original_obj(self) -> Optional[Any]:
+    def original_obj(self) -> Any | None:
         return self.__original_obj
 
 
@@ -37,7 +37,7 @@ _ON_FREEZE_COPIER = OnFreezeCopier()
 _ON_FREEZE_IDENTITY_FUNC = OnFreezeIdentityFunc()
 
 
-def on_freeze_func_creator(on_freeze: Union[str, OnFreezeFuncType]) -> OnFreezeFuncType:
+def on_freeze_func_creator(on_freeze: str | OnFreezeFuncType) -> OnFreezeFuncType:
     if isinstance(on_freeze, str):
         if on_freeze == 'copy':
             return _ON_FREEZE_COPIER

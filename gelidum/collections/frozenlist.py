@@ -1,4 +1,4 @@
-from typing import Any, Callable, Generator, Optional, Sequence, Union
+from typing import Any, Callable, Generator, Sequence
 
 from gelidum.exceptions import FrozenException
 from gelidum.frozen import FrozenBase
@@ -7,7 +7,7 @@ from gelidum.typing import FrozenList
 __all__ = ['frozenlist']
 
 
-_FrozenListParameterType = Optional[Union[Sequence, Generator]]
+_FrozenListParameterType = Sequence | Generator | None
 
 
 class frozenlist(tuple, FrozenBase):  # noqa
@@ -15,7 +15,7 @@ class frozenlist(tuple, FrozenBase):  # noqa
         raise FrozenException("'frozenlist' object is immutable")
 
     def __new__(
-        cls, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], Any]] = None
+        cls, seq: _FrozenListParameterType = None, freeze_func: Callable[[Any], Any] | None = None
     ) -> 'frozenlist':
         if freeze_func is None:
             from gelidum.freeze import freeze
@@ -32,7 +32,7 @@ class frozenlist(tuple, FrozenBase):  # noqa
         return self
 
     def __init__(
-        self, seq: Optional[_FrozenListParameterType] = None, freeze_func: Optional[Callable[[Any], Any]] = None
+        self, seq: _FrozenListParameterType = None, freeze_func: Callable[[Any], Any] | None = None
     ):
         pass
 

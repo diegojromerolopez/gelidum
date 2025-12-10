@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-import sys
 from typing import (
     TYPE_CHECKING,
+    Annotated,
     Any,
     Callable,
     Generic,
-    Optional,
+    TypeAlias,
     TypeVar,
-    Union,
 )
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -22,57 +21,51 @@ if TYPE_CHECKING:  # pragma: no cover
 T = TypeVar('T')
 
 
-class Freezable(Generic[T]):  # noqa
-    pass
+FrozenList: TypeAlias = 'frozenlist'
+FrozenDict: TypeAlias = 'frozendict'
+FrozenZet: TypeAlias = 'frozenzet'
+FrozenNdArray: TypeAlias = 'frozenndarray'
 
-
-class Frozen(Generic[T]):
-    """
-    Generic type representing a frozen (immutable) version of type T.
-
-    This type preserves all attributes and methods of T while ensuring immutability.
-    Use this for type hints to maintain type information through freeze operations.
-
-    Example:
-        person = Person('Alice', 30)
-        frozen_person: Frozen[Person] = freeze(person)
-    """
-
-    pass
-
-
-# TypeAlias is available in Python 3.10+, for 3.9 we use simple assignment
-if sys.version_info >= (3, 10):
-    from typing import TypeAlias
-
-    FrozenList: TypeAlias = 'frozenlist'
-    FrozenDict: TypeAlias = 'frozendict'
-    FrozenZet: TypeAlias = 'frozenzet'
-    FrozenNdArray: TypeAlias = 'frozenndarray'
+if TYPE_CHECKING:
+    Frozen = Annotated[T, "Frozen"]
+    Freezable = Annotated[T, "Freezable"]
 else:
-    FrozenList = 'frozenlist'  # type: ignore[misc]
-    FrozenDict = 'frozendict'  # type: ignore[misc]
-    FrozenZet = 'frozenzet'  # type: ignore[misc]
-    FrozenNdArray = 'frozenndarray'  # type: ignore[misc]
+    class Freezable(Generic[T]):  # noqa
+        pass
 
-FrozenType = Optional[
-    Union[
-        bool,
-        int,
-        float,
-        bytes,
-        complex,
-        str,
-        bytes,
-        FrozenDict,  # type: ignore[valid-type]
-        FrozenList,  # type: ignore[valid-type]
-        FrozenZet,  # type: ignore[valid-type]
-        FrozenNdArray,  # type: ignore[valid-type]
-        tuple,
-        frozenset,
-        'FrozenBase',
-        Frozen[T],
-    ]
+    class Frozen(Generic[T]):
+        """
+        Generic type representing a frozen (immutable) version of type T.
+
+        This type preserves all attributes and methods of T while ensuring immutability.
+        Use this for type hints to maintain type information through freeze operations.
+
+        Example:
+            person = Person('Alice', 30)
+            frozen_person: Frozen[Person] = freeze(person)
+        """
+
+        pass
+
+from typing import Union
+
+FrozenType = Union[
+    bool,
+    int,
+    float,
+    bytes,
+    complex,
+    str,
+    bytes,
+    FrozenDict,  # type: ignore[valid-type]
+    FrozenList,  # type: ignore[valid-type]
+    FrozenZet,  # type: ignore[valid-type]
+    FrozenNdArray,  # type: ignore[valid-type]
+    tuple,
+    frozenset,
+    'FrozenBase',
+    Frozen[T],
+    None,
 ]
 
 OnUpdateFuncType = Callable[..., None]
