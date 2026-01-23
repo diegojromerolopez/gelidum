@@ -1,6 +1,6 @@
 [project]
 name = "gelidum"
-version = "0.10.0"
+version = "0.10.1"
 description = "Freeze your objects in python"
 readme = "README.md"
 keywords = [ "freeze", "python", "object" ]
