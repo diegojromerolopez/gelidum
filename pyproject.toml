@@ -39,6 +39,10 @@ dev = [
     "mypy>=1.18.2",
 ]
 
+[build-system]
+requires = ["setuptools"]  # PEP 508 specifications.
+build-backend = "setuptools.build_meta:__legacy__"
+
 [tool.setuptools.packages.find]
 include = ["gelidum*"]
 exclude = ["resources*"]
